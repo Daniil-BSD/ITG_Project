@@ -5,8 +5,9 @@
 	/// Defines the <see cref="PerlinNoise" />
 	/// </summary>
 	public class PerlinNoise : InterpolatableAlgorithm<float, Vec2> {
-
-		public PerlinNoise(Algorithm<Vec2> algorithm, int scale) : base(algorithm, scale) { }
+		public PerlinNoise(Algorithm<Vec2> algorithm, int scale) : base(algorithm, scale)
+		{
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static float Ease3(float v)

@@ -124,6 +124,7 @@
 
 
 
+
 		public static Vec2 operator -(Vec2 V1)
 		{
 			return *Vec2.Neg(&V1);

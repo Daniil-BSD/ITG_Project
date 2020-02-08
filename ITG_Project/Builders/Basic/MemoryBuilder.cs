@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ITG_Core {
+﻿namespace ITG_Core {
+	/// <summary>
+	/// Defines the <see cref="MemoryBuilder{T}" />
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
 	public class MemoryBuilder<T> : LayerBuilder<T, T> where T : struct {
 		public override Algorithm<T> Build(LandscapeBuilder.LandscapeItermidiate itermidiate)
 		{

@@ -1,8 +1,4 @@
-﻿using System;
-
-namespace ITG_Core {
-
-
+﻿namespace ITG_Core {
 	/// <summary>
 	/// Defines the <see cref="Vec2Field" />
 	/// </summary>

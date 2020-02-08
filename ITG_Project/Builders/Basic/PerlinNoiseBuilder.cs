@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ITG_Core {
+﻿namespace ITG_Core {
+	/// <summary>
+	/// Defines the <see cref="PerlinNoiseBuilder" />
+	/// </summary>
 	public class PerlinNoiseBuilder : InterpolatableAlgorithmBuilder<float, Vec2> {
-
 		public override Algorithm<float> Build(LandscapeBuilder.LandscapeItermidiate itermidiate)
 		{
 			base.Build(itermidiate);

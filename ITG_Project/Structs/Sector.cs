@@ -5,6 +5,7 @@
 	using System.Runtime.CompilerServices;
 
 
+
 	public class Sector<T> where T : struct {
 
 		public readonly Coordinate coordinate;

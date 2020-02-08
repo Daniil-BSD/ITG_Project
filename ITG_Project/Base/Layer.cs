@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ITG_Core {
-
+﻿namespace ITG_Core {
+	/// <summary>
+	/// Defines the <see cref="Layer{T, S}" />
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <typeparam name="S"></typeparam>
 	public abstract class Layer<T, S> : Algorithm<T> where T : struct where S : struct {
 		protected readonly Algorithm<S> source;
 

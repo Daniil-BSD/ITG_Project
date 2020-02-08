@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace ITG_Core {
+﻿namespace ITG_Core {
+	using System;
 	using System.Collections.Generic;
+
 	/// <summary>
 	/// Defines the <see cref="Landscape" />
 	/// </summary>
@@ -30,6 +30,7 @@ namespace ITG_Core {
 			throw new KeyNotFoundException();
 		}
 	}
+
 
 	/// <summary>
 	/// Defines the <see cref="LandscapeBuilder" />

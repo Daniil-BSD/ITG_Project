@@ -146,6 +146,7 @@
 
 
 
+
 		public static Vec3 operator -(Vec3 V1)
 		{
 			return *Vec3.Neg(&V1);

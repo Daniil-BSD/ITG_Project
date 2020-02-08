@@ -1,15 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace ITG_Core {
+	using System;
+	using System.Collections.Generic;
+	using System.Text;
 
-namespace ITG_Core {
-
+	/// <summary>
+	/// Defines the <see cref="AlgorithmBuilder" />
+	/// </summary>
 	public abstract class AlgorithmBuilder {
-		public abstract bool IsValid(LandscapeBuilder landscapeBuilder);
-		public abstract string ValidityMessage(LandscapeBuilder landscapeBuilder);
 		public abstract Algorithm BuildGeneric(LandscapeBuilder.LandscapeItermidiate landscapeItermidiate);
+
 		public abstract Type GetGenericType();
+
+		public abstract bool IsValid(LandscapeBuilder landscapeBuilder);
+
+		public abstract string ValidityMessage(LandscapeBuilder landscapeBuilder);
 	}
+
 	/// <summary>
 	/// Defines the <see cref="AlgorithmBuilder{T}" />
 	/// </summary>
@@ -21,6 +27,17 @@ namespace ITG_Core {
 				throw new InvalidOperationException("Builder is in an invalid satate and thus cannot build the ");
 			return null;
 		}
+
+		public override Algorithm BuildGeneric(LandscapeBuilder.LandscapeItermidiate itermidiate)
+		{
+			return Build(itermidiate);
+		}
+
+		public sealed override Type GetGenericType()
+		{
+			return typeof(T);
+		}
+
 		public override bool IsValid(LandscapeBuilder landscapeBuilder)
 		{
 			return true;
@@ -37,16 +54,6 @@ namespace ITG_Core {
 		public virtual List<string> ValidityMessages(LandscapeBuilder landscapeBuilder)
 		{
 			return new List<string>();
-		}
-
-		public override Algorithm BuildGeneric(LandscapeBuilder.LandscapeItermidiate itermidiate)
-		{
-			return Build(itermidiate);
-		}
-
-		public sealed override Type GetGenericType()
-		{
-			return typeof(T);
 		}
 	}
 }

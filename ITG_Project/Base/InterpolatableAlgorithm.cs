@@ -1,9 +1,6 @@
 ﻿namespace ITG_Core {
 	using System;
-	using System.Collections.Generic;
 	using System.Runtime.CompilerServices;
-
-
 
 	/// <summary>
 	/// Defines the <see cref="InterpolatableAlgorithm{T, S}" />
@@ -11,14 +8,12 @@
 	/// <typeparam name="T"></typeparam>
 	/// <typeparam name="S"></typeparam>
 	public abstract class InterpolatableAlgorithm<T, S> : Layer<T, S> where T : struct where S : struct {
-
 		protected readonly int scale;
 
 		public InterpolatableAlgorithm(Algorithm<S> algorithm, int scale) : base(algorithm)
 		{
 			this.scale = scale;
 		}
-
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public override Chunk<T> ChunkPopulation(Coordinate coordinate)

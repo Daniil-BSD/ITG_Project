@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace ITG_Core {
+	using System.Collections.Generic;
 
-namespace ITG_Core {
-
+	/// <summary>
+	/// Defines the <see cref="LayerBuilder{T, S}" />
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <typeparam name="S"></typeparam>
 	public abstract class LayerBuilder<T, S> : AlgorithmBuilder<T> where T : struct where S : struct {
-
 		public string SourceID { get; set; }
 
 		public override bool IsValid(LandscapeBuilder landscapeBuilder)
@@ -30,6 +31,5 @@ namespace ITG_Core {
 
 			return messages;
 		}
-
 	}
 }

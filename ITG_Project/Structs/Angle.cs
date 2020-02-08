@@ -114,6 +114,7 @@
 
 
 
+
 		public static Angle operator -(Angle a)
 		{
 			Angle ret = new Angle(unchecked(uint.MaxValue - a.angle + 1));

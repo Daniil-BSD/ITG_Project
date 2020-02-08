@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ITG_Core {
-
+﻿namespace ITG_Core {
+	/// <summary>
+	/// Defines the <see cref="RandomBuilder" />
+	/// </summary>
 	public class RandomBuilder : AlgorithmBuilder<uint> {
-
 		public int Seed { get; set; }
 
 		public override Algorithm<uint> Build(LandscapeBuilder.LandscapeItermidiate itermidiate)
@@ -14,5 +11,4 @@ namespace ITG_Core {
 			return new Random(Seed);
 		}
 	}
-
 }

@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ITG_Core {
+﻿namespace ITG_Core {
+	/// <summary>
+	/// Defines the <see cref="InterpolatorBuilder" />
+	/// </summary>
 	public class InterpolatorBuilder : InterpolatableAlgorithmBuilder<float, float> {
-
 		public override Algorithm<float> Build(LandscapeBuilder.LandscapeItermidiate itermidiate)
 		{
 			base.Build(itermidiate);

@@ -1,12 +1,13 @@
 ﻿namespace ITG_Core {
 	using System;
-	using System.Collections.Generic;
 	using System.Runtime.CompilerServices;
 
+	/// <summary>
+	/// Defines the <see cref="Algorithm" />
+	/// </summary>
 	public abstract class Algorithm {
 		public abstract Type GetGenericType();
 	}
-
 
 	/// <summary>
 	/// Defines the <see cref="Algorithm{T}" />
@@ -15,11 +16,15 @@
 	abstract public class Algorithm<T> : Algorithm where T : struct {
 		private readonly int stdSectorSide = Constants.CHUNK_SIZE / 2;
 
-
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Chunk<T> GetChunck(Coordinate coordinate)
 		{
 			return ChunkPopulation(coordinate);
+		}
+
+		public sealed override Type GetGenericType()
+		{
+			return typeof(T);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -72,11 +77,6 @@
 				}
 			}
 			return sector;
-		}
-
-		public sealed override Type GetGenericType()
-		{
-			return typeof(T);
 		}
 	}
 }
