@@ -2,14 +2,11 @@
 	using System.Runtime.CompilerServices;
 
 	/// <summary>
-	/// Defines the <see cref="PerllinNoise" />
+	/// Defines the <see cref="PerlinNoise" />
 	/// </summary>
-	public class PerllinNoise : InterpolatableAlgorithm<float, Vec2> {
-		public static readonly float MAGNITUDE = 0.70710678118f;//1.41421356237f; //0.70710678118f;
+	public class PerlinNoise : InterpolatableAlgorithm<float, Vec2> {
 
-		public PerllinNoise(int scale) : base(new Memory<Vec2>(new Vec2Field()), scale)
-		{
-		}
+		public PerlinNoise(Algorithm<Vec2> algorithm, int scale) : base(algorithm, scale) { }
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static float Ease3(float v)
@@ -47,8 +44,6 @@
 			float bottom = p00 + easeX * (p10 - p00);
 
 			float ret = ((bottom + Ease5(y) * (top - bottom)) + 1) / 2;
-			//Console.WriteLine(x + ", " + y);
-			//Console.WriteLine(g00.ToString() + g01.ToString() + g10.ToString() + g11.ToString());
 			return Ease3(ret);
 		}
 	}

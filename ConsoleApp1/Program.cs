@@ -37,17 +37,37 @@ namespace ConsoleApp1 {
 
 			Console.WriteLine("90 degrees: " + Angle.RightAngle.Vec2);
 
-			Console.WriteLine("45 degrees: " + Angle.StraightAngle.AngleRaw);
-			Console.WriteLine("45 degrees: " + Angle.StraightAngle.GetAngle(AngleFormat.Unit));
-			Console.WriteLine("45 degrees: " + Angle.StraightAngle.GetAngle(AngleFormat.Degrees));
-			Console.WriteLine("45 degrees: " + Angle.StraightAngle.GetAngle(AngleFormat.Radians));
-			Console.WriteLine("45 degrees: " + Angle.StraightAngle.Vec2);
+			Console.WriteLine("180 degrees: " + Angle.StraightAngle.AngleRaw);
+			Console.WriteLine("180 degrees: " + Angle.StraightAngle.GetAngle(AngleFormat.Unit));
+			Console.WriteLine("180 degrees: " + Angle.StraightAngle.GetAngle(AngleFormat.Degrees));
+			Console.WriteLine("180 degrees: " + Angle.StraightAngle.GetAngle(AngleFormat.Radians));
+			Console.WriteLine("180 degrees: " + Angle.StraightAngle.Vec2);
 
 			Stopwatch sw = new Stopwatch();
-			Console.WriteLine("Computing...");
+			Console.WriteLine("Stopwatch Started");
+			Console.WriteLine("Building...");
 			sw.Start();
-			var rand = new Interpolator(SCALE);
-			Sector<float> area = rand.GetSector(new Sector<float>(new Coordinate(-RADIUS, -RADIUS), RADIUS * 2, RADIUS * 2));
+
+			LandscapeBuilder landscapeBuilder = new LandscapeBuilder();
+
+
+			landscapeBuilder["random"] = new RandomBuilder() { Seed = 6 };
+			landscapeBuilder["vec2"] = new Vec2FieldBuilder() { SourceID = "random", Magnitude = Constants.SQRT_2_OVER_2_FLOAT };
+			landscapeBuilder["perlin"] = new PerlinNoiseBuilder() { SourceID = "vec2", Scale = SCALE / 4 };
+			landscapeBuilder["mem1"] = new MemoryBuilder<float>() { SourceID = "perlin" };
+			landscapeBuilder["inerpol"] = new InterpolatorBuilder() { SourceID = "mem1", Scale = 4 };
+
+			Landscape landscape = landscapeBuilder.Build();
+
+			Console.WriteLine("Elapsed={0}", sw.Elapsed);
+			Console.WriteLine("Computing...");
+
+			var output = landscape.GetAlgorithm<float>("inerpol");
+			Sector<float> area = output.GetSector(new Sector<float>(new Coordinate(-RADIUS, -RADIUS), RADIUS * 2, RADIUS * 2));
+
+
+
+
 			sw.Stop();
 			Console.WriteLine("Elapsed={0}", sw.Elapsed);
 			Console.WriteLine("Press \"Enter\" to save", sw.Elapsed);

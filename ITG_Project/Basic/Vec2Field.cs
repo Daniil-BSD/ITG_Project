@@ -1,16 +1,17 @@
-﻿namespace ITG_Core {
+﻿using System;
+
+namespace ITG_Core {
+
+
 	/// <summary>
 	/// Defines the <see cref="Vec2Field" />
 	/// </summary>
-	public class Vec2Field : Algorithm<Vec2> {
+	public class Vec2Field : Layer<Vec2, uint> {
 		private readonly float magnitude;
 
-		private Algorithm<uint> source;
-
-		public Vec2Field()
+		public Vec2Field(Algorithm<uint> algorithm, float magnitude) : base(algorithm)
 		{
-			source = new Random();
-			magnitude = 0.70710678118f;
+			this.magnitude = magnitude;
 		}
 
 		public override Chunk<Vec2> ChunkPopulation(Coordinate coordinate)

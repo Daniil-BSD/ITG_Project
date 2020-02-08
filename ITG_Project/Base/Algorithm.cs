@@ -1,20 +1,20 @@
 ﻿namespace ITG_Core {
+	using System;
+	using System.Collections.Generic;
 	using System.Runtime.CompilerServices;
 
-	/// <summary>
-	/// Defines the <see cref="AlgorithmBuilder{T}" />
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	public abstract class AlgorithmBuilder<T> where T : struct {
-		abstract public Algorithm<T> Build();
+	public abstract class Algorithm {
+		public abstract Type GetGenericType();
 	}
+
 
 	/// <summary>
 	/// Defines the <see cref="Algorithm{T}" />
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	abstract public class Algorithm<T> where T : struct {
+	abstract public class Algorithm<T> : Algorithm where T : struct {
 		private readonly int stdSectorSide = Constants.CHUNK_SIZE / 2;
+
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Chunk<T> GetChunck(Coordinate coordinate)
@@ -30,7 +30,6 @@
 			if ( subsectorsX <= 1 && subsectorsY <= 1 )
 				return SectorPopulation(sector);
 			Sector<T>[,] subsectors = new Sector<T>[subsectorsX, subsectorsY];
-			//Console.WriteLine(subsectorsX + " , " + subsectorsY);
 			for ( int i = 0 ; i < subsectorsX ; i++ ) {
 				for ( int j = 0 ; j < subsectorsY ; j++ ) {
 					int width = stdSectorSide;
@@ -39,9 +38,10 @@
 						width = sector.width - stdSectorSide * i;
 					if ( j == subsectorsY - 1 )
 						height = sector.height - stdSectorSide * j;
-					//Console.WriteLine(width + " , " + height);
 					subsectors[i, j] = new Sector<T>(new Coordinate(sector.coordinate.x + (i * stdSectorSide), sector.coordinate.y + (j * stdSectorSide)), width, height);
 
+
+					//TODO Multithread!!!
 					subsectors[i, j] = SectorPopulation(subsectors[i, j]);
 				}
 			}
@@ -72,6 +72,11 @@
 				}
 			}
 			return sector;
+		}
+
+		public sealed override Type GetGenericType()
+		{
+			return typeof(T);
 		}
 	}
 }

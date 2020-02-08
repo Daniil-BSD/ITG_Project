@@ -1,6 +1,8 @@
 ﻿namespace ITG_Core {
 	using System.Runtime.CompilerServices;
 
+
+
 	/// <summary>
 	/// Defines the <see cref="Random" />
 	/// </summary>
