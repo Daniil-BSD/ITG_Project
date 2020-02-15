@@ -11,7 +11,7 @@
 
 		public uint UintY => unchecked((uint) y) + int.MaxValue;
 
-		public Coordinate(int X, int Y)
+		public Coordinate(in int X, in int Y)
 		{
 			x = X;
 			y = Y;
@@ -46,20 +46,6 @@
 		public override string ToString()
 		{
 			return "(" + x + ", " + y + ")";
-		}
-
-		public uint UintXScale(int deviser)
-		{
-			if ( x < 0 )
-				return int.MaxValue - 1 - unchecked((uint) ((-x - 1) / deviser));
-			return unchecked((uint) (x / deviser)) + int.MaxValue;
-		}
-
-		public uint UintYScale(int deviser)
-		{
-			if ( y < 0 )
-				return int.MaxValue - 1 - unchecked((uint) ((-y - 1) / deviser));
-			return unchecked((uint) (y / deviser)) + int.MaxValue;
 		}
 	}
 }

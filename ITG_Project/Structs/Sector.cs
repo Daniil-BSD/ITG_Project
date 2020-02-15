@@ -6,6 +6,7 @@
 
 
 
+
 	public class Sector<T> where T : struct {
 
 		public readonly Coordinate coordinate;
@@ -15,7 +16,7 @@
 
 
 		//public T this[int x, int y] => chunks[x / Constants.CHUNK_SIZE, y / Constants.CHUNK_SIZE][x % Constants.CHUNK_SIZE, y % Constants.CHUNK_SIZE];
-		public T this[int x, int y] {
+		public T this[in int x, in int y] {
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get {
 				//Console.WriteLine(x + " , " + y);
@@ -29,9 +30,13 @@
 		public Chunk<T>[,] Chunks => chunks;
 		public int Width_units => width * Constants.CHUNK_SIZE;
 		public int Height_units => height * Constants.CHUNK_SIZE;
-
-
-
+		public Sector(Coordinate coordinate, in int width, in int height)
+		{
+			this.chunks = new Chunk<T>[width, height];
+			this.width = width;
+			this.height = height;
+			this.coordinate = coordinate;
+		}
 		public Sector(Coordinate coordinate, int width, int height)
 		{
 			this.chunks = new Chunk<T>[width, height];

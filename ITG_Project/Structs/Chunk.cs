@@ -2,7 +2,7 @@
 	public class Chunk<T> where T : struct {
 		public T[,] value;
 
-		public T this[int x, int y] {
+		public T this[in int x, in int y] {
 			get {
 				return value[x, y];
 			}

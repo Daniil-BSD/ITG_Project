@@ -1,7 +1,6 @@
 ﻿namespace ITG_Core {
 	using System;
 	using System.Collections.Generic;
-	using System.Text;
 
 	/// <summary>
 	/// Defines the <see cref="AlgorithmBuilder" />

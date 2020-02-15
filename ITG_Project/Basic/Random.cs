@@ -12,7 +12,7 @@
 			this.seed = seed;
 		}
 
-		public override Chunk<uint> ChunkPopulation(Coordinate coordinate)
+		public override Chunk<uint> ChunkPopulation(in Coordinate coordinate)
 		{
 			LehmerPlusSRNG random = new LehmerPlusSRNG(coordinate, seed);
 			Chunk<uint> chunk = new Chunk<uint>();

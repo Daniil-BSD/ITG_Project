@@ -17,7 +17,7 @@
 		private readonly int stdSectorSide = Constants.CHUNK_SIZE / 2;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Chunk<T> GetChunck(Coordinate coordinate)
+		public Chunk<T> GetChunck(in Coordinate coordinate)
 		{
 			return ChunkPopulation(coordinate);
 		}
@@ -66,7 +66,7 @@
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		abstract public Chunk<T> ChunkPopulation(Coordinate coordinate);
+		abstract public Chunk<T> ChunkPopulation(in Coordinate coordinate);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		virtual public Sector<T> SectorPopulation(Sector<T> sector)

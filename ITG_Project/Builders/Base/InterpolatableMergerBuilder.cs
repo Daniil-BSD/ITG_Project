@@ -2,11 +2,12 @@
 	using System.Collections.Generic;
 
 	/// <summary>
-	/// Defines the <see cref="InterpolatableAlgorithmBuilder{T, S}" />
+	/// Defines the <see cref="InterpolatableMergerBuilder" />
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	/// <typeparam name="S"></typeparam>
-	public abstract class InterpolatableAlgorithmBuilder<T, S> : LayerBuilder<T, S> where T : struct where S : struct {
+	/// <typeparam name="S1"></typeparam>
+	/// <typeparam name="S2"></typeparam>
+	public class InterpolatableMergerBuilder<T, S1, S2> : MergerBuilder<T, S1, S2> where T : struct where S1 : struct where S2 : struct {
 		public int Scale { get; set; }
 
 		public override bool IsValid(LandscapeBuilder landscapeBuilder)

@@ -16,7 +16,7 @@
 			this.algorithm = algorithm;
 		}
 
-		public override Chunk<T> ChunkPopulation(Coordinate coordinate)
+		public override Chunk<T> ChunkPopulation(in Coordinate coordinate)
 		{
 			if ( !memory.ContainsKey(coordinate) )
 				memory.Add(coordinate, algorithm.ChunkPopulation(coordinate));

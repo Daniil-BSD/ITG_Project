@@ -43,6 +43,7 @@ namespace ConsoleApp1 {
 			Console.WriteLine("180 degrees: " + Angle.StraightAngle.GetAngle(AngleFormat.Radians));
 			Console.WriteLine("180 degrees: " + Angle.StraightAngle.Vec2);
 
+
 			Stopwatch sw = new Stopwatch();
 			Console.WriteLine("Stopwatch Started");
 			Console.WriteLine("Building...");

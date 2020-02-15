@@ -7,9 +7,9 @@
 	public abstract class Layer<T, S> : Algorithm<T> where T : struct where S : struct {
 		protected readonly Algorithm<S> source;
 
-		public Layer(Algorithm<S> algorithm) : base()
+		public Layer(Algorithm<S> source) : base()
 		{
-			this.source = algorithm;
+			this.source = source;
 		}
 	}
 }

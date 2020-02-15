@@ -27,37 +27,26 @@
 			}
 		}
 
-		public unsafe Vec2(float f)
+		public unsafe Vec2(in float f)
 		{
 			x = y = f;
 		}
 
-		public Vec2(float X, float Y)
+		public Vec2(in float X, in float Y)
 		{
 			x = X;
 			y = Y;
 		}
 
-		public Vec2(float* X, float* Y)
-		{
-			x = *X;
-			y = *Y;
-		}
-
-		public Vec2(ref Vec2 V)
+		public Vec2(in Vec2 V)
 		{
 			x = V.x;
 			y = V.y;
 		}
 
-		public static float Dot(Vec2 V1, Vec2 V2)
+		public static float Dot(in Vec2 V1, in Vec2 V2)
 		{
-			return Vec2.Dot(&V1, &V2);
-		}
-
-		public static float Dot(Vec2* V1, Vec2* V2)
-		{
-			return V1->x * V2->x + V1->y * V2->y;
+			return V1.x * V2.x + V1.y * V2.y;
 		}
 
 		public static Vec2* Minus(Vec2* V1, Vec2* V2)
@@ -78,7 +67,7 @@
 			return &v;
 		}
 
-		public static Vec2* Scale(Vec2* V1, float f)
+		public static Vec2* Scale(Vec2* V1, in float f)
 		{
 			Vec2 v = new Vec2(V1->x * f, V1->y * f);
 			return &v;
@@ -108,7 +97,7 @@
 			return (xBin << 16) | (yBin & 0b0000_0000_0000_0000_1111_1111_1111_1111);
 		}
 
-		public Vec2 normalize()
+		public Vec2 Normalize()
 		{
 			float f = Magnitude;
 			f = (f == 0) ? 0 : 1 / f;
@@ -123,39 +112,53 @@
 		}
 
 
-
-
-		public static Vec2 operator -(Vec2 V1)
+		public static Vec2 operator -(in Vec2 V1)
 		{
-			return *Vec2.Neg(&V1);
+			fixed ( Vec2* v1 = &V1 ) {
+				return *Vec2.Neg(v1);
+			}
 		}
 
-		public static Vec2 operator -(Vec2 V1, Vec2 V2)
+		public static Vec2 operator -(in Vec2 V1, in Vec2 V2)
 		{
-			return *Vec2.Minus(&V1, &V2);
+			fixed ( Vec2* v1 = &V1 ) {
+				fixed ( Vec2* v2 = &V2 ) {
+					return *Vec2.Minus(v1, v2);
+				}
+			}
 		}
 
-		public static Vec2 operator +(Vec2 V1, Vec2 V2)
+		public static Vec2 operator +(in Vec2 V1, in Vec2 V2)
 		{
-			return *Vec2.Plus(&V1, &V2);
+			fixed ( Vec2* v1 = &V1 ) {
+				fixed ( Vec2* v2 = &V2 ) {
+					return *Vec2.Plus(v1, v2);
+				}
+			}
 		}
 
-		public static Vec2 operator *(Vec2 V1, Vec2 V2)
+		public static Vec2 operator *(in Vec2 V1, in Vec2 V2)
 		{
-			return *Vec2.Scale(&V1, &V2);
+			fixed ( Vec2* v1 = &V1 ) {
+				fixed ( Vec2* v2 = &V2 ) {
+					return *Vec2.Scale(v1, v2);
+				}
+			}
 		}
 
-		public static Vec2 operator *(Vec2 V1, float f)
+		public static Vec2 operator *(in Vec2 V1, in float f)
 		{
-			return *Vec2.Scale(&V1, f);
+			fixed ( Vec2* v1 = &V1 ) {
+				return *Vec2.Scale(v1, f);
+			}
 		}
 
-		public static Vec2 operator *(float f, Vec2 V1)
+		public static Vec2 operator *(in float f, in Vec2 V1)
 		{
 			return V1 * f;
 		}
 
-		public static Vec2 operator /(Vec2 V1, float f)
+		public static Vec2 operator /(in Vec2 V1, in float f)
 		{
 			return V1 * (1 / f);
 		}

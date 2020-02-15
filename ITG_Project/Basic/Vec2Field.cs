@@ -10,7 +10,7 @@
 			this.magnitude = magnitude;
 		}
 
-		public override Chunk<Vec2> ChunkPopulation(Coordinate coordinate)
+		public override Chunk<Vec2> ChunkPopulation(in Coordinate coordinate)
 		{
 			Chunk<Vec2> returnChunk = new Chunk<Vec2>();
 			Chunk<uint> sourceChunk = source.GetChunck(coordinate);

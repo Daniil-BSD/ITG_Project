@@ -6,11 +6,12 @@
 	/// Defines the <see cref="InterpolatableAlgorithm{T, S}" />
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	/// <typeparam name="S"></typeparam>
-	public abstract class InterpolatableAlgorithm<T, S> : Layer<T, S> where T : struct where S : struct {
+	/// <typeparam name="S1"></typeparam>
+	/// <typeparam name="S2"></typeparam>
+	public abstract class InterpolatableAlgorithm<T, S1, S2> : Merger<T, S1, S2> where T : struct where S1 : struct where S2 : struct {
 		protected readonly int scale;
 
-		public InterpolatableAlgorithm(Algorithm<S> source, int scale) : base(source)
+		public InterpolatableAlgorithm(Algorithm<S1> source, Algorithm<S2> source2, int scale) : base(source, source2)
 		{
 			this.scale = scale;
 		}
@@ -29,7 +30,7 @@
 		/// |					|
 		/// |	00			01	|
 		/// ---------------------
-		public abstract T Compute(in S val00, in S val01, in S val10, in S val11, in float x, in float y, in float offset);
+		public abstract T Compute(in S1 val00a, in S1 val01a, in S1 val10a, in S1 val11a, in S2 val00b, in S2 val01b, in S2 val10b, in S2 val11b, in float x, in float y, in float offset);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public override Sector<T> SectorPopulation(Sector<T> sector)
@@ -44,7 +45,14 @@
 			//used to find the corresponding intermidiate value index
 			float pointOffsetX = MathExt.Modulo(corX * Constants.CHUNK_SIZE, scale) * step;
 			float pointOffsetY = MathExt.Modulo(corY * Constants.CHUNK_SIZE, scale) * step;
-			Sector<S> sourceSector = source.GetSector(new Sector<S>(new Coordinate(MathExt.IntegerDevisionConsistent(corX, scale), MathExt.IntegerDevisionConsistent(corY, scale)), sector.width / scale + 2, sector.height / scale + 2));
+			//sector values computing
+			Coordinate coordinate = new Coordinate(MathExt.IntegerDevisionConsistent(corX, scale), MathExt.IntegerDevisionConsistent(corY, scale));
+			int requestWidth = sector.width / scale + 2;
+			int requestHeight = sector.height / scale + 2;
+
+			Sector<S1> sourceSector1 = source.GetSector(new Sector<S1>(coordinate, requestWidth, requestHeight));
+			Sector<S2> sourceSector2 = source2.GetSector(new Sector<S2>(coordinate, requestWidth, requestHeight));
+
 			sector.FillUp();
 			for ( int i = 0 ; i < sector.Width_units ; i++ ) {
 				float x = step * i + pointOffsetX;
@@ -53,10 +61,14 @@
 					float y = step * j + pointOffsetY;
 					int sectorIndexY = (int) Math.Floor(y) + offsetY;
 					sector[i, j] = Compute(
-						sourceSector[sectorIndexX, sectorIndexY],
-						sourceSector[sectorIndexX, sectorIndexY + 1],
-						sourceSector[sectorIndexX + 1, sectorIndexY],
-						sourceSector[sectorIndexX + 1, sectorIndexY + 1],
+						sourceSector1[sectorIndexX, sectorIndexY],
+						sourceSector1[sectorIndexX, sectorIndexY + 1],
+						sourceSector1[sectorIndexX + 1, sectorIndexY],
+						sourceSector1[sectorIndexX + 1, sectorIndexY + 1],
+						sourceSector2[sectorIndexX, sectorIndexY],
+						sourceSector2[sectorIndexX, sectorIndexY + 1],
+						sourceSector2[sectorIndexX + 1, sectorIndexY],
+						sourceSector2[sectorIndexX + 1, sectorIndexY + 1],
 						x % 1, y % 1,
 						initialOffset
 					);

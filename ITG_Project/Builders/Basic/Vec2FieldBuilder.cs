@@ -3,7 +3,7 @@
 	/// Defines the <see cref="Vec2FieldBuilder" />
 	/// </summary>
 	public class Vec2FieldBuilder : LayerBuilder<Vec2, uint> {
-		public float Magnitude { get; set; }
+		public float Magnitude { get; set; } = 1;
 
 		public override Algorithm<Vec2> Build(LandscapeBuilder.LandscapeItermidiate itermidiate)
 		{
