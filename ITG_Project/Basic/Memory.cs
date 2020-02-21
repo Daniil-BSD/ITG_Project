@@ -1,5 +1,6 @@
 ﻿namespace ITG_Core {
 	using System.Collections.Generic;
+	using System.Runtime.CompilerServices;
 
 	/// <summary>
 	/// Defines the <see cref="Memory{T}" />
@@ -16,6 +17,7 @@
 			this.algorithm = algorithm;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public override Chunk<T> ChunkPopulation(in Coordinate coordinate)
 		{
 			if ( !memory.ContainsKey(coordinate) )
@@ -23,6 +25,7 @@
 			return memory[coordinate];
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		override public Sector<T> SectorPopulation(Sector<T> sector)
 		{
 			bool noMissingChunks = true;

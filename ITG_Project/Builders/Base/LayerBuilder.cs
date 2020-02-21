@@ -27,7 +27,7 @@
 			if ( !landscapeBuilder.CheckValidityOf(SourceID) )
 				messages.Add("Source Layer \"" + SourceID + "\" is missing or invalid.");
 			else if ( !landscapeBuilder.TypeOf(SourceID).IsSubclassOf(typeof(AlgorithmBuilder<S>)) )
-				messages.Add("Source is of uncompattible type.");
+				messages.Add("Source \"" + SourceID + "\" is of uncompattible type.");
 
 			return messages;
 		}

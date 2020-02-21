@@ -1,4 +1,6 @@
 ﻿namespace ITG_Core {
+	using System.Runtime.CompilerServices;
+
 	/// <summary>
 	/// Defines the <see cref="NeighbourBasedMerger{T, S1, S2}" />
 	/// </summary>
@@ -13,8 +15,10 @@
 			this.source2 = source2;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public abstract T Compute(Neighbourhood<S1> n1, Neighbourhood<S2> n2);
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public override Sector<T> SectorPopulation(Sector<T> sector)
 		{
 			Coordinate coordinate = new Coordinate(sector.coordinate.x - 1, sector.coordinate.y - 1);

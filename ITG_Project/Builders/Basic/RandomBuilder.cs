@@ -7,7 +7,7 @@
 
 		public override Algorithm<uint> Build(LandscapeBuilder.LandscapeItermidiate itermidiate)
 		{
-			base.Build(itermidiate);
+			VerifyVallidity(itermidiate);
 			return new Random(Seed);
 		}
 	}

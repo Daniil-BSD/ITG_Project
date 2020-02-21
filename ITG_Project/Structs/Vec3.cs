@@ -137,6 +137,7 @@
 		}
 
 
+
 		public static Vec3 operator -(in Vec3 V1)
 		{
 			fixed ( Vec3* v1 = &V1 ) {

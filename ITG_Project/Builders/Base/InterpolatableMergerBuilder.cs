@@ -7,7 +7,7 @@
 	/// <typeparam name="T"></typeparam>
 	/// <typeparam name="S1"></typeparam>
 	/// <typeparam name="S2"></typeparam>
-	public class InterpolatableMergerBuilder<T, S1, S2> : MergerBuilder<T, S1, S2> where T : struct where S1 : struct where S2 : struct {
+	public abstract class InterpolatableMergerBuilder<T, S1, S2> : MergerBuilder<T, S1, S2> where T : struct where S1 : struct where S2 : struct {
 		public int Scale { get; set; }
 
 		public override bool IsValid(LandscapeBuilder landscapeBuilder)

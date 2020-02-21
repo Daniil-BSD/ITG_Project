@@ -48,7 +48,7 @@
 			float bottom = p00 + easeX * (p10 - p00);
 
 			float ret = ((bottom + Ease5(Y) * (top - bottom)) + 1) / 2;
-			return Ease3(ret);
+			return (Ease3(ret) - 0.5f) * 2f;
 		}
 	}
 }

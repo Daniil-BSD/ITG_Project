@@ -11,7 +11,7 @@ namespace ConsoleApp1 {
 	public class Program {
 		private static readonly bool BORDERS = false;
 
-		private static readonly int RADIUS = 128;//128;
+		private static readonly int RADIUS = 32;//128;
 
 		private static readonly int SCALE = 512;//512;
 
@@ -51,19 +51,25 @@ namespace ConsoleApp1 {
 
 			LandscapeBuilder landscapeBuilder = new LandscapeBuilder();
 
-
+			/*
 			landscapeBuilder["random"] = new RandomBuilder() { Seed = 6 };
 			landscapeBuilder["vec2"] = new Vec2FieldBuilder() { SourceID = "random", Magnitude = Constants.SQRT_2_OVER_2_FLOAT };
 			landscapeBuilder["perlin"] = new PerlinNoiseBuilder() { SourceID = "vec2", Scale = SCALE / 4 };
 			landscapeBuilder["mem1"] = new MemoryBuilder<float>() { SourceID = "perlin" };
 			landscapeBuilder["inerpol"] = new InterpolatorBuilder() { SourceID = "mem1", Scale = 4 };
+			*/
 
+			landscapeBuilder["random"] = new RandomBuilder() { Seed = 6 };
+			landscapeBuilder["vec2"] = new Vec2FieldBuilder() { SourceID = "random", Magnitude = Constants.SQRT_2_OVER_2_FLOAT };
+			landscapeBuilder["mem1"] = new MemoryBuilder<Vec2>() { SourceID = "vec2" };
+			landscapeBuilder["ret"] = new ParlinGroupBuiler() { Vec2FieldID = "mem1", TargetScale = SCALE * 2, MaxPerlinScale = SCALE / 4, DeltaFactor = 0.625f, ScaleStep = 1.875f, RetFactor = 1.575f, BottomUp = false };
 			Landscape landscape = landscapeBuilder.Build();
 
 			Console.WriteLine("Elapsed={0}", sw.Elapsed);
 			Console.WriteLine("Computing...");
 
-			var output = landscape.GetAlgorithm<float>("inerpol");
+			sw.Restart();
+			var output = landscape.GetAlgorithm<float>("ret");
 			Sector<float> area = output.GetSector(new Sector<float>(new Coordinate(-RADIUS, -RADIUS), RADIUS * 2, RADIUS * 2));
 
 
@@ -85,9 +91,8 @@ namespace ConsoleApp1 {
 			long total = 0;
 			for ( int i = 0 ; i < width ; i++ ) {
 				for ( int j = 0 ; j < height ; j++ ) {
-					int saturation = (int) (area[i, j] * 255 * 3) % 256;
+					int saturation = (int) (((area[i, j] + 1) / 2) * 255 * 5) % 256;
 
-					//Console.Write(saturation + ",");
 					total += saturation;
 					if ( saturation < 0 || saturation > 255 ) {
 						errors++;
@@ -98,7 +103,6 @@ namespace ConsoleApp1 {
 						min = Math.Min(min, area[i, j]);
 					}
 				}
-				//Console.WriteLine();
 			}
 			bmp.Save("D:\\output.png", ImageFormat.Png);
 

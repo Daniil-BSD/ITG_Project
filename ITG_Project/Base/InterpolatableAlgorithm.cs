@@ -8,7 +8,7 @@
 	/// <typeparam name="T"></typeparam>
 	/// <typeparam name="S"></typeparam>
 	public abstract class InterpolatableAlgorithm<T, S> : Layer<T, S> where T : struct where S : struct {
-		protected readonly int scale;
+		public readonly int scale;
 
 		public InterpolatableAlgorithm(Algorithm<S> source, int scale) : base(source)
 		{

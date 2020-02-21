@@ -4,6 +4,6 @@
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	/// <typeparam name="S"></typeparam>
-	public class NeighbourBasedAgorithmBuilder<T, S> : LayerBuilder<T, S> where T : struct where S : struct {
+	public abstract class NeighbourBasedAgorithmBuilder<T, S> : LayerBuilder<T, S> where T : struct where S : struct {
 	}
 }

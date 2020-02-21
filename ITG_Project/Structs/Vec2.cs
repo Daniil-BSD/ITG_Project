@@ -112,6 +112,7 @@
 		}
 
 
+
 		public static Vec2 operator -(in Vec2 V1)
 		{
 			fixed ( Vec2* v1 = &V1 ) {

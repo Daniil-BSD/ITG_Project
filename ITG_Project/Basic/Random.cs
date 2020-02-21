@@ -12,6 +12,7 @@
 			this.seed = seed;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public override Chunk<uint> ChunkPopulation(in Coordinate coordinate)
 		{
 			LehmerPlusSRNG random = new LehmerPlusSRNG(coordinate, seed);

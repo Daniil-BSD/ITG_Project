@@ -30,6 +30,7 @@
 		/// |					|
 		/// |	00			01	|
 		/// ---------------------
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public abstract T Compute(in S1 val00a, in S1 val01a, in S1 val10a, in S1 val11a, in S2 val00b, in S2 val01b, in S2 val10b, in S2 val11b, in float x, in float y, in float offset);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

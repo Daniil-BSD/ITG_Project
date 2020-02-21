@@ -17,6 +17,7 @@
 			return SectorPopulation(new Sector<T>(coordinate, 1, 1)).Chunks[0, 0];
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public abstract T Compute(Neighbourhood<S> n);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -33,6 +34,7 @@
 			}
 			return sector;
 		}
+
 
 		public class Neighbourhood<NT> where NT : struct {
 			public readonly NT[,] data;

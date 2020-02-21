@@ -5,8 +5,8 @@
 	/// <summary>
 	/// Defines the <see cref="Algorithm" />
 	/// </summary>
-	public abstract class Algorithm {
-		public abstract Type GetGenericType();
+	public interface Algorithm {
+		Type GetGenericType();
 	}
 
 	/// <summary>
@@ -14,7 +14,7 @@
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	abstract public class Algorithm<T> : Algorithm where T : struct {
-		private readonly int stdSectorSide = Constants.CHUNK_SIZE / 2;
+		private readonly int stdSectorSide = Constants.CHUNK_SIZE / 2;//TODO make settable?
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Chunk<T> GetChunck(in Coordinate coordinate)
@@ -22,7 +22,7 @@
 			return ChunkPopulation(coordinate);
 		}
 
-		public sealed override Type GetGenericType()
+		public Type GetGenericType()
 		{
 			return typeof(T);
 		}

@@ -6,7 +6,7 @@
 	public class MemoryBuilder<T> : LayerBuilder<T, T> where T : struct {
 		public override Algorithm<T> Build(LandscapeBuilder.LandscapeItermidiate itermidiate)
 		{
-			base.Build(itermidiate);
+			VerifyVallidity(itermidiate);
 			return new Memory<T>(itermidiate.Get<T>(SourceID));
 		}
 	}

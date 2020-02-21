@@ -5,7 +5,7 @@
 	public class PerlinNoiseBuilder : InterpolatableAlgorithmBuilder<float, Vec2> {
 		public override Algorithm<float> Build(LandscapeBuilder.LandscapeItermidiate itermidiate)
 		{
-			base.Build(itermidiate);
+			VerifyVallidity(itermidiate);
 			return new PerlinNoise(itermidiate.Get<Vec2>(SourceID), Scale);
 		}
 	}

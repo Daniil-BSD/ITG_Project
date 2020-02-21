@@ -7,6 +7,7 @@
 
 
 
+
 	public class Sector<T> where T : struct {
 
 		public readonly Coordinate coordinate;

@@ -1,4 +1,6 @@
 ﻿namespace ITG_Core {
+	using System.Runtime.CompilerServices;
+
 	/// <summary>
 	/// Defines the <see cref="Vec2Field" />
 	/// </summary>
@@ -10,6 +12,7 @@
 			this.magnitude = magnitude;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public override Chunk<Vec2> ChunkPopulation(in Coordinate coordinate)
 		{
 			Chunk<Vec2> returnChunk = new Chunk<Vec2>();
