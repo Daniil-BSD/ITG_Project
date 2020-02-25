@@ -34,8 +34,6 @@
 			}
 			return sector;
 		}
-
-
 		public class Neighbourhood<NT> where NT : struct {
 			public readonly NT[,] data;
 			public NT this[in int x, in int y] {

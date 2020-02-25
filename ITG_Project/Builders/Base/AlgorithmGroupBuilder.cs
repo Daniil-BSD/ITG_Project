@@ -37,7 +37,7 @@
 			return true;
 		}
 
-		public virtual string ValidityMessage(LandscapeBuilder landscapeBuilder)
+		public string ValidityMessage(LandscapeBuilder landscapeBuilder)
 		{
 			if ( IsValid(landscapeBuilder) )
 				return "Valid.";

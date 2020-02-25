@@ -49,36 +49,6 @@
 			return V1.x * V2.x + V1.y * V2.y;
 		}
 
-		public static Vec2* Minus(Vec2* V1, Vec2* V2)
-		{
-			Vec2 v = new Vec2(V1->x - V2->x, V1->y - V2->y);
-			return &v;
-		}
-
-		public static Vec2* Neg(Vec2* V1)
-		{
-			Vec2 v = new Vec2(-V1->x, -V1->y);
-			return &v;
-		}
-
-		public static Vec2* Plus(Vec2* V1, Vec2* V2)
-		{
-			Vec2 v = new Vec2(V1->x + V2->x, V1->y + V2->y);
-			return &v;
-		}
-
-		public static Vec2* Scale(Vec2* V1, in float f)
-		{
-			Vec2 v = new Vec2(V1->x * f, V1->y * f);
-			return &v;
-		}
-
-		public static Vec2* Scale(Vec2* V1, Vec2* V2)
-		{
-			Vec2 v = new Vec2(V1->x * V2->x, V1->y * V2->y);
-			return &v;
-		}
-
 		public override bool Equals(object obj)
 		{
 			if ( !(obj is Vec2) ) {
@@ -115,43 +85,27 @@
 
 		public static Vec2 operator -(in Vec2 V1)
 		{
-			fixed ( Vec2* v1 = &V1 ) {
-				return *Vec2.Neg(v1);
-			}
+			return new Vec2(-V1.x, -V1.y);
 		}
 
 		public static Vec2 operator -(in Vec2 V1, in Vec2 V2)
 		{
-			fixed ( Vec2* v1 = &V1 ) {
-				fixed ( Vec2* v2 = &V2 ) {
-					return *Vec2.Minus(v1, v2);
-				}
-			}
+			return new Vec2(V1.x - V2.x, V1.y - V2.y);
 		}
 
 		public static Vec2 operator +(in Vec2 V1, in Vec2 V2)
 		{
-			fixed ( Vec2* v1 = &V1 ) {
-				fixed ( Vec2* v2 = &V2 ) {
-					return *Vec2.Plus(v1, v2);
-				}
-			}
+			return new Vec2(V1.x + V2.x, V1.y + V2.y);
 		}
 
 		public static Vec2 operator *(in Vec2 V1, in Vec2 V2)
 		{
-			fixed ( Vec2* v1 = &V1 ) {
-				fixed ( Vec2* v2 = &V2 ) {
-					return *Vec2.Scale(v1, v2);
-				}
-			}
+			return new Vec2(V1.x * V2.x, V1.y * V2.y);
 		}
 
 		public static Vec2 operator *(in Vec2 V1, in float f)
 		{
-			fixed ( Vec2* v1 = &V1 ) {
-				return *Vec2.Scale(v1, f);
-			}
+			return new Vec2(V1.x * f, V1.y * f);
 		}
 
 		public static Vec2 operator *(in float f, in Vec2 V1)
@@ -161,7 +115,7 @@
 
 		public static Vec2 operator /(in Vec2 V1, in float f)
 		{
-			return V1 * (1 / f);
+			return new Vec2(V1.x / f, V1.y / f);
 		}
 	}
 }

@@ -44,6 +44,14 @@ namespace ConsoleApp1 {
 			Console.WriteLine("180 degrees: " + Angle.StraightAngle.Vec2);
 
 
+			Console.WriteLine("Cross(v1, X): " + Vec3.Cross(v1, new Vec3(1, 0, 0)));
+			Console.WriteLine("Cross(v1, Y): " + Vec3.Cross(v1, new Vec3(0, 1, 0)));
+			Console.WriteLine("Cross(v1, Z): " + Vec3.Cross(v1, new Vec3(0, 0, 1)));
+			Console.WriteLine("v1.CrossX: " + v1.CrossX);
+			Console.WriteLine("v1.CrossY: " + v1.CrossY);
+			Console.WriteLine("v1.CrossZ: " + v1.CrossZ);
+
+
 			Stopwatch sw = new Stopwatch();
 			Console.WriteLine("Stopwatch Started");
 			Console.WriteLine("Building...");
@@ -62,7 +70,7 @@ namespace ConsoleApp1 {
 			landscapeBuilder["random"] = new RandomBuilder() { Seed = 6 };
 			landscapeBuilder["vec2"] = new Vec2FieldBuilder() { SourceID = "random", Magnitude = Constants.SQRT_2_OVER_2_FLOAT };
 			landscapeBuilder["mem1"] = new MemoryBuilder<Vec2>() { SourceID = "vec2" };
-			landscapeBuilder["ret"] = new ParlinGroupBuiler() { Vec2FieldID = "mem1", TargetScale = SCALE * 2, MaxPerlinScale = SCALE / 4, DeltaFactor = 0.625f, ScaleStep = 1.875f, RetFactor = 1.575f, BottomUp = false };
+			landscapeBuilder["ret"] = new ParlinGroupBuiler() { Vec2FieldID = "mem1", UpperTargetScale = SCALE * 2, MaxPerlinScale = SCALE / 4, DeltaFactor = 0.625f, ScaleStep = 1.875f, RetFactor = 1.575f, BottomUp = true };
 			Landscape landscape = landscapeBuilder.Build();
 
 			Console.WriteLine("Elapsed={0}", sw.Elapsed);

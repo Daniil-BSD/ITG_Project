@@ -14,7 +14,9 @@
 
 		public float DeltaFactor { get; set; } = 0.5f;
 
-		public float InitialScale { get; set; } = 1;
+		public float LowerTargetScale { get; set; } = 2;
+
+		public int MaxInterpolationScale { get; set; } = 8;
 
 		public int MaxLayers { get; set; } = 16;
 
@@ -24,7 +26,7 @@
 
 		public float ScaleStep { get; set; } = 2;
 
-		public float TargetScale { get; set; } = 1024;
+		public float UpperTargetScale { get; set; } = 1024;
 
 		public string Vec2FieldID { get; set; }
 
@@ -34,11 +36,11 @@
 			List<Algorithm<float>> sources = new List<Algorithm<float>>();
 			Algorithm<Vec2> vec2Source = itermidiate.Get<Vec2>(Vec2FieldID);
 			if ( BottomUp ) {
-				for ( float f = InitialScale ; f <= TargetScale && sources.Count < MaxLayers ; f *= ScaleStep ) {
+				for ( float f = LowerTargetScale ; f <= UpperTargetScale && sources.Count < MaxLayers ; f *= ScaleStep ) {
 					int scale = RoundTI(f);
 					int interpolatorScacle = 1;
-					while ( scale / interpolatorScacle > MaxPerlinScale ) {
-						interpolatorScacle *= 2;
+					while ( scale / interpolatorScacle > MaxPerlinScale && interpolatorScacle < MaxInterpolationScale ) {
+						interpolatorScacle++;
 					}
 					int perlinScale = scale / interpolatorScacle;
 					if ( interpolatorScacle == 1 ) {
@@ -59,11 +61,11 @@
 				ret.Add(LandscapeBuilder.MAIN_ALGORITHM_KEY, new FloatAdder(sources, DeltaFactor, RetFactor));
 				return ret;
 			} else {
-				for ( float f = TargetScale ; f > InitialScale && sources.Count < MaxLayers ; f /= ScaleStep ) {
+				for ( float f = UpperTargetScale ; f > LowerTargetScale && sources.Count < MaxLayers ; f /= ScaleStep ) {
 					int scale = RoundTI(f);
 					int interpolatorScacle = 1;
-					while ( scale / interpolatorScacle > MaxPerlinScale ) {
-						interpolatorScacle *= 2;
+					while ( scale / interpolatorScacle > MaxPerlinScale && interpolatorScacle < MaxInterpolationScale ) {
+						interpolatorScacle++;
 					}
 					int perlinScale = scale / interpolatorScacle;
 					if ( interpolatorScacle == 1 ) {
@@ -93,21 +95,62 @@
 
 		public override bool IsValid(LandscapeBuilder landscapeBuilder)
 		{
-			return base.IsValid(landscapeBuilder);
-		}
-
-		public override string ValidityMessage(LandscapeBuilder landscapeBuilder)
-		{
-			return base.ValidityMessage(landscapeBuilder);
+			if ( !base.IsValid(landscapeBuilder) )
+				return false;
+			if ( DeltaFactor <= 0 )
+				return false;
+			if ( MaxLayers < 2 )
+				return false;
+			if ( MaxPerlinScale < 2 )
+				return false;
+			if ( RetFactor == 0 )
+				return false;
+			if ( ScaleStep <= 0 )
+				return false;
+			if ( UpperTargetScale < 2 )
+				return false;
+			if ( LowerTargetScale < 2 )
+				return false;
+			if ( UpperTargetScale <= LowerTargetScale )
+				return false;
+			if ( MaxInterpolationScale < 1 )
+				return false;
+			if ( !landscapeBuilder.CheckValidityOf(Vec2FieldID) )
+				return false;
+			if ( !landscapeBuilder.TypeOf(Vec2FieldID).IsSubclassOf(typeof(AlgorithmBuilder<Vec2>)) )
+				return false;
+			return true;
 		}
 
 		public override List<string> ValidityMessages(LandscapeBuilder landscapeBuilder)
 		{
-			return base.ValidityMessages(landscapeBuilder);
+			List<string> messages = base.ValidityMessages(landscapeBuilder);
+			if ( DeltaFactor <= 0 )
+				messages.Add("DeltaFactor has to be a positive, non-zero real number.");
+			if ( MaxLayers < 2 )
+				messages.Add("MaxLayers has to be greater than one.");
+			if ( MaxPerlinScale < 2 )
+				messages.Add("MaxPerlinScale has to be greater than one.");
+			if ( RetFactor == 0 )
+				messages.Add("RetFactor has to be a non-zero real number.");
+			if ( ScaleStep <= 0 )
+				messages.Add("ScaleStep has to be a positive, non-zero real number.");
+			if ( UpperTargetScale < 2 )
+				messages.Add("UpperTargetScale has to be greater than one.");
+			if ( LowerTargetScale < 2 )
+				messages.Add("LowerTargetScale has to be greater than one.");
+			if ( UpperTargetScale <= LowerTargetScale )
+				messages.Add("UpperTargetScale has to be greater than LowerTargetScale.");
+			if ( MaxInterpolationScale < 1 )
+				messages.Add("MaxInterpolationScale has to be a greater than zero.");
+			if ( !landscapeBuilder.CheckValidityOf(Vec2FieldID) )
+				messages.Add("Source Layer \"" + Vec2FieldID + "\" is missing or invalid.");
+			else if ( !landscapeBuilder.TypeOf(Vec2FieldID).IsSubclassOf(typeof(AlgorithmBuilder<Vec2>)) )
+				messages.Add("Source \"" + Vec2FieldID + "\" is of uncompattible type.");
+			return messages;
 		}
 
-		//TODO: validation
-		private int RoundTI(in float f)
+		private static int RoundTI(in float f)
 		{
 			return (int) Math.Round(f);
 		}
