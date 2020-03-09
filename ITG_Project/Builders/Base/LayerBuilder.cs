@@ -15,7 +15,7 @@
 				return false;
 			if ( !landscapeBuilder.CheckValidityOf(SourceID) )
 				return false;
-			if ( !landscapeBuilder.TypeOf(SourceID).IsSubclassOf(typeof(AlgorithmBuilder<S>)) )
+			if ( !(landscapeBuilder.TypeOf(SourceID).IsSubclassOf(typeof(AlgorithmBuilder<S>)) || landscapeBuilder.TypeOf(SourceID).IsSubclassOf(typeof(AlgorithmGroupBuilder<S>))) )
 				return false;
 			return true;
 		}

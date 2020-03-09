@@ -12,6 +12,27 @@
 
 		public float z;
 
+		public static Vec3 X {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get {
+				return new Vec3(1, 0, 0);
+			}
+		}
+
+		public static Vec3 Y {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get {
+				return new Vec3(0, 1, 0);
+			}
+		}
+
+		public static Vec3 Z {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get {
+				return new Vec3(0, 0, 1);
+			}
+		}
+
 		public Vec3 CrossX {
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get {
@@ -36,12 +57,23 @@
 		public float Magnitude {
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get {
-				return (float) Math.Sqrt(x * x + y * y + z * z);
+				return (float) Math.Sqrt(MagnitudeSquared);
 			}
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			set {
 				float f = (value == 0) ? 0 : Magnitude / value;
 				this *= f;
+			}
+		}
+
+		public float MagnitudeSquared {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get {
+				return x * x + y * y + z * z;
+			}
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			set {
+				Magnitude = (float) Math.Sqrt(value);
 			}
 		}
 
@@ -53,6 +85,27 @@
 					return new Vec3(this);
 				f = (f == 0) ? 0 : 1 / f;
 				return new Vec3(x * f, y * f, z * f);
+			}
+		}
+
+		public Vec2 XY {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get {
+				return new Vec2(x, y);
+			}
+		}
+
+		public Vec2 XZ {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get {
+				return new Vec2(x, z);
+			}
+		}
+
+		public Vec2 YZ {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get {
+				return new Vec2(y, z);
 			}
 		}
 
@@ -90,6 +143,34 @@
 			return V1.x * V2.x + V1.y * V2.y + V1.z * V2.z;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vec3 Interpolate(in Vec3 V1, in Vec3 V2, in float f)
+		{
+			float dot = Vec3.Dot(V1, V2);
+			double theta = Math.Acos(dot) * f;
+			Vec3 RelativeVec = V2 - V1 * dot;
+			RelativeVec.Normalize();
+			return ((V1 * (float) Math.Cos(theta)) + (RelativeVec * (float) Math.Sin(theta)));
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vec3 NormalFromGradients(in float gradientX, in float gradientY)
+		{
+			return new Vec3(-gradientX, -gradientY, 1).Normalize();
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vec3 NormalFromGradients(in Vec2 gradients)
+		{
+			return NormalFromGradients(gradients.x, gradients.y);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public float Dot(in Vec3 V1)
+		{
+			return Dot(this, V1);
+		}
+
 		public override bool Equals(object obj)
 		{
 			if ( !(obj is Vec3) ) {
@@ -107,7 +188,8 @@
 			int xBin = (*(int*) &copyX) >> 12;
 			int yBin = (*(int*) &copyY) >> 12;
 			int zBin = (*(int*) &copyZ) >> 12;
-			return ((xBin << 22) >> 2) | (yBin & 0b0000_0000_0000_0000_0000_0011_1111_1111) << 10 | (zBin & 0b0000_0000_0000_0000_0000_0011_1111_1111);
+			int mask = 0b0000_0000_0000_0000_0000_0011_1111_1111;
+			return ((xBin << 22) >> 2) | (yBin & mask) << 10 | (zBin & mask);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -125,6 +207,7 @@
 		{
 			return "(" + x + ", " + y + ", " + z + ")";
 		}
+
 
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

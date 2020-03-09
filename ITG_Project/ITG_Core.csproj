@@ -6,7 +6,8 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
+    <NoWarn>1701;1702;CS0659</NoWarn>
   </PropertyGroup>
 
 </Project>

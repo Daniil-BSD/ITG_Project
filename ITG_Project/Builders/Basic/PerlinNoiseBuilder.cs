@@ -3,10 +3,10 @@
 	/// Defines the <see cref="PerlinNoiseBuilder" />
 	/// </summary>
 	public class PerlinNoiseBuilder : InterpolatableAlgorithmBuilder<float, Vec2> {
-		public override Algorithm<float> Build(LandscapeBuilder.LandscapeItermidiate itermidiate)
+		public override Algorithm<float> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
-			VerifyVallidity(itermidiate);
-			return new PerlinNoise(itermidiate.Get<Vec2>(SourceID), Scale);
+			VerifyVallidity(intermidiate);
+			return new PerlinNoise(Offset, intermidiate.Get<Vec2>(SourceID), Scale);
 		}
 	}
 }

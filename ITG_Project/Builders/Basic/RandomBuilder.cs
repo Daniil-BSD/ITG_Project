@@ -5,10 +5,10 @@
 	public class RandomBuilder : AlgorithmBuilder<uint> {
 		public int Seed { get; set; }
 
-		public override Algorithm<uint> Build(LandscapeBuilder.LandscapeItermidiate itermidiate)
+		public override Algorithm<uint> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
-			VerifyVallidity(itermidiate);
-			return new Random(Seed);
+			VerifyVallidity(intermidiate);
+			return new Random(Offset, Seed);
 		}
 	}
 }

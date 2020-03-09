@@ -1,5 +1,6 @@
 ﻿namespace ITG_Core {
-	using System.Collections.Generic;
+	using System;
+	using System.Collections.Concurrent;
 	using System.Runtime.CompilerServices;
 
 	/// <summary>
@@ -9,30 +10,41 @@
 	public class Memory<T> : Algorithm<T> where T : struct {
 		private Algorithm<T> algorithm;
 
-		private Dictionary<Coordinate, Chunk<T>> memory;
+		private ConcurrentDictionary<Coordinate, Chunk<T>> memory;
 
-		public Memory(Algorithm<T> algorithm)
+		public Memory(Coordinate offset, Algorithm<T> algorithm) : base(offset)
 		{
-			memory = new Dictionary<Coordinate, Chunk<T>>();
+			memory = new ConcurrentDictionary<Coordinate, Chunk<T>>();
 			this.algorithm = algorithm;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public override Chunk<T> ChunkPopulation(in Coordinate coordinate)
+		public void Drop()
 		{
-			if ( !memory.ContainsKey(coordinate) )
-				memory.Add(coordinate, algorithm.ChunkPopulation(coordinate));
+			memory.Clear();
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void PushData(in Chunk<T> chunk, in Coordinate coordinate)
+		{
+			TrySavingSector(coordinate, chunk);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		protected override Chunk<T> ChunkPopulation(in Coordinate coordinate)
+		{
+			TrySavingSector(coordinate, algorithm.GetChunck(coordinate));
 			return memory[coordinate];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		override public Sector<T> SectorPopulation(Sector<T> sector)
+		protected override Sector<T> SectorPopulation(in RequstSector requstSector)
 		{
 			bool noMissingChunks = true;
 			bool noPresentChunks = true;
+			Sector<T> sector = new Sector<T>(requstSector);
 			for ( int i = 0 ; i < sector.width ; i++ ) {
 				for ( int j = 0 ; j < sector.height ; j++ ) {
-					Coordinate coordinate = new Coordinate(i + sector.coordinate.x, j + sector.coordinate.y);
+					Coordinate coordinate = new Coordinate(i, j) + sector.Coordinate;
 					if ( memory.ContainsKey(coordinate) ) {
 						sector.Chunks[i, j] = memory[coordinate];
 						noPresentChunks = false;
@@ -45,12 +57,11 @@
 			if ( noMissingChunks ) {
 				return sector;
 			} else if ( noPresentChunks ) {
-				algorithm.SectorPopulation(sector);
-				//saving all the chunks to memory
+				sector = algorithm.GetSector(sector);
 				for ( int i = 0 ; i < sector.width ; i++ ) {
 					for ( int j = 0 ; j < sector.height ; j++ ) {
-						Coordinate coordinate = new Coordinate(i + sector.coordinate.x, j + sector.coordinate.y);
-						memory.Add(coordinate, sector.Chunks[i, j]);
+						Coordinate coordinate = new Coordinate(i, j) + sector.Coordinate;
+						TrySavingSector(coordinate, sector.Chunks[i, j]);
 					}
 				}
 			} else {
@@ -58,13 +69,39 @@
 				for ( int i = 0 ; i < sector.width ; i++ ) {
 					for ( int j = 0 ; j < sector.height ; j++ ) {
 						if ( sector.Chunks[i, j] == null ) {
-							Coordinate coordinate = new Coordinate(i + sector.coordinate.x, j + sector.coordinate.y);
+							Coordinate coordinate = new Coordinate(i, j) + sector.Coordinate;
 							sector.Chunks[i, j] = ChunkPopulation(coordinate);
 						}
 					}
 				}
 			}
 			return sector;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		protected void TrySavingSector(in Coordinate key, in Chunk<T> value)
+		{
+			if ( !memory.TryAdd(key, value) )
+				if ( !memory[key].Equals(value) )
+					throw new PushConflictException<T>(memory[key], value);
+		}
+	}
+
+	/// <summary>
+	/// Defines the <see cref="PushConflictException{T}" />
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	public class PushConflictException<T> : Exception where T : struct {
+		public readonly Chunk<T> inMemory;
+
+		public readonly Chunk<T> pushed;
+
+		public override string Message => "\noriginal:\t" + inMemory + "\nnew:\t\t" + pushed;
+
+		public PushConflictException(Chunk<T> inMemory, Chunk<T> pushed)
+		{
+			this.inMemory = inMemory;
+			this.pushed = pushed;
 		}
 	}
 }

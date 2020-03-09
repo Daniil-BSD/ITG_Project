@@ -10,15 +10,9 @@
 	public abstract class InterpolatableAlgorithm<T, S> : Layer<T, S> where T : struct where S : struct {
 		public readonly int scale;
 
-		public InterpolatableAlgorithm(Algorithm<S> source, int scale) : base(source)
+		public InterpolatableAlgorithm(Coordinate offset, Algorithm<S> source, int scale) : base(offset, source)
 		{
 			this.scale = scale;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public override Chunk<T> ChunkPopulation(in Coordinate coordinate)
-		{
-			return SectorPopulation(new Sector<T>(coordinate, 1, 1)).Chunks[0, 0];
 		}
 
 		/// ---------------------
@@ -32,20 +26,20 @@
 		public abstract T Compute(in S val00, in S val01, in S val10, in S val11, in float x, in float y, in float offset);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public override Sector<T> SectorPopulation(Sector<T> sector)
+		protected override Sector<T> SectorPopulation(in RequstSector requstSector)
 		{
 			float step = 1f / scale;
 			float initialOffset = step / 2;
-			int corX = sector.coordinate.x;
-			int corY = sector.coordinate.y;
+			int corX = requstSector.coordinate.x;
+			int corY = requstSector.coordinate.y;
 			//used to find the corresponding index
-			int offsetX = (int) Math.Floor((double) MathExt.Modulo(corX, scale) * Constants.CHUNK_SIZE / scale);
-			int offsetY = (int) Math.Floor((double) MathExt.Modulo(corY, scale) * Constants.CHUNK_SIZE / scale);
+			int offsetX = (int) Math.Floor((double) corX.Modulo(scale) * Constants.CHUNK_SIZE / scale);
+			int offsetY = (int) Math.Floor((double) corY.Modulo(scale) * Constants.CHUNK_SIZE / scale);
 			//used to find the corresponding intermidiate value index
 			float pointOffsetX = MathExt.Modulo(corX * Constants.CHUNK_SIZE, scale) * step;
 			float pointOffsetY = MathExt.Modulo(corY * Constants.CHUNK_SIZE, scale) * step;
-			Sector<S> sourceSector = source.GetSector(new Sector<S>(new Coordinate(MathExt.IntegerDevisionConsistent(corX, scale), MathExt.IntegerDevisionConsistent(corY, scale)), sector.width / scale + 2, sector.height / scale + 2));
-			sector.FillUp();
+			Sector<S> sourceSector = source.GetSector(new RequstSector(new Coordinate(corX.IntegerDevisionConsistent(scale), corY.IntegerDevisionConsistent(scale)), requstSector.width / scale + 2, requstSector.height / scale + 2));
+			Sector<T> sector = new Sector<T>(requstSector);
 			for ( int i = 0 ; i < sector.Width_units ; i++ ) {
 				float x = step * i + pointOffsetX;
 				int sectorIndexX = (int) Math.Floor(x) + offsetX;

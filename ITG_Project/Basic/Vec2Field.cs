@@ -7,13 +7,13 @@
 	public class Vec2Field : Layer<Vec2, uint> {
 		private readonly float magnitude;
 
-		public Vec2Field(Algorithm<uint> algorithm, float magnitude) : base(algorithm)
+		public Vec2Field(Coordinate offset, Algorithm<uint> algorithm, float magnitude) : base(offset, algorithm)
 		{
 			this.magnitude = magnitude;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public override Chunk<Vec2> ChunkPopulation(in Coordinate coordinate)
+		protected override Chunk<Vec2> ChunkPopulation(in Coordinate coordinate)
 		{
 			Chunk<Vec2> returnChunk = new Chunk<Vec2>();
 			Chunk<uint> sourceChunk = source.GetChunck(coordinate);

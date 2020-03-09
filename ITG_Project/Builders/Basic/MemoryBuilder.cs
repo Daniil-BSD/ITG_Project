@@ -4,10 +4,10 @@
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	public class MemoryBuilder<T> : LayerBuilder<T, T> where T : struct {
-		public override Algorithm<T> Build(LandscapeBuilder.LandscapeItermidiate itermidiate)
+		public override Algorithm<T> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
-			VerifyVallidity(itermidiate);
-			return new Memory<T>(itermidiate.Get<T>(SourceID));
+			VerifyVallidity(intermidiate);
+			return new Memory<T>(Offset, intermidiate.Get<T>(SourceID));
 		}
 	}
 }

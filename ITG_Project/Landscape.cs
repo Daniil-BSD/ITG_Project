@@ -5,6 +5,7 @@
 
 
 
+
 	/// <summary>
 	/// Defines the <see cref="Landscape" />
 	/// </summary>
@@ -32,7 +33,18 @@
 			}
 			throw new KeyNotFoundException();
 		}
+
+		public void UsedOnlyForAOTCodeGeneration()
+		{
+			GetAlgorithm<float>("");
+			GetAlgorithm<uint>("");
+			GetAlgorithm<Vec2>("");
+			GetAlgorithm<Vec3>("");
+			GetAlgorithm<Angle>("");
+			GetAlgorithm<int>("");
+		}
 	}
+
 
 
 
@@ -99,8 +111,8 @@
 		public Landscape Build()
 		{
 			if ( !IsValid() )
-				throw new InvalidOperationException("LandscapeBuilder is in invalid state bor building Landscape.");
-			var algorithms = new LandscapeItermidiate(this).GetAlgorithms();
+				throw new InvalidOperationException("LandscapeBuilder is in invalid state for building Landscape.");
+			var algorithms = new LandscapeIntermidiate(this).GetAlgorithms();
 			return new Landscape(algorithms);
 		}
 
@@ -112,15 +124,15 @@
 			throw new InvalidProgramException();
 		}
 
-		public class LandscapeItermidiate {
+		public class LandscapeIntermidiate {
 
 			private Queue<string> buildQueue;
 			private Dictionary<string, Algorithm> algorithms;
 			private LandscapeBuilder builder;
 
-			public LandscapeItermidiate(LandscapeBuilder builder) : this(builder, builder.builders.Keys) { }
+			public LandscapeIntermidiate(LandscapeBuilder builder) : this(builder, builder.builders.Keys) { }
 
-			public LandscapeItermidiate(LandscapeBuilder builder, IEnumerable<string> roots)
+			public LandscapeIntermidiate(LandscapeBuilder builder, IEnumerable<string> roots)
 			{
 				this.builder = builder;
 				algorithms = new Dictionary<string, Algorithm>();
@@ -128,17 +140,24 @@
 				Build();
 			}
 
-			public static implicit operator LandscapeBuilder(LandscapeItermidiate li) => li.builder;
+			public static implicit operator LandscapeBuilder(LandscapeIntermidiate li) => li.builder;
 
 			private void Build()
 			{
 				while ( buildQueue.Count > 0 ) {
 					string key = buildQueue.Dequeue();
-					var type = builder[key].GetGenericType();
-					var getMethod = typeof(LandscapeItermidiate).GetMethod("Get");
-					var getMethodTyped = getMethod.MakeGenericMethod(new[] { type });
-					getMethodTyped.Invoke(this, new object[] { key });
+					var algorithmBuilder = builder[key];
+					AddAlgorithm(key, algorithmBuilder);
 				}
+			}
+			public void UsedOnlyForAOTCodeGeneration()
+			{
+				Get<float>("");
+				Get<uint>("");
+				Get<Vec2>("");
+				Get<Vec3>("");
+				Get<Angle>("");
+				Get<int>("");
 			}
 
 			public Algorithm<T> Get<T>(string key) where T : struct
@@ -167,6 +186,8 @@
 
 			public void AddAlgorithm(string key, AlgorithmBuilder builder)
 			{
+				if ( algorithms.ContainsKey(key) )
+					return;
 				var newAlgoruthms = builder.BuildGeneric(this);
 				if ( newAlgoruthms.Count == 1 ) {
 					//convert dictionary to a single object

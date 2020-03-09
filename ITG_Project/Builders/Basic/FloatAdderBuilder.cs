@@ -5,17 +5,17 @@
 	/// Defines the <see cref="FloatAdderBuilder" />
 	/// </summary>
 	public class FloatAdderBuilder : MultiInputAlgorithmBuilder<float, float> {
-		public float DeltaFactor { get; set; } = 0.5f;
+		public float DeltaFactor { get; set; } = 1f;
 
-		public float RetFactor { get; set; } = 1.2f;
+		public float RetFactor { get; set; } = 1f;
 
-		public override Algorithm<float> Build(LandscapeBuilder.LandscapeItermidiate itermidiate)
+		public override Algorithm<float> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
-			VerifyVallidity(itermidiate);
+			VerifyVallidity(intermidiate);
 			List<Algorithm<float>> algorithms = new List<Algorithm<float>>();
 			foreach ( var sourceID in Sources )
-				algorithms.Add(itermidiate.Get<float>(sourceID));
-			return new FloatAdder(algorithms, DeltaFactor, RetFactor);
+				algorithms.Add(intermidiate.Get<float>(sourceID));
+			return new FloatAdder(Offset, algorithms, DeltaFactor, RetFactor);
 		}
 	}
 }

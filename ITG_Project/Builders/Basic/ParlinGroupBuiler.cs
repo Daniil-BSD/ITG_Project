@@ -22,6 +22,8 @@
 
 		public float MaxPerlinScale { get; set; } = 128;
 
+		public Coordinate OffsetGlobal { get; set; } = new Coordinate(0, 0);
+
 		public float RetFactor { get; set; } = 1.375f;
 
 		public float ScaleStep { get; set; } = 2;
@@ -30,11 +32,11 @@
 
 		public string Vec2FieldID { get; set; }
 
-		public override Dictionary<string, Algorithm> BuildGeneric(LandscapeBuilder.LandscapeItermidiate itermidiate)
+		public override Dictionary<string, Algorithm> BuildGeneric(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
 			Dictionary<string, Algorithm> ret = new Dictionary<string, Algorithm>();
 			List<Algorithm<float>> sources = new List<Algorithm<float>>();
-			Algorithm<Vec2> vec2Source = itermidiate.Get<Vec2>(Vec2FieldID);
+			Algorithm<Vec2> vec2Source = intermidiate.Get<Vec2>(Vec2FieldID);
 			if ( BottomUp ) {
 				for ( float f = LowerTargetScale ; f <= UpperTargetScale && sources.Count < MaxLayers ; f *= ScaleStep ) {
 					int scale = RoundTI(f);
@@ -45,21 +47,19 @@
 					int perlinScale = scale / interpolatorScacle;
 					if ( interpolatorScacle == 1 ) {
 						string ref_key = IDENTIFIER_PERLIN + sources.Count;
-						var perlin = new PerlinNoise(vec2Source, perlinScale);
+						var perlin = new PerlinNoise(OffsetGlobal, vec2Source, perlinScale);
 						ret.Add(ref_key, perlin);
 						sources.Insert(0, perlin);
 					} else {
 						string ref_key_perlin = IDENTIFIER_PERLIN + sources.Count;
 						string ref_key_interpol = IDENTIFIER_INTERPOLATOR + sources.Count;
-						var perlin = new PerlinNoise(vec2Source, perlinScale);
-						var interpol = new Interpolator(perlin, interpolatorScacle);
+						var perlin = new PerlinNoise(OffsetGlobal, vec2Source, perlinScale);
+						var interpol = new Interpolator(Coordinate.Origin, perlin, interpolatorScacle);
 						ret.Add(ref_key_perlin, perlin);
 						ret.Add(ref_key_interpol, interpol);
 						sources.Insert(0, interpol);
 					}
 				}
-				ret.Add(LandscapeBuilder.MAIN_ALGORITHM_KEY, new FloatAdder(sources, DeltaFactor, RetFactor));
-				return ret;
 			} else {
 				for ( float f = UpperTargetScale ; f > LowerTargetScale && sources.Count < MaxLayers ; f /= ScaleStep ) {
 					int scale = RoundTI(f);
@@ -70,22 +70,22 @@
 					int perlinScale = scale / interpolatorScacle;
 					if ( interpolatorScacle == 1 ) {
 						string ref_key = IDENTIFIER_PERLIN + sources.Count;
-						var perlin = new PerlinNoise(vec2Source, perlinScale);
+						var perlin = new PerlinNoise(OffsetGlobal, vec2Source, perlinScale);
 						ret.Add(ref_key, perlin);
 						sources.Add(perlin);
 					} else {
 						string ref_key_perlin = IDENTIFIER_PERLIN + sources.Count;
 						string ref_key_interpol = IDENTIFIER_INTERPOLATOR + sources.Count;
-						var perlin = new PerlinNoise(vec2Source, perlinScale);
-						var interpol = new Interpolator(perlin, interpolatorScacle);
+						var perlin = new PerlinNoise(OffsetGlobal, vec2Source, perlinScale);
+						var interpol = new Interpolator(Coordinate.Origin, perlin, interpolatorScacle);
 						ret.Add(ref_key_perlin, perlin);
 						ret.Add(ref_key_interpol, interpol);
 						sources.Add(interpol);
 					}
 				}
-				ret.Add(LandscapeBuilder.MAIN_ALGORITHM_KEY, new FloatAdder(sources, DeltaFactor, RetFactor));
-				return ret;
 			}
+			ret.Add(LandscapeBuilder.MAIN_ALGORITHM_KEY, new FloatAdder(OffsetGlobal, sources, DeltaFactor, RetFactor));
+			return ret;
 		}
 
 		public override Type GetGenericType(string key)

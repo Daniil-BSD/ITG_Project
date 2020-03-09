@@ -9,7 +9,7 @@
 	public abstract class MultiInputAlgorithm<T, S> : Algorithm<T> where T : struct where S : struct {
 		public readonly Algorithm<S>[] sources;
 
-		public MultiInputAlgorithm(List<Algorithm<S>> sources) : base()
+		public MultiInputAlgorithm(Coordinate offset, List<Algorithm<S>> sources) : base(offset)
 		{
 			this.sources = sources.ToArray();
 		}

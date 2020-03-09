@@ -5,10 +5,10 @@
 	public class Vec2FieldBuilder : LayerBuilder<Vec2, uint> {
 		public float Magnitude { get; set; } = Constants.SQRT_2_OVER_2_FLOAT;
 
-		public override Algorithm<Vec2> Build(LandscapeBuilder.LandscapeItermidiate itermidiate)
+		public override Algorithm<Vec2> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
-			VerifyVallidity(itermidiate);
-			return new Vec2Field(itermidiate.Get<uint>(SourceID), Magnitude);
+			VerifyVallidity(intermidiate);
+			return new Vec2Field(Offset, intermidiate.Get<uint>(SourceID), Magnitude);
 		}
 	}
 }

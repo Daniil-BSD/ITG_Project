@@ -5,15 +5,12 @@ namespace ConsoleApp1 {
 	using System.Drawing;
 	using System.Drawing.Imaging;
 
-	/// <summary>
-	/// Defines the <see cref="Program" />
-	/// </summary>
 	public class Program {
 		private static readonly bool BORDERS = false;
 
-		private static readonly int RADIUS = 32;//128;
+		private static readonly int RADIUS = 24;//128;
 
-		private static readonly int SCALE = 512;//512;
+		private static readonly int SCALE = 128;//512;
 
 		private static void Main(string[] args)
 		{
@@ -51,6 +48,12 @@ namespace ConsoleApp1 {
 			Console.WriteLine("v1.CrossY: " + v1.CrossY);
 			Console.WriteLine("v1.CrossZ: " + v1.CrossZ);
 
+			Sector<float> sectorFloat = new Sector<float>(new Coordinate(0, 0), 1, 1);
+			sectorFloat[0, 0] = 0;
+			sectorFloat[1, 0] = 50;
+
+			Console.WriteLine("should be 12.5: " + sectorFloat.ValueAt(0.5f, 0.5f));
+
 
 			Stopwatch sw = new Stopwatch();
 			Console.WriteLine("Stopwatch Started");
@@ -70,15 +73,48 @@ namespace ConsoleApp1 {
 			landscapeBuilder["random"] = new RandomBuilder() { Seed = 6 };
 			landscapeBuilder["vec2"] = new Vec2FieldBuilder() { SourceID = "random", Magnitude = Constants.SQRT_2_OVER_2_FLOAT };
 			landscapeBuilder["mem1"] = new MemoryBuilder<Vec2>() { SourceID = "vec2" };
-			landscapeBuilder["ret"] = new ParlinGroupBuiler() { Vec2FieldID = "mem1", UpperTargetScale = SCALE * 2, MaxPerlinScale = SCALE / 4, DeltaFactor = 0.625f, ScaleStep = 1.875f, RetFactor = 1.575f, BottomUp = true };
+			landscapeBuilder["perlin"] = new ParlinGroupBuiler() { Vec2FieldID = "mem1", UpperTargetScale = SCALE * 2, MaxPerlinScale = SCALE / 4, DeltaFactor = 0.625f, ScaleStep = 1.875f, RetFactor = 1.375f, BottomUp = true, OffsetGlobal = new Coordinate(5, 5), LowerTargetScale = 8 };
+			landscapeBuilder["mem2"] = new MemoryBuilder<float>() { SourceID = "perlin" };
+			landscapeBuilder["HE"] = new HydrolicErrosionBuilder() {
+				SourceID = "mem2",
+				OutputFactor = 1.125f,
+				LayeringPower = 5,
+				LayeringIndexes = new int[] { 0, 1, 4, 5, 10, 11, 14, 15, 16, 17, 20, 21, 26, 27, 30, 31 },
+				SedimentCapacityFactor = 4,
+				Gravity = 3f,
+				StepLength = 1f,
+				InitialSpeed = 0f,
+				BrushRadius = 2f,
+				InitialVolume = 10f,
+				EvaporationSpeed = 0.01f,
+				MaxIterations = 64,
+				Inertia = 0.5f,
+				ErodeSpeed = 0.125f,
+				DepositSpeed = 0.125f,
+			};
+			landscapeBuilder["HEmem"] = new MemoryBuilder<float>() { SourceID = "HE" };
+			landscapeBuilder["HEinv"] = new FloatAdderBuilder() { Sources = new string[] { "HEmem" }, RetFactor = -1 };
+			landscapeBuilder["HEdiff"] = new FloatAdderBuilder() { Sources = new string[] { "HEinv", "mem2" }, RetFactor = 2 };
+
+			//landscapeBuilder["blur1"] = new BlurBuilder() { SourceID = "mem2" };
+			//landscapeBuilder["brush"] = new BrushTestBuilder();
 			Landscape landscape = landscapeBuilder.Build();
 
 			Console.WriteLine("Elapsed={0}", sw.Elapsed);
 			Console.WriteLine("Computing...");
 
+
+
 			sw.Restart();
-			var output = landscape.GetAlgorithm<float>("ret");
-			Sector<float> area = output.GetSector(new Sector<float>(new Coordinate(-RADIUS, -RADIUS), RADIUS * 2, RADIUS * 2));
+			var outputPerlin = landscape.GetAlgorithm<float>("mem2");
+			var outputHE = landscape.GetAlgorithm<float>("HEmem");
+			var outputdiff = landscape.GetAlgorithm<float>("HEdiff");
+
+			var request = new RequstSector(new Coordinate(-RADIUS, -RADIUS), RADIUS * 2, RADIUS * 2);
+			Sector<float> sectorHE = outputHE.GetSector(request);
+			Sector<float> sectorPerlin = outputPerlin.GetSector(request);
+			Sector<float> sectordiff = outputdiff.GetSector(request);
+			//Sector<float> area = output.GetSector(new RequstSector(new Coordinate(0, 0), 4, 4));
 
 
 
@@ -86,38 +122,40 @@ namespace ConsoleApp1 {
 			sw.Stop();
 			Console.WriteLine("Elapsed={0}", sw.Elapsed);
 			Console.WriteLine("Press \"Enter\" to save", sw.Elapsed);
-			Console.ReadKey();
+			//Console.ReadKey();
 			Console.WriteLine("Saving...");
 
-			int width = area.Width_units;
-			int height = area.Height_units;
+			int width = request.Width_units * 3;
+			int height = request.Height_units;
 			Bitmap bmp = new Bitmap(width, height);
-
-			float min = int.MaxValue;
-			float max = 0;
 			int errors = 0;
-			long total = 0;
-			for ( int i = 0 ; i < width ; i++ ) {
-				for ( int j = 0 ; j < height ; j++ ) {
-					int saturation = (int) (((area[i, j] + 1) / 2) * 255 * 5) % 256;
 
-					total += saturation;
-					if ( saturation < 0 || saturation > 255 ) {
-						errors++;
-						bmp.SetPixel(i, j, Color.FromArgb(255, 0, 0));
-					} else {
-						bmp.SetPixel(i, j, Color.FromArgb((saturation == 0 || saturation == 255) ? 127 : saturation, (i % Constants.CHUNK_SIZE == 0 && BORDERS) ? 255 : saturation, (j % Constants.CHUNK_SIZE == 0 && BORDERS) ? 255 : saturation));
-						max = Math.Max(max, area[i, j]);
-						min = Math.Min(min, area[i, j]);
-					}
-				}
-			}
+			Draw(sectorPerlin, bmp, 0, ref errors);
+			Draw(sectorHE, bmp, request.Width_units, ref errors);
+			Draw(sectordiff, bmp, request.Width_units * 2, ref errors);
+
+
 			bmp.Save("D:\\output.png", ImageFormat.Png);
 
-			Console.WriteLine("min: " + min + " max: " + max + " avg: " + (double) total / (width * height) + " errors: " + errors);
+			//Console.WriteLine("min: " + min + " max: " + max + " avg: " + (double) total / (width * height) + " errors: " + errors);
 			Console.WriteLine("Saved");
 
 			Console.ReadKey();
+		}
+
+		public static void Draw(Sector<float> area, in Bitmap bmp, int offset, ref int errors)
+		{
+			for ( int i = 0 ; i < area.Width_units ; i++ ) {
+				for ( int j = 0 ; j < area.Height_units ; j++ ) {
+					int saturation = ((int) ((area[i, j]) * 255)).Modulo(256);
+					if ( saturation < 0 || saturation > 255 ) {
+						errors++;
+						bmp.SetPixel(offset + i, j, Color.FromArgb(255, 0, 0));
+					} else {
+						bmp.SetPixel(offset + i, j, Color.FromArgb((saturation == 0 || saturation == 255) ? 127 : saturation, (i % Constants.CHUNK_SIZE == 0 && BORDERS) ? 255 : saturation, (j % Constants.CHUNK_SIZE == 0 && BORDERS) ? 255 : saturation));
+					}
+				}
+			}
 		}
 	}
 }

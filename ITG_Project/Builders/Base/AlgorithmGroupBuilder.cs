@@ -14,13 +14,13 @@
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	public abstract class AlgorithmGroupBuilder<T> : AlgorithmBuilder, AlgorithmGroupBuilder where T : struct {
-		public Algorithm<float> Build(LandscapeBuilder.LandscapeItermidiate itermidiate)
+		public Algorithm<float> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
-			string key = itermidiate.GetKeyFor(this);
-			return itermidiate.Get<float>(key);
+			string key = intermidiate.GetKeyFor(this);
+			return intermidiate.Get<float>(key);
 		}
 
-		public abstract Dictionary<string, Algorithm> BuildGeneric(LandscapeBuilder.LandscapeItermidiate landscapeItermidiate);
+		public abstract Dictionary<string, Algorithm> BuildGeneric(LandscapeBuilder.LandscapeIntermidiate landscapeIntermidiate);
 
 		public Type GetGenericType()
 		{

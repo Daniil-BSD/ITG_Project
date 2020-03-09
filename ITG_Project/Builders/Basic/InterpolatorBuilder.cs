@@ -3,10 +3,10 @@
 	/// Defines the <see cref="InterpolatorBuilder" />
 	/// </summary>
 	public class InterpolatorBuilder : InterpolatableAlgorithmBuilder<float, float> {
-		public override Algorithm<float> Build(LandscapeBuilder.LandscapeItermidiate itermidiate)
+		public override Algorithm<float> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
-			VerifyVallidity(itermidiate);
-			return new Interpolator(itermidiate.Get<float>(SourceID), Scale);
+			VerifyVallidity(intermidiate);
+			return new Interpolator(Offset, intermidiate.Get<float>(SourceID), Scale);
 		}
 	}
 }

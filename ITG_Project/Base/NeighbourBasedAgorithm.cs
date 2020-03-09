@@ -7,33 +7,27 @@
 	/// <typeparam name="T"></typeparam>
 	/// <typeparam name="S"></typeparam>
 	public abstract class NeighbourBasedAgorithm<T, S> : Layer<T, S> where T : struct where S : struct {
-		public NeighbourBasedAgorithm(Algorithm<S> source) : base(source)
+		public NeighbourBasedAgorithm(Coordinate offset, Algorithm<S> source) : base(offset, source)
 		{
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public override Chunk<T> ChunkPopulation(in Coordinate coordinate)
-		{
-			return SectorPopulation(new Sector<T>(coordinate, 1, 1)).Chunks[0, 0];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public abstract T Compute(Neighbourhood<S> n);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public override Sector<T> SectorPopulation(Sector<T> sector)
+		protected override Sector<T> SectorPopulation(in RequstSector requstSector)
 		{
-			Sector<S> sourceSector = new Sector<S>(new Coordinate(sector.coordinate.x - 1, sector.coordinate.y - 1), sector.width + 2, sector.height + 2);
-			sourceSector = source.GetSector(sourceSector);
-			sector.FillUp();
-			for ( int i = Constants.CHUNK_SIZE ; i < sector.Width_units - Constants.CHUNK_SIZE ; i++ ) {
-				for ( int j = Constants.CHUNK_SIZE ; j < sector.Height_units - Constants.CHUNK_SIZE ; j++ ) {
+			RequstSector outgoingRequstSector = requstSector.GetExpandedCopy(1);
+			var sourceSector = source.GetSector(outgoingRequstSector);
+			var sector = new Sector<T>(requstSector);
+			for ( int i = 0 ; i < sector.Width_units ; i++ ) {
+				for ( int j = 0 ; j < sector.Height_units ; j++ ) {
 					sector[i, j] = Compute(new Neighbourhood<S>(sourceSector, i, j));
-					;
 				}
 			}
 			return sector;
 		}
+
 		public class Neighbourhood<NT> where NT : struct {
 			public readonly NT[,] data;
 			public NT this[in int x, in int y] {
@@ -41,12 +35,20 @@
 					return data[x + 1, y + 1];
 				}
 			}
-			public Neighbourhood(Sector<NT> s, in int x, in int y)
+			public Neighbourhood(Sector<NT> s, in int i, in int j)
 			{
+				int x = i + Constants.CHUNK_SIZE;
+				int y = j + Constants.CHUNK_SIZE;
+				int xn = x - 1;
+				int xo = x;
+				int xp = x + 1;
+				int yn = y - 1;
+				int yo = y;
+				int yp = y + 1;
 				data = new NT[3, 3]{
-					{ s[x - 1, y + 1]   , s[x, y + 1]   , s[x + 1, y + 1]},
-					{ s[x - 1, y]       , s[x, y]       , s[x + 1, y]},
-					{ s[x - 1, y - 1]   , s[x, y - 1]   , s[x + 1, y - 1]}
+					{ s[xn, yp] , s[xo, yp] , s[xp, yp]},
+					{ s[xn, yo] , s[xo, yo] , s[xp, yo]},
+					{ s[xn, yn] , s[xo, yn] , s[xp, yn]}
 				};
 
 			}

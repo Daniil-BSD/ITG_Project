@@ -1,11 +1,50 @@
 ﻿namespace ITG_Core {
 	using System;
-	using System.Collections;
-	using System.Collections.Generic;
 	using System.Runtime.CompilerServices;
+
+	/// <summary>
+	/// Defines the <see cref="RequstSector" />
+	/// </summary>
+	public struct RequstSector {
+		public readonly Coordinate coordinate;
+
+		public readonly int height;
+
+		public readonly int width;
+
+		public int Height_units => height * Constants.CHUNK_SIZE;
+
+		public int Width_units => width * Constants.CHUNK_SIZE;
+
+		public RequstSector(in Coordinate coordinate, in int width, in int height)
+		{
+			this.width = width;
+			this.height = height;
+			this.coordinate = new Coordinate(coordinate);
+		}
+
+		public RequstSector(RequstSector original, in int expansion)
+		{
+			width = original.width + expansion + expansion;
+			height = original.height + expansion + expansion;
+			coordinate = original.coordinate - new Coordinate(expansion, expansion);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public RequstSector GetExpandedCopy(in int expansion)
+		{
+			return new RequstSector(this, expansion);
+		}
+
+		public RequstSector GetOffsetCopy(Coordinate offset)
+		{
+			return new RequstSector(coordinate + offset, width, height);
+		}
+	}
+
 	public class Sector<T> where T : struct {
 
-		public readonly Coordinate coordinate;
+		private Coordinate coordinate;
 		private Chunk<T>[,] chunks;
 		public readonly int width;
 		public readonly int height;
@@ -15,7 +54,6 @@
 		public T this[in int x, in int y] {
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get {
-				//Console.WriteLine(x + " , " + y);
 				return chunks[x / Constants.CHUNK_SIZE, y / Constants.CHUNK_SIZE][x % Constants.CHUNK_SIZE, y % Constants.CHUNK_SIZE];
 			}
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -23,47 +61,51 @@
 				chunks[x / Constants.CHUNK_SIZE, y / Constants.CHUNK_SIZE][x % Constants.CHUNK_SIZE, y % Constants.CHUNK_SIZE] = value;
 			}
 		}
+
+		public T this[in CoordinateBasic coordinate] {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get {
+				return chunks[coordinate.x / Constants.CHUNK_SIZE, coordinate.y / Constants.CHUNK_SIZE][coordinate.x % Constants.CHUNK_SIZE, coordinate.y % Constants.CHUNK_SIZE];
+			}
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			set {
+				chunks[coordinate.x / Constants.CHUNK_SIZE, coordinate.y / Constants.CHUNK_SIZE][coordinate.x % Constants.CHUNK_SIZE, coordinate.y % Constants.CHUNK_SIZE] = value;
+			}
+		}
+
+
 		public Chunk<T>[,] Chunks => chunks;
+		public Coordinate Coordinate => coordinate;
 		public int Width_units => width * Constants.CHUNK_SIZE;
 		public int Height_units => height * Constants.CHUNK_SIZE;
-		public Sector(Coordinate coordinate, in int width, in int height)
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Sector(in Coordinate coordinate, in int width, in int height, in bool fillup = true)
 		{
 			this.chunks = new Chunk<T>[width, height];
 			this.width = width;
 			this.height = height;
-			this.coordinate = coordinate;
-		}
-		public Sector(Coordinate coordinate, int width, int height)
-		{
-			this.chunks = new Chunk<T>[width, height];
-			this.width = width;
-			this.height = height;
-			this.coordinate = coordinate;
+			this.coordinate = new Coordinate(coordinate);
+			if ( fillup )
+				FillUp();
 		}
 
-		public IEnumerator GetEnumerator()
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Sector(in RequstSector requstSector, in bool fillup = true)
 		{
-			throw new NotImplementedException();
+			this.chunks = new Chunk<T>[requstSector.width, requstSector.height];
+			this.width = requstSector.width;
+			this.height = requstSector.height;
+			this.coordinate = requstSector.coordinate;
+			if ( fillup )
+				FillUp();
 		}
 
-		public ValueEnumerator GetValueEnumerator()
-		{
-			FillUp();
-			return new ValueEnumerator(this);
-		}
-
-		public ChunkEnumerator GetChunkEnumerator()
-		{
-			FillUp();
-			return new ChunkEnumerator(this);
-		}
-
-		public void FillUp()
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private void FillUp()
 		{
 			for ( int i = 0 ; i < width ; i++ )
 				for ( int j = 0 ; j < height ; j++ )
-					if ( chunks[i, j] == null )
-						chunks[i, j] = new Chunk<T>();
+					chunks[i, j] = new Chunk<T>();
 		}
 
 		public override string ToString()
@@ -77,136 +119,111 @@
 			}
 			return ret + "";
 		}
-
-#pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
-		public class ChunkEnumerator : IEnumeratorPlus<Chunk<T>> {
-			private IEnumerator<Chunk<T>> chunkEnumerator;
-			public Chunk<T> Current => chunkEnumerator.Current;
-			object IEnumerator.Current => Current;
-
-
-			//TODO:
-			public int X => throw new NotImplementedException();
-
-			public int Y => throw new NotImplementedException();
-
-			public ChunkEnumerator(Sector<T> area)
-			{
-				chunkEnumerator = (IEnumerator<Chunk<T>>) area.chunks.GetEnumerator();
-			}
-
-			public bool MoveNext()
-			{
-
-				return chunkEnumerator.MoveNext();
-			}
-
-			public void Reset()
-			{
-				chunkEnumerator.Reset();
-			}
-
-			public void Dispose()
-			{
-				chunkEnumerator.Dispose();
-			}
-
-			public IEnumerator<Chunk<T>> GetEnumerator()
-			{
-				return this;
-			}
-
-			IEnumerator IEnumerable.GetEnumerator()
-			{
-				return this;
-			}
-
-			public void SetCurernt<T1>(T1 t) where T1 : struct
-			{
-				throw new NotImplementedException();
-			}
+		public delegate Chunk<T> ForeachChunkDelegate<T1, T2>(ref Chunk<T1> chunk1, in Chunk<T2> chunk2, in float factor) where T1 : struct where T2 : struct;
+		public static Sector<T> ForeachChunk<T1, T2>(ForeachChunkDelegate<T1, T2> body, ref Sector<T1> sector1, in Sector<T2> sector2, in float factor = 1f) where T1 : struct where T2 : struct
+		{
+			if ( !sector1.Equals(sector2) )
+				throw new ArgumentException("Mismatched sectors.");
+			Sector<T> ret = new Sector<T>(sector1, false);
+			for ( int i = 0 ; i < ret.width ; i++ )
+				for ( int j = 0 ; j < ret.height ; j++ )
+					ret.chunks[i, j] = body(ref sector1.chunks[i, j], sector2.chunks[i, j], factor);
+			return ret;
 		}
 
-		public class ValueEnumerator : IEnumeratorPlus<T> {
-			private Sector<T> sector;
-			private IEnumerator chunkEnumerator;
-			private IEnumerator valueEnumerator;
-			public T Current => (T) valueEnumerator.Current;
-			object IEnumerator.Current => Current;
-			private int chunkIndex;
-			private int valueIndex;
-			private int sectorWidth;
-			public int X {
-				[MethodImpl(MethodImplOptions.AggressiveInlining)]
-				get {
-					return (chunkIndex % sectorWidth) * Constants.CHUNK_SIZE + valueIndex % Constants.CHUNK_SIZE;
-				}
-			}
 
-			public int Y {
-				[MethodImpl(MethodImplOptions.AggressiveInlining)]
-				get {
-					return (chunkIndex / sectorWidth) * Constants.CHUNK_SIZE + valueIndex / Constants.CHUNK_SIZE;
-				}
-			}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public T ValueAtDefault(in float x, in float y)
+		{
 
-			public ValueEnumerator(Sector<T> sector)
-			{
-				this.sector = sector;
-				chunkEnumerator = (IEnumerator) sector.chunks.GetEnumerator();
-				chunkEnumerator.MoveNext();
-				valueEnumerator = ((Chunk<T>) chunkEnumerator.Current).value.GetEnumerator();
-				valueEnumerator.MoveNext();
-				sectorWidth = sector.width;
-				this.sector = sector;
-				chunkIndex = 0;
-				valueIndex = 0;
-			}
+			int coorX = (x + 0.5f).ToIntegerConsistent();
+			int coorY = (y + 0.5f).ToIntegerConsistent();
 
-			public void Dispose()
-			{
-				//valueEnumerator.Dispose();
-				//chunkEnumerator.Dispose();
-			}
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool MoveNext()
-			{
-				if ( !valueEnumerator.MoveNext() ) {
-					if ( chunkEnumerator.MoveNext() ) {
-						chunkIndex++;
-						valueIndex = 0;
-						valueEnumerator = ((Chunk<T>) chunkEnumerator.Current).value.GetEnumerator();
-						valueEnumerator.MoveNext();
-						return true;
-					} else {
-						return false;
-					}
-				}
-				valueIndex++;
-				return true;
-			}
-
-			public void Reset()
-			{
-				throw new NotImplementedException();
-			}
-
-			IEnumerator IEnumerable.GetEnumerator()
-			{
-				return this;
-			}
-
-			IEnumerator<T> IEnumerable<T>.GetEnumerator()
-			{
-				return this;
-			}
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public void SetCurernt(T t)
-			{
-				//Console.WriteLine(valueIndex % Constants.CHUNK_SIZE + " , " + valueIndex / Constants.CHUNK_SIZE);
-				((Chunk<T>) chunkEnumerator.Current)[valueIndex / Constants.CHUNK_SIZE, valueIndex % Constants.CHUNK_SIZE] = t;
-			}
+			return this[coorX, coorY];
 		}
-#pragma warning restore CS0693 // Type parameter has the same name as the type parameter from outer type
+
+		public Sector<T> GetCopy()
+		{
+			Sector<T> copy = new Sector<T>(coordinate, width, height, fillup: false);
+			for ( int i = 0 ; i < width ; i++ )
+				for ( int j = 0 ; j < height ; j++ )
+					copy.chunks[i, j] = chunks[i, j];
+			return copy;
+		}
+		public Sector<T> GetDeepCopy()
+		{
+			Sector<T> copy = new Sector<T>(coordinate, width, height, fillup: false);
+			for ( int i = 0 ; i < width ; i++ ) {
+				for ( int j = 0 ; j < height ; j++ ) {
+					copy.chunks[i, j] = chunks[i, j].GetCopy();
+				}
+			}
+			return copy;
+		}
+
+		public Sector<T> GetCopy(int reductionRadius)
+		{
+			int reductionRadius2 = reductionRadius + reductionRadius;
+			Sector<T> copy = new Sector<T>(coordinate + new Coordinate(reductionRadius, reductionRadius), width - reductionRadius2, height - reductionRadius2, fillup: false);
+			for ( int i = reductionRadius ; i < width - reductionRadius ; i++ )
+				for ( int j = reductionRadius ; j < height - reductionRadius ; j++ )
+					copy.chunks[i - reductionRadius, j - reductionRadius] = chunks[i, j];
+			return copy;
+		}
+
+		public Sector<T> OffsetBack(Coordinate offset)
+		{
+			coordinate = coordinate - offset;
+			return this;
+		}
+
+		// override object.Equals
+		public override bool Equals(object obj)
+		{
+			if ( obj == null || GetType() != obj.GetType() ) {
+				return false;
+			}
+			var sec = (Sector<T>) obj;
+			return sec.Coordinate.Equals(coordinate) && sec.width == width && sec.height == height;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static implicit operator RequstSector(in Sector<T> sector)
+		{
+			return new RequstSector(sector.coordinate, sector.width, sector.height);
+		}
+	}
+
+	/// <summary>
+	/// Defines the <see cref="SectorExtentions" />
+	/// </summary>
+	public static unsafe partial class SectorExtentions {
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static float ValueAt(this Sector<float> sector, in float x, in float y)
+		{
+			int coorX = x.ToIntegerConsistent();
+			int coorY = y.ToIntegerConsistent();
+			int coorXpo = coorX + 1;
+			int coorYpo = coorX + 1;
+
+			float val00 = sector[coorX, coorY];
+			float val10 = sector[coorXpo, coorY];
+			float val01 = sector[coorX, coorYpo];
+			float val11 = sector[coorXpo, coorYpo];
+
+			float X = x.Modulo(1);
+			float Y = x.Modulo(1);
+
+			float top = val01 + X * (val11 - val01);
+			float bottom = val00 + X * (val10 - val00);
+			float ret = (bottom + Y * (top - bottom));
+			return ret;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static float ValueAt(this Sector<float> sector, in Vec2 vec)
+		{
+			return sector.ValueAt(vec.x, vec.y);
+		}
 	}
 }

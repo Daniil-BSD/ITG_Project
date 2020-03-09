@@ -7,13 +7,13 @@
 	public class Random : Algorithm<uint> {
 		private readonly int seed;
 
-		public Random(int seed = 0)
+		public Random(Coordinate offset, int seed = 0) : base(offset)
 		{
 			this.seed = seed;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public override Chunk<uint> ChunkPopulation(in Coordinate coordinate)
+		protected override Chunk<uint> ChunkPopulation(in Coordinate coordinate)
 		{
 			LehmerPlusSRNG random = new LehmerPlusSRNG(coordinate, seed);
 			Chunk<uint> chunk = new Chunk<uint>();

@@ -3,9 +3,13 @@
 	/// Defines the <see cref="Constants" />
 	/// </summary>
 	public static class Constants {
+		public const float AROUND_0_POSITIVE = 0.01f;
+
 		public const int CHUNK_NUMBER_OF_VALUES = CHUNK_SIZE * CHUNK_SIZE;
 
 		public const int CHUNK_SIZE = 16;
+
+		public const int DEFAULT_SECTOR_SIZE = 16;
 
 		public const double SQRT_2_OVER_2_DOUBLE = 0.707106781186547524400844362105;
 

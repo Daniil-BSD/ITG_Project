@@ -5,7 +5,7 @@
 	/// Defines the <see cref="PerlinNoise" />
 	/// </summary>
 	public class PerlinNoise : InterpolatableAlgorithm<float, Vec2> {
-		public PerlinNoise(Algorithm<Vec2> algorithm, int scale) : base(algorithm, scale)
+		public PerlinNoise(Coordinate offset, Algorithm<Vec2> algorithm, int scale) : base(offset, algorithm, scale)
 		{
 		}
 

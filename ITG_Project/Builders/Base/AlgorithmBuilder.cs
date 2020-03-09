@@ -6,7 +6,7 @@
 	/// Defines the <see cref="AlgorithmBuilder" />
 	/// </summary>
 	public interface AlgorithmBuilder {
-		Dictionary<string, Algorithm> BuildGeneric(LandscapeBuilder.LandscapeItermidiate landscapeItermidiate);
+		Dictionary<string, Algorithm> BuildGeneric(LandscapeBuilder.LandscapeIntermidiate landscapeIntermidiate);
 
 		Type GetGenericType();
 
@@ -20,12 +20,14 @@
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	public abstract class AlgorithmBuilder<T> : AlgorithmBuilder where T : struct {
-		public abstract Algorithm<T> Build(LandscapeBuilder.LandscapeItermidiate itermidiate);
+		public Coordinate Offset { get; set; } = new Coordinate(0, 0);
 
-		public Dictionary<string, Algorithm> BuildGeneric(LandscapeBuilder.LandscapeItermidiate itermidiate)
+		public abstract Algorithm<T> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate);
+
+		public Dictionary<string, Algorithm> BuildGeneric(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
 			var ret = new Dictionary<string, Algorithm> {
-				{ LandscapeBuilder.MAIN_ALGORITHM_KEY, Build(itermidiate) }
+				{ LandscapeBuilder.MAIN_ALGORITHM_KEY, Build(intermidiate) }
 			};
 			return ret;
 		}
@@ -53,9 +55,9 @@
 			return new List<string>();
 		}
 
-		public void VerifyVallidity(LandscapeBuilder.LandscapeItermidiate itermidiate)
+		public void VerifyVallidity(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
-			if ( !IsValid(itermidiate) )
+			if ( !IsValid(intermidiate) )
 				throw new InvalidOperationException("Builder is in an invalid satate and thus cannot build an instance.");
 		}
 	}

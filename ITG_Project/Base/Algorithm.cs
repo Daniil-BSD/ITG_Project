@@ -14,12 +14,25 @@
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	abstract public class Algorithm<T> : Algorithm where T : struct {
-		private readonly int stdSectorSide = Constants.CHUNK_SIZE / 2;//TODO make settable?
+		public readonly Coordinate offset;
+
+		// overridable constant for children
+		public virtual int StdSectorSize {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get {
+				return Constants.DEFAULT_SECTOR_SIZE;
+			}
+		}
+
+		public Algorithm(Coordinate offset)
+		{
+			this.offset = offset;
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Chunk<T> GetChunck(in Coordinate coordinate)
 		{
-			return ChunkPopulation(coordinate);
+			return ChunkPopulation(coordinate + offset);
 		}
 
 		public Type GetGenericType()
@@ -28,52 +41,57 @@
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Sector<T> GetSector(Sector<T> sector)
+		public Sector<T> GetSector(in RequstSector requstSector)
 		{
-			int subsectorsX = sector.width / stdSectorSide;
-			int subsectorsY = sector.height / stdSectorSide;
+			int stdSectorSize = StdSectorSize;
+			int subsectorsX = requstSector.width / stdSectorSize;
+			int subsectorsY = requstSector.height / stdSectorSize;
 			if ( subsectorsX <= 1 && subsectorsY <= 1 )
-				return SectorPopulation(sector);
+				return SectorPopulation(requstSector.GetOffsetCopy(offset)).OffsetBack(offset);
+
 			Sector<T>[,] subsectors = new Sector<T>[subsectorsX, subsectorsY];
 			for ( int i = 0 ; i < subsectorsX ; i++ ) {
 				for ( int j = 0 ; j < subsectorsY ; j++ ) {
-					int width = stdSectorSide;
-					int height = stdSectorSide;
+					int width = stdSectorSize;
+					int height = stdSectorSize;
 					if ( i == subsectorsX - 1 )
-						width = sector.width - stdSectorSide * i;
+						width = requstSector.width - stdSectorSize * i;
 					if ( j == subsectorsY - 1 )
-						height = sector.height - stdSectorSide * j;
-					subsectors[i, j] = new Sector<T>(new Coordinate(sector.coordinate.x + (i * stdSectorSide), sector.coordinate.y + (j * stdSectorSide)), width, height);
+						height = requstSector.height - stdSectorSize * j;
+					var subsectorsRequest = new RequstSector(new Coordinate(i * stdSectorSize, j * stdSectorSize) + requstSector.coordinate + offset, width, height);
 
-
-					//TODO Multithread!!!
-					subsectors[i, j] = SectorPopulation(subsectors[i, j]);
+					//TODO: Multithread!!!
+					subsectors[i, j] = SectorPopulation(subsectorsRequest);
 				}
 			}
+
+			Sector<T> sector = new Sector<T>(requstSector);
 
 			for ( int si = 0 ; si < subsectorsX ; si++ ) {
 				for ( int sj = 0 ; sj < subsectorsY ; sj++ ) {
 					for ( int i = 0 ; i < subsectors[si, sj].width ; i++ ) {
 						for ( int j = 0 ; j < subsectors[si, sj].height ; j++ ) {
-
-							//Console.Write((si * stdSectorSide + i) + " , " + (sj * stdSectorSide + j) + " \t");
-							sector.Chunks[si * stdSectorSide + i, sj * stdSectorSide + j] = subsectors[si, sj].Chunks[i, j];
+							sector.Chunks[si * stdSectorSize + i, sj * stdSectorSize + j] = subsectors[si, sj].Chunks[i, j];
 						}
 					}
 				}
 			}
-			return sector;
+			return sector.OffsetBack(offset);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		abstract public Chunk<T> ChunkPopulation(in Coordinate coordinate);
+		protected virtual Chunk<T> ChunkPopulation(in Coordinate coordinate)
+		{
+			return SectorPopulation(new RequstSector(coordinate, 1, 1)).Chunks[0, 0];
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		virtual public Sector<T> SectorPopulation(Sector<T> sector)
+		protected virtual Sector<T> SectorPopulation(in RequstSector requstSector)
 		{
+			Sector<T> sector = new Sector<T>(requstSector, false);
 			for ( int i = 0 ; i < sector.width ; i++ ) {
 				for ( int j = 0 ; j < sector.height ; j++ ) {
-					sector.Chunks[i, j] = ChunkPopulation(new Coordinate(i + sector.coordinate.x, j + sector.coordinate.y));
+					sector.Chunks[i, j] = ChunkPopulation(new Coordinate(i, j) + sector.Coordinate);
 				}
 			}
 			return sector;
