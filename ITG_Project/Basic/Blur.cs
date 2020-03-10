@@ -3,7 +3,7 @@
 	/// Defines the <see cref="Blur" />
 	/// </summary>
 	public class Blur : NeighbourBasedAgorithm<float, float> {
-		public Blur(Coordinate offset, Algorithm<float> source) : base(offset, source)
+		public Blur(Coordinate offset, ITGThreadPool threadPool, Algorithm<float> source) : base(offset, threadPool, source)
 		{
 		}
 

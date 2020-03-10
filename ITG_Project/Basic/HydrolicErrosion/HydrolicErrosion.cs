@@ -49,7 +49,7 @@
 
 		private LayeringEnumeratorBuilder layeringEnumeratorBuilder;
 
-		public HydrolicErrosion(Coordinate offset, Algorithm<float> source, float brushRadius, float depositSpeed, float erodeSpeed, float evaporationSpeed, float gravity, float inertia, float initialSpeed, float initialVolume, int layeringPower, int[] layeringIndexes, int maxIterations, float maxSedimentForTermination, float minSedimentCapacity, float minVolume, float outputFactor, float sedimentCapacityFactor, float stepLength) : base(offset, source)
+		public HydrolicErrosion(Coordinate offset, ITGThreadPool threadPool, Algorithm<float> source, float brushRadius, float depositSpeed, float erodeSpeed, float evaporationSpeed, float gravity, float inertia, float initialSpeed, float initialVolume, int layeringPower, int[] layeringIndexes, int maxIterations, float maxSedimentForTermination, float minSedimentCapacity, float minVolume, float outputFactor, float sedimentCapacityFactor, float stepLength) : base(offset, threadPool, source)
 		{
 			this.brushRadius = brushRadius;
 			this.depositSpeed = depositSpeed;

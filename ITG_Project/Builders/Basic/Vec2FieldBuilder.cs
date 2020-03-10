@@ -8,7 +8,7 @@
 		public override Algorithm<Vec2> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
 			VerifyVallidity(intermidiate);
-			return new Vec2Field(Offset, intermidiate.Get<uint>(SourceID), Magnitude);
+			return new Vec2Field(Offset, intermidiate.ThreadPool, intermidiate.Get<uint>(SourceID), Magnitude);
 		}
 	}
 }

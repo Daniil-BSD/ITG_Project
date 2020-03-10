@@ -15,6 +15,7 @@
 	/// <typeparam name="T"></typeparam>
 	abstract public class Algorithm<T> : Algorithm where T : struct {
 		public readonly Coordinate offset;
+		public readonly ITGThreadPool threadPool;
 
 		// overridable constant for children
 		public virtual int StdSectorSize {
@@ -24,9 +25,10 @@
 			}
 		}
 
-		public Algorithm(Coordinate offset)
+		public Algorithm(Coordinate offset, ITGThreadPool threadPool)
 		{
 			this.offset = offset;
+			this.threadPool = threadPool;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -77,6 +79,7 @@
 				}
 			}
 			return sector.OffsetBack(offset);
+
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

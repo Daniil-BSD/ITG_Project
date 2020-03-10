@@ -8,7 +8,7 @@
 		//TODO
 		public override Algorithm<Vec3> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
-			return new NormalFast(Offset, intermidiate.Get<float>(SourceID), gridStepOverHeightRange: GridStepOverHeightRange);
+			return new NormalFast(Offset, intermidiate.ThreadPool, intermidiate.Get<float>(SourceID), gridStepOverHeightRange: GridStepOverHeightRange);
 		}
 	}
 }

@@ -6,7 +6,7 @@
 		public override Algorithm<float> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
 			VerifyVallidity(intermidiate);
-			return new Blur(Offset, intermidiate.Get<float>(SourceID));
+			return new Blur(Offset, intermidiate.ThreadPool, intermidiate.Get<float>(SourceID));
 		}
 	}
 }

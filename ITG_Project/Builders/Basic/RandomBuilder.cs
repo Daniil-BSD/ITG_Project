@@ -8,7 +8,7 @@
 		public override Algorithm<uint> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
 			VerifyVallidity(intermidiate);
-			return new Random(Offset, Seed);
+			return new Random(Offset, intermidiate.ThreadPool, Seed);
 		}
 	}
 }

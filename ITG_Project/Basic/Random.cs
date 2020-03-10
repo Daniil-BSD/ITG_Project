@@ -7,7 +7,7 @@
 	public class Random : Algorithm<uint> {
 		private readonly int seed;
 
-		public Random(Coordinate offset, int seed = 0) : base(offset)
+		public Random(Coordinate offset, ITGThreadPool threadPool, int seed = 0) : base(offset, threadPool)
 		{
 			this.seed = seed;
 		}

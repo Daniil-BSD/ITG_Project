@@ -62,14 +62,6 @@ namespace ConsoleApp1 {
 
 			LandscapeBuilder landscapeBuilder = new LandscapeBuilder();
 
-			/*
-			landscapeBuilder["random"] = new RandomBuilder() { Seed = 6 };
-			landscapeBuilder["vec2"] = new Vec2FieldBuilder() { SourceID = "random", Magnitude = Constants.SQRT_2_OVER_2_FLOAT };
-			landscapeBuilder["perlin"] = new PerlinNoiseBuilder() { SourceID = "vec2", Scale = SCALE / 4 };
-			landscapeBuilder["mem1"] = new MemoryBuilder<float>() { SourceID = "perlin" };
-			landscapeBuilder["inerpol"] = new InterpolatorBuilder() { SourceID = "mem1", Scale = 4 };
-			*/
-
 			landscapeBuilder["random"] = new RandomBuilder() { Seed = 6 };
 			landscapeBuilder["vec2"] = new Vec2FieldBuilder() { SourceID = "random", Magnitude = Constants.SQRT_2_OVER_2_FLOAT };
 			landscapeBuilder["mem1"] = new MemoryBuilder<Vec2>() { SourceID = "vec2" };

@@ -7,7 +7,7 @@ namespace ITG_Core {
 
 		private readonly float factor;
 
-		public FloatShifter(Coordinate offset, Algorithm<float> source, float factor) : base(offset, source)
+		public FloatShifter(Coordinate offset, ITGThreadPool threadPool, Algorithm<float> source, float factor) : base(offset, threadPool, source)
 		{
 			this.factor = factor;
 		}

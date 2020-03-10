@@ -3,7 +3,7 @@
 	/// Defines the <see cref="MaxErrosionDelta" />
 	/// </summary>
 	public class MaxErrosionDelta : NeighbourBasedAgorithm<float, float> {
-		public MaxErrosionDelta(Coordinate offset, Algorithm<float> source) : base(offset, source)
+		public MaxErrosionDelta(Coordinate offset, ITGThreadPool threadPool, Algorithm<float> source) : base(offset, threadPool, source)
 		{
 		}
 

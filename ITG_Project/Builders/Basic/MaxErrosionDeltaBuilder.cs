@@ -5,7 +5,7 @@
 	public class MaxErrosionDeltaBuilder : LayerBuilder<float, float> {
 		public override Algorithm<float> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
-			return new MaxErrosionDelta(Offset, intermidiate.Get<float>(SourceID));
+			return new MaxErrosionDelta(Offset, intermidiate.ThreadPool, intermidiate.Get<float>(SourceID));
 		}
 	}
 }

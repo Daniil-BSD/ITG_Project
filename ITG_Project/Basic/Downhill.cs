@@ -3,7 +3,7 @@
 	/// Defines the <see cref="Downhill" />
 	/// </summary>
 	public class Downhill : Layer<Vec3, Vec3> {
-		public Downhill(Coordinate offset, Algorithm<Vec3> source) : base(offset, source)
+		public Downhill(Coordinate offset, ITGThreadPool threadPool, Algorithm<Vec3> source) : base(offset, threadPool, source)
 		{
 		}
 

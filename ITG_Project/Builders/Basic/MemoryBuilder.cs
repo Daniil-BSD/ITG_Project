@@ -7,7 +7,7 @@
 		public override Algorithm<T> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
 			VerifyVallidity(intermidiate);
-			return new Memory<T>(Offset, intermidiate.Get<T>(SourceID));
+			return new Memory<T>(Offset, intermidiate.ThreadPool, intermidiate.Get<T>(SourceID));
 		}
 	}
 }

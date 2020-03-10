@@ -10,7 +10,7 @@
 	public abstract class InterpolatableAlgorithm<T, S> : Layer<T, S> where T : struct where S : struct {
 		public readonly int scale;
 
-		public InterpolatableAlgorithm(Coordinate offset, Algorithm<S> source, int scale) : base(offset, source)
+		public InterpolatableAlgorithm(Coordinate offset, ITGThreadPool threadPool, Algorithm<S> source, int scale) : base(offset, threadPool, source)
 		{
 			this.scale = scale;
 		}
@@ -24,6 +24,13 @@
 		/// |	00			01	|
 		/// ---------------------
 		public abstract T Compute(in S val00, in S val01, in S val10, in S val11, in float x, in float y, in float offset);
+
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		protected override Chunk<T> ChunkPopulation(in Coordinate coordinate)
+		{
+			return SectorPopulation(new RequstSector(coordinate, 1, 1)).Chunks[0, 0];
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		protected override Sector<T> SectorPopulation(in RequstSector requstSector)

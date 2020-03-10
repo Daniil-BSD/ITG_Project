@@ -104,6 +104,10 @@
 
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static implicit operator CoordinateBasic(in Coordinate original) => new CoordinateBasic(original.x, original.y);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static implicit operator Coordinate(in CoordinateBasic original) => new Coordinate(original.x, original.y);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static implicit operator Vec2(in CoordinateBasic original) => new Vec2(original.x, original.y);
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static explicit operator CoordinateBasic(in Vec2 original) => new CoordinateBasic(original.x.ToIntegerConsistent(), original.y.ToIntegerConsistent());

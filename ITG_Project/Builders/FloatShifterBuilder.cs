@@ -7,7 +7,7 @@ namespace ITG_Core {
 		public float Factor { get; set; } = 1;
 		public override Algorithm<float> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
-			return new FloatShifter(Offset, intermidiate.Get<float>(SourceID), Factor);
+			return new FloatShifter(Offset, intermidiate.ThreadPool, intermidiate.Get<float>(SourceID), Factor);
 		}
 	}
 }

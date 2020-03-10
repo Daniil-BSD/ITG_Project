@@ -12,7 +12,7 @@
 
 		public readonly float retFactor;
 
-		public FloatAdder(Coordinate offset, List<Algorithm<float>> sources, float deltaFactor, float retFactor) : base(offset, sources)
+		public FloatAdder(Coordinate offset, ITGThreadPool threadPool, List<Algorithm<float>> sources, float deltaFactor, float retFactor) : base(offset, threadPool, sources)
 		{
 			this.deltaFactor = deltaFactor;
 			this.retFactor = retFactor;
@@ -27,14 +27,13 @@
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Chunk<float> AddUpChunks(ref Chunk<float> main, in Chunk<float> addition, in float factor = 1f)
+		public static void AddUpChunks(ref Chunk<float> main, in Chunk<float> addition, in float factor = 1f)
 		{
 			for ( int i = 0 ; i < Constants.CHUNK_SIZE ; i++ ) {
 				for ( int j = 0 ; j < Constants.CHUNK_SIZE ; j++ ) {
 					main[i, j] += addition[i, j] * factor;
 				}
 			}
-			return main;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

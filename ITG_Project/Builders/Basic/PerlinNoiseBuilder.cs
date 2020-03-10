@@ -6,7 +6,7 @@
 		public override Algorithm<float> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
 			VerifyVallidity(intermidiate);
-			return new PerlinNoise(Offset, intermidiate.Get<Vec2>(SourceID), Scale);
+			return new PerlinNoise(Offset, intermidiate.ThreadPool, intermidiate.Get<Vec2>(SourceID), Scale);
 		}
 	}
 }

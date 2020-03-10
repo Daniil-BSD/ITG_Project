@@ -10,9 +10,15 @@
 	public abstract class NeighbourBasedMerger<T, S1, S2> : NeighbourBasedAgorithm<T, S1> where T : struct where S1 : struct where S2 : struct {
 		protected readonly Algorithm<S2> source2;
 
-		public NeighbourBasedMerger(Coordinate offset, Algorithm<S1> source, Algorithm<S2> source2) : base(offset, source)
+		public NeighbourBasedMerger(Coordinate offset, ITGThreadPool threadPool, Algorithm<S1> source, Algorithm<S2> source2) : base(offset, threadPool, source)
 		{
 			this.source2 = source2;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		protected override Chunk<T> ChunkPopulation(in Coordinate coordinate)
+		{
+			return SectorPopulation(new RequstSector(coordinate, 1, 1)).Chunks[0, 0];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

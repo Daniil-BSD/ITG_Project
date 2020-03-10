@@ -7,12 +7,19 @@
 	/// <typeparam name="T"></typeparam>
 	/// <typeparam name="S"></typeparam>
 	public abstract class NeighbourBasedAgorithm<T, S> : Layer<T, S> where T : struct where S : struct {
-		public NeighbourBasedAgorithm(Coordinate offset, Algorithm<S> source) : base(offset, source)
+		public NeighbourBasedAgorithm(Coordinate offset, ITGThreadPool threadPool, Algorithm<S> source) : base(offset, threadPool, source)
 		{
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public abstract T Compute(Neighbourhood<S> n);
+
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		protected override Chunk<T> ChunkPopulation(in Coordinate coordinate)
+		{
+			return SectorPopulation(new RequstSector(coordinate, 1, 1)).Chunks[0, 0];
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		protected override Sector<T> SectorPopulation(in RequstSector requstSector)

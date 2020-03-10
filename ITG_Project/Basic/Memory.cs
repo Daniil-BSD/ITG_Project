@@ -12,7 +12,7 @@
 
 		private ConcurrentDictionary<Coordinate, Chunk<T>> memory;
 
-		public Memory(Coordinate offset, Algorithm<T> algorithm) : base(offset)
+		public Memory(Coordinate offset, ITGThreadPool threadPool, Algorithm<T> algorithm) : base(offset, threadPool)
 		{
 			memory = new ConcurrentDictionary<Coordinate, Chunk<T>>();
 			this.algorithm = algorithm;

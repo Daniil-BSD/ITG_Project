@@ -5,7 +5,7 @@
 	public class DownhillBuilder : LayerBuilder<Vec3, Vec3> {
 		public override Algorithm<Vec3> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
-			return new Downhill(Offset, intermidiate.Get<Vec3>(SourceID));
+			return new Downhill(Offset, intermidiate.ThreadPool, intermidiate.Get<Vec3>(SourceID));
 		}
 	}
 }

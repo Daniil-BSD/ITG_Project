@@ -5,7 +5,7 @@
 	/// Defines the <see cref="Interpolator" />
 	/// </summary>
 	public class Interpolator : InterpolatableAlgorithm<float, float> {
-		public Interpolator(Coordinate offset, Algorithm<float> algorithm, int scale) : base(offset, algorithm, scale)
+		public Interpolator(Coordinate offset, ITGThreadPool threadPool, Algorithm<float> algorithm, int scale) : base(offset, threadPool, algorithm, scale)
 		{
 		}
 

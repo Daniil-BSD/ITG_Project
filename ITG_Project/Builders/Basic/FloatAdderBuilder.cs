@@ -15,7 +15,7 @@
 			List<Algorithm<float>> algorithms = new List<Algorithm<float>>();
 			foreach ( var sourceID in Sources )
 				algorithms.Add(intermidiate.Get<float>(sourceID));
-			return new FloatAdder(Offset, algorithms, DeltaFactor, RetFactor);
+			return new FloatAdder(Offset, intermidiate.ThreadPool, algorithms, DeltaFactor, RetFactor);
 		}
 	}
 }

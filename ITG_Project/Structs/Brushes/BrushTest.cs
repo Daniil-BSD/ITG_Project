@@ -5,7 +5,7 @@
 	/// Defines the <see cref="BrushTest" />
 	/// </summary>
 	public class BrushTest : Algorithm<float> {
-		public BrushTest(Coordinate offset) : base(offset)
+		public BrushTest(Coordinate offset, ITGThreadPool threadPool) : base(offset, threadPool)
 		{
 		}
 
@@ -36,7 +36,7 @@
 		public override Algorithm<float> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
 			VerifyVallidity(intermidiate);
-			return new BrushTest(Offset);
+			return new BrushTest(Offset, intermidiate.ThreadPool);
 		}
 	}
 }

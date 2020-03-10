@@ -43,6 +43,7 @@
 		{
 			return new HydrolicErrosion(
 				offset: Offset,
+				threadPool: intermidiate.ThreadPool,
 				source: intermidiate.Get<float>(SourceID),
 				brushRadius: BrushRadius,
 				depositSpeed: DepositSpeed,

@@ -119,16 +119,24 @@
 			}
 			return ret + "";
 		}
-		public delegate Chunk<T> ForeachChunkDelegate<T1, T2>(ref Chunk<T1> chunk1, in Chunk<T2> chunk2, in float factor) where T1 : struct where T2 : struct;
-		public static Sector<T> ForeachChunk<T1, T2>(ForeachChunkDelegate<T1, T2> body, ref Sector<T1> sector1, in Sector<T2> sector2, in float factor = 1f) where T1 : struct where T2 : struct
+		public delegate void ForeachChunkDelegate<T1, T2, P>(ref Chunk<T1> main, in Chunk<T2> secondary, in P param) where T1 : struct where T2 : struct;
+		public static void ForeachChunk<T1, T2, P>(ForeachChunkDelegate<T1, T2, P> body, ref Sector<T1> sector1, in Sector<T2> sector2, in P param) where T1 : struct where T2 : struct
 		{
 			if ( !sector1.Equals(sector2) )
 				throw new ArgumentException("Mismatched sectors.");
-			Sector<T> ret = new Sector<T>(sector1, false);
-			for ( int i = 0 ; i < ret.width ; i++ )
-				for ( int j = 0 ; j < ret.height ; j++ )
-					ret.chunks[i, j] = body(ref sector1.chunks[i, j], sector2.chunks[i, j], factor);
-			return ret;
+			for ( int i = 0 ; i < sector1.width ; i++ )
+				for ( int j = 0 ; j < sector1.height ; j++ )
+					body(ref sector1.chunks[i, j], sector2.chunks[i, j], param);
+		}
+
+		public delegate void ChunkPopulationDelegate<S>(out Chunk<T> main, in Chunk<S> request, in Coordinate coordinate) where S : struct;
+		public static void ForeachChunk<S>(ChunkPopulationDelegate<S> ChunkPopulation, ref Sector<T> main, in Sector<S> request) where S : struct
+		{
+			if ( !main.Equals(request) )
+				throw new ArgumentException("Mismatched sectors.");
+			for ( int i = 0 ; i < main.width ; i++ )
+				for ( int j = 0 ; j < main.height ; j++ )
+					ChunkPopulation(out main.chunks[i, j], request.chunks[i, j], main.coordinate + new Coordinate(i, j));
 		}
 
 
@@ -184,6 +192,10 @@
 				return false;
 			}
 			var sec = (Sector<T>) obj;
+			return sec.Coordinate.Equals(coordinate) && sec.width == width && sec.height == height;
+		}
+		public bool Equals<S>(Sector<S> sec) where S : struct
+		{
 			return sec.Coordinate.Equals(coordinate) && sec.width == width && sec.height == height;
 		}
 
