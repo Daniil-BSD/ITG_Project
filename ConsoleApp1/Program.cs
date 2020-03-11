@@ -8,9 +8,11 @@ namespace ConsoleApp1 {
 	public class Program {
 		private static readonly bool BORDERS = false;
 
-		private static readonly int RADIUS = 24;//128;
+		private static readonly int RADIUS = 12;//128;
 
-		private static readonly int SCALE = 128;//512;
+		private static readonly int SCALE = 512;//512;
+
+		private static readonly int LAYERS = 12;
 
 		private static void Main(string[] args)
 		{
@@ -69,20 +71,20 @@ namespace ConsoleApp1 {
 			landscapeBuilder["mem2"] = new MemoryBuilder<float>() { SourceID = "perlin" };
 			landscapeBuilder["HE"] = new HydrolicErrosionBuilder() {
 				SourceID = "mem2",
-				OutputFactor = 1.125f,
+				OutputFactor = 0.75f,
 				LayeringPower = 5,
 				LayeringIndexes = new int[] { 0, 1, 4, 5, 10, 11, 14, 15, 16, 17, 20, 21, 26, 27, 30, 31 },
-				SedimentCapacityFactor = 4,
-				Gravity = 3f,
+				SedimentCapacityFactor = 6,
+				Gravity = 4f,
 				StepLength = 1f,
 				InitialSpeed = 0f,
-				BrushRadius = 2f,
-				InitialVolume = 10f,
+				BrushRadius = 3f,
+				InitialVolume = 20f,
 				EvaporationSpeed = 0.01f,
 				MaxIterations = 64,
-				Inertia = 0.5f,
+				Inertia = 0.000005f,
 				ErodeSpeed = 0.125f,
-				DepositSpeed = 0.125f,
+				DepositSpeed = 0.0675f,
 			};
 			landscapeBuilder["HEmem"] = new MemoryBuilder<float>() { SourceID = "HE" };
 			landscapeBuilder["HEinv"] = new FloatAdderBuilder() { Sources = new string[] { "HEmem" }, RetFactor = -1 };
@@ -139,7 +141,7 @@ namespace ConsoleApp1 {
 		{
 			for ( int i = 0 ; i < area.Width_units ; i++ ) {
 				for ( int j = 0 ; j < area.Height_units ; j++ ) {
-					int saturation = ((int) ((area[i, j]) * 255)).Modulo(256);
+					int saturation = ((int) ((area[i, j]) * 255) * LAYERS).Modulo(256);
 					if ( saturation < 0 || saturation > 255 ) {
 						errors++;
 						bmp.SetPixel(offset + i, j, Color.FromArgb(255, 0, 0));

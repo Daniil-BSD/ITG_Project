@@ -38,6 +38,8 @@
 
 		public int[] LayeringIndexes { get; set; } = new int[1] { 1 };
 
+		public float Friction { get; set; } = 0.25f;
+
 		//TODO
 		public override Algorithm<float> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
@@ -61,7 +63,8 @@
 				minVolume: MinVolume,
 				outputFactor: OutputFactor,
 				sedimentCapacityFactor: SedimentCapacityFactor,
-				stepLength: StepLength
+				stepLength: StepLength,
+				friction: Friction
 			);
 		}
 	}
