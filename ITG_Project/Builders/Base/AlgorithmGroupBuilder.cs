@@ -1,13 +1,14 @@
 ﻿namespace ITG_Core.Bulders {
-	using ITG_Core;
 	using System;
 	using System.Collections.Generic;
+	using ITG_Core;
 	using ITG_Core.Base;
 
 	/// <summary>
 	/// Defines the <see cref="IAlgorithmGroupBuilder" />
 	/// </summary>
 	public interface IAlgorithmGroupBuilder {
+
 		Type GetGenericType(string key);
 	}
 
@@ -16,6 +17,7 @@
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	public abstract class AlgorithmGroupBuilder<T> : IAlgorithmBuilder, IAlgorithmGroupBuilder where T : struct {
+
 		public Algorithm<float> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
 			string key = intermidiate.GetKeyFor(this);

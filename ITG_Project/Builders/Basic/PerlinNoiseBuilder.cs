@@ -1,10 +1,12 @@
 ﻿namespace ITG_Core.Basic.Builders {
-	using ITG_Core.Bulders;
 	using ITG_Core.Base;
+	using ITG_Core.Bulders;
+
 	/// <summary>
 	/// Defines the <see cref="PerlinNoiseBuilder" />
 	/// </summary>
 	public class PerlinNoiseBuilder : InterpolatableAlgorithmBuilder<float, Vec2> {
+
 		public override Algorithm<float> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
 			VerifyVallidity(intermidiate);

@@ -1,5 +1,4 @@
 ﻿namespace ITG_Core.Basic.Builders {
-
 	using ITG_Core.Base;
 	using ITG_Core.Bulders;
 
@@ -7,6 +6,7 @@
 	/// Defines the <see cref="HydrolicErrosionBuilder" />
 	/// </summary>
 	public class HydraulicErosionBuilder : LayerBuilder<float, float> {
+
 		public float BrushRadius { get; set; } = 1.25f;
 
 		public float CoverageFactor { get; set; } = 1f;

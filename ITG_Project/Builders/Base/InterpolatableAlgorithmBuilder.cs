@@ -7,6 +7,7 @@
 	/// <typeparam name="T"></typeparam>
 	/// <typeparam name="S"></typeparam>
 	public abstract class InterpolatableAlgorithmBuilder<T, S> : LayerBuilder<T, S> where T : struct where S : struct {
+
 		public int Scale { get; set; }
 
 		public override bool IsValid(LandscapeBuilder landscapeBuilder)

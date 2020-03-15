@@ -1,8 +1,10 @@
 ﻿namespace ITG_Core.Brushes {
+
 	/// <summary>
 	/// Defines the <see cref="CircularFloatBrushGroup" />
 	/// </summary>
 	public class CircularFloatBrushGroup : BrushGroup<CircularFloatBrush, float> {
+
 		public readonly CircularBrushMode mode;
 
 		public readonly float radius;

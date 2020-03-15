@@ -1,17 +1,20 @@
 ﻿namespace ITG_Core.Basic {
-	using ITG_Core.Base;
 	using System.Collections.Generic;
 	using System.Runtime.CompilerServices;
+	using ITG_Core.Base;
 
 	/// <summary>
 	/// Defines the <see cref="FloatAdder" />
 	/// </summary>
 	public class FloatAdder : MultiInputAlgorithm<float, float> {
+
 		public readonly float correctionFactor;
 
 		public readonly float deltaFactor;
 
 		public readonly float retFactor;
+
+		public override int StdSectorSize => 128;
 
 		public FloatAdder(Coordinate offset, ITGThreadPool threadPool, List<Algorithm<float>> sources, float deltaFactor, float retFactor) : base(offset, threadPool, sources)
 		{
@@ -25,16 +28,6 @@
 				factor *= deltaFactor;
 			}
 			correctionFactor = retFactor / theoreticalMax;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void AddUpChunks(ref Chunk<float> main, in Chunk<float> addition, in float factor = 1f)
-		{
-			for ( int i = 0 ; i < Constants.CHUNK_SIZE ; i++ ) {
-				for ( int j = 0 ; j < Constants.CHUNK_SIZE ; j++ ) {
-					main[i, j] += addition[i, j] * factor;
-				}
-			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -62,6 +55,16 @@
 				factor *= deltaFactor;
 			}
 			return sector;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void AddUpChunks(ref Chunk<float> main, in Chunk<float> addition, in float factor = 1f)
+		{
+			for ( int i = 0 ; i < Constants.CHUNK_SIZE ; i++ ) {
+				for ( int j = 0 ; j < Constants.CHUNK_SIZE ; j++ ) {
+					main[i, j] += addition[i, j] * factor;
+				}
+			}
 		}
 	}
 }

@@ -1,5 +1,4 @@
 namespace ConsoleApp1 {
-
 	using System;
 	using System.Diagnostics;
 	using System.Drawing;
@@ -8,22 +7,24 @@ namespace ConsoleApp1 {
 	using ITG_Core.Basic.Builders;
 
 	public class Program {
+
 		private static readonly bool BORDERS = false;
+
+		private static readonly float FACTOR = 2f;
+
 		private static readonly bool LAYERED = false;
 
-		private static readonly int RADIUS = 8;//128;
+		private static readonly int LAYERS = 1;
+
+		private static readonly int RADIUS = 16;//128;
 
 		private static readonly int SCALE = 512;//512;
 
-		private static readonly int LAYERS = 8;
-
-		private static readonly float FACTOR = 2.125f;
-
 		private static void Main()
 		{
-			var v1 = new Vec3(1);
+			/*Vec3 v1 = new Vec3(1);
 			Console.WriteLine("v1 is: " + v1);
-			var v2 = new Vec3(1, 2, 4);
+			Vec3 v2 = new Vec3(1, 2, 4);
 			Console.WriteLine("v2 is: " + v2);
 			Console.WriteLine("Dot(v1, v2): " + Vec3.Dot(v1, v2));
 			Console.WriteLine("Cross(v1, v2): " + Vec3.Cross(v1, v2));
@@ -53,18 +54,18 @@ namespace ConsoleApp1 {
 			Console.WriteLine("v1.CrossY: " + v1.CrossY);
 			Console.WriteLine("v1.CrossZ: " + v1.CrossZ);
 
-			var sectorFloat = new Sector<float>(new Coordinate(0, 0), 1, 1);
+			Sector<float> sectorFloat = new Sector<float>(new Coordinate(0, 0), 1, 1);
 			sectorFloat[0, 0] = 0;
 			sectorFloat[1, 0] = 50;
 
 			Console.WriteLine("should be 12.5: " + sectorFloat.ValueAt(0.5f, 0.5f));
-
-			var sw = new Stopwatch();
+			*/
+			Stopwatch sw = new Stopwatch();
 			Console.WriteLine("Stopwatch Started");
 			Console.WriteLine("Building...");
 			sw.Start();
 
-			var landscapeBuilder = new LandscapeBuilder();
+			LandscapeBuilder landscapeBuilder = new LandscapeBuilder();
 
 			landscapeBuilder["random"] = new RandomBuilder() { Seed = 6 };
 			landscapeBuilder["vec2"] = new Vec2FieldBuilder() { SourceID = "random", Magnitude = Constants.SQRT_2_OVER_2_FLOAT };
@@ -79,7 +80,7 @@ namespace ConsoleApp1 {
 				StepLength = 4,
 			};
 
-			landscapeBuilder["HEmem"] = new MemoryBuilder<float>() { SourceID = "HE" };
+			landscapeBuilder["HEmem"] = new MemoryBuilder<float>() { SourceID = "HE", };
 
 			landscapeBuilder["HEmblur"] = new BlurBuilder { SourceID = "HEmem", Force = 0.5f };
 
@@ -98,7 +99,7 @@ namespace ConsoleApp1 {
 			ITG_Core.Base.Algorithm<float> outputHE = landscape.GetAlgorithm<float>("HEmem");
 			ITG_Core.Base.Algorithm<float> outputdiff = landscape.GetAlgorithm<float>("HEdiff");
 
-			var request = new RequstSector(new Coordinate(-RADIUS, -RADIUS), RADIUS * 2, RADIUS * 2);
+			RequstSector request = new RequstSector(new Coordinate(-RADIUS, -RADIUS), RADIUS * 2, RADIUS * 2);
 			Sector<float> sectorHE = outputHE.GetSector(request);
 			Sector<float> sectorPerlin = outputPerlin.GetSector(request);
 			Sector<float> sectordiff = outputdiff.GetSector(request);
@@ -112,7 +113,7 @@ namespace ConsoleApp1 {
 
 			int width = request.Width_units * 3;
 			int height = request.Height_units;
-			var bmp = new Bitmap(width, height);
+			Bitmap bmp = new Bitmap(width, height);
 
 			Draw(sectorPerlin, bmp, 0, LAYERED);
 			Draw(sectorHE, bmp, request.Width_units, LAYERED);

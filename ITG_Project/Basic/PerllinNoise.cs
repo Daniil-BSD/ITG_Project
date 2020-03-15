@@ -1,11 +1,12 @@
 ﻿namespace ITG_Core.Basic {
-	using ITG_Core.Base;
 	using System.Runtime.CompilerServices;
+	using ITG_Core.Base;
 
 	/// <summary>
 	/// Defines the <see cref="PerlinNoise" />
 	/// </summary>
 	public class PerlinNoise : InterpolatableAlgorithm<float, Vec2> {
+
 		public PerlinNoise(Coordinate offset, ITGThreadPool threadPool, Algorithm<Vec2> algorithm, int scale) : base(offset, threadPool, algorithm, scale)
 		{
 		}
@@ -14,7 +15,7 @@
 		public static float Ease3(in float v)
 		{
 			float temp = v * v;
-			return (temp * 3 - temp * v * 2);
+			return ( temp * 3 - temp * v * 2 );
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -22,7 +23,7 @@
 		{
 			float p2 = v * v;
 			float p3 = p2 * v;
-			return (p3 * p2 * 6 - p2 * p2 * 15 + p3 * 10);
+			return ( p3 * p2 * 6 - p2 * p2 * 15 + p3 * 10 );
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -45,11 +46,11 @@
 
 			float easeX = Ease5(X);
 
-			float top = p01 + easeX * (p11 - p01);
-			float bottom = p00 + easeX * (p10 - p00);
+			float top = p01 + easeX * ( p11 - p01 );
+			float bottom = p00 + easeX * ( p10 - p00 );
 
-			float ret = ((bottom + Ease5(Y) * (top - bottom)) + 1) / 2;
-			return (Ease3(ret) - 0.5f) * 2f;
+			float ret = ( ( bottom + Ease5(Y) * ( top - bottom ) ) + 1 ) / 2;
+			return ( Ease3(ret) - 0.5f ) * 2f;
 		}
 	}
 }

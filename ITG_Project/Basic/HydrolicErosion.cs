@@ -1,28 +1,93 @@
 ﻿namespace ITG_Core.Basic {
-
-	using ITG_Core.Base;
-	using ITG_Core.Brushes;
 	using System;
 	using System.Runtime.CompilerServices;
+	using ITG_Core.Base;
+	using ITG_Core.Brushes;
 
 	/// <summary>
 	/// Defines the <see cref="HydrolicErrosion" />
 	/// </summary>
 	public class HydrolicErosion : Layer<float, float> {
+
 		private readonly CircularFloatBrushGroup depositBrushes;
+
 		private readonly CircularFloatBrushGroup errosionBrushes;
+
 		private readonly LayerungEnumeratorBuilder layeringEnumeratorBuilder;
+
 		private readonly int maxSectorSize;
+
+		public static readonly int BRUSHGROUP_SIZE = 4;
+
+		public readonly float brushRadius;
+
+		public readonly float depositSpeed;
+
+		public readonly float erodeSpeed;
+
+		public readonly int extraDropletRadius = 4;
+
+		public readonly int extraHeightmapRadius = 5;
+
+		public readonly float gravity;
+
+		public readonly float initialSpeed;
+
+		public readonly float initialVolume;
+
+		public readonly int maxIterations;
+
+		public readonly float minModification;
+
+		public readonly float minSedimentCapacity;
+
+		public readonly float outputFactor;
+
+		public readonly float sedimentCapacityFactor;
+
+		public readonly float speedStepFactor;
+
+		public readonly float stepLength;
+
+		public readonly float volumeStepFactor;
+
+		public override int StdSectorSize => maxSectorSize;
+
+		public HydrolicErosion(Coordinate offset, ITGThreadPool threadPool, Algorithm<float> source, float brushRadius, float depositSpeed, float erodeSpeed, float evaporationSpeed, float gravity, float initialSpeed, float initialVolume, int layeringPower, int maxIterations, float minSedimentCapacity, float outputFactor, float sedimentCapacityFactor, float stepLength, float friction, float minModification, int maxSectorSize, float coverageFactor) : base(offset, threadPool, source)
+		{
+			this.brushRadius = brushRadius;
+			this.depositSpeed = depositSpeed;
+			this.erodeSpeed = -erodeSpeed;
+			volumeStepFactor = 1f - evaporationSpeed;
+			speedStepFactor = 1f - friction;
+			this.gravity = gravity;
+			this.initialSpeed = initialSpeed;
+			this.initialVolume = initialVolume;
+			this.maxIterations = maxIterations;
+			this.minSedimentCapacity = minSedimentCapacity;
+			this.outputFactor = outputFactor;
+			this.sedimentCapacityFactor = sedimentCapacityFactor;
+			this.stepLength = stepLength;
+			this.minModification = minModification;
+			this.maxSectorSize = maxSectorSize;
+
+			errosionBrushes = new CircularFloatBrushGroup(brushRadius, CircularBrushMode.Quadratic_EaseOut, Constants.AROUND_0_POSITIVE, BRUSHGROUP_SIZE);
+			depositBrushes = new CircularFloatBrushGroup(brushRadius, CircularBrushMode.Quadratic_Smooth, Constants.AROUND_0_POSITIVE, BRUSHGROUP_SIZE);
+			layeringEnumeratorBuilder = new LayerungEnumeratorBuilder(layeringPower, coverageFactor);
+
+			extraDropletRadius = (int)( ( brushRadius + stepLength * maxIterations ) / ( Constants.CHUNK_SIZE ) );
+			extraHeightmapRadius = 1 + (int)( extraDropletRadius * 1.125f );
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		protected override Sector<float> SectorPopulation(in RequstSector requstSector)
 		{
-			var outgoingRequestSector = requstSector.GetExpandedCopy(extraHeightmapRadius);
-			var heightmap = source.GetSector(outgoingRequestSector).GetDeepCopy();
+			RequstSector outgoingRequestSector = requstSector.GetExpandedCopy(extraHeightmapRadius);
+			Sector<float> heightmap = source.GetSector(outgoingRequestSector).GetDeepCopy();
 
-			var enumeratorRequestSector = requstSector.GetExpandedCopy(extraDropletRadius);
-			var enumeratorOffset = new Vec2(( extraHeightmapRadius - extraDropletRadius ) * Constants.CHUNK_SIZE);
-			var enumerator = layeringEnumeratorBuilder.BuildEnumerator(enumeratorRequestSector.Width_units, enumeratorRequestSector.Height_units);
+			RequstSector enumeratorRequestSector = requstSector.GetExpandedCopy(extraDropletRadius);
+			Vec2 enumeratorOffset = new Vec2(( extraHeightmapRadius - extraDropletRadius ) * Constants.CHUNK_SIZE);
+			LayeringEnumerator enumerator = layeringEnumeratorBuilder.BuildEnumerator(enumeratorRequestSector.Width_units, enumeratorRequestSector.Height_units);
 
 			int margin = (int)stepLength + (int)brushRadius + 2;
 			int margin_right = heightmap.Width_units - margin;
@@ -65,7 +130,7 @@
 					if ( dir.MagnitudeSquared <= Constants.AROUND_0_POSITIVE ) {
 						dir = gradients * Constants.AROUND_0_POSITIVE;
 					}
-					var dirNormalized = dir;
+					Vec2 dirNormalized = dir;
 					dirNormalized.Magnitude = stepLength;
 
 					positionNext = position + dirNormalized;
@@ -93,8 +158,8 @@
 						float amountToDeposit = ( deltaHeight > 0 ) ? MathExt.Min(deltaHeight, sediment) : MathExt.Max(sedimentMinusSedimentCapacity * depositSpeed, ( sedimentCapacity <= minSedimentCapacityPlusMinModificatioon ) ? minModification : 0);
 						if ( amountToDeposit >= minModification ) {
 							sediment -= MathExt.Min(amountToDeposit, sediment);
-							var depositBrush = depositBrushes.GetBrush(position);
-							var depositBrushSamples = depositBrush.Touples;
+							CircularFloatBrush depositBrush = depositBrushes.GetBrush(position);
+							BrushTouple<float>[] depositBrushSamples = depositBrush.Touples;
 							float depositHeight = ( amountToDeposit / depositBrush.sum ) * outputFactor;
 
 							for ( int i = 0 ; i < depositBrushSamples.Length ; i++ ) {
@@ -109,8 +174,8 @@
 						float amountToErode = sedimentMinusSedimentCapacity * erodeSpeed;
 
 						if ( amountToErode >= minModification ) {
-							var errosionBrush = errosionBrushes.GetBrush(position);
-							var errosionBrushSamples = errosionBrush.Touples;
+							CircularFloatBrush errosionBrush = errosionBrushes.GetBrush(position);
+							BrushTouple<float>[] errosionBrushSamples = errosionBrush.Touples;
 							float errosionHeight = MathExt.Min(( amountToErode / errosionBrush.sum ), -deltaHeight) * outputFactor;
 
 							for ( int i = 0 ; i < errosionBrushSamples.Length ; i++ ) {
@@ -128,61 +193,6 @@
 				}
 			}
 			return heightmap.GetCopy(extraHeightmapRadius);
-		}
-
-		public static readonly int BRUSHGROUP_SIZE = 4;
-
-		public readonly float brushRadius;
-		public readonly float depositSpeed;
-		public readonly float erodeSpeed;
-		public readonly int extraDropletRadius = 4;
-		public readonly int extraHeightmapRadius = 5;
-		public readonly float gravity;
-
-		public readonly float initialSpeed;
-
-		public readonly float initialVolume;
-
-		public readonly int maxIterations;
-
-		public readonly float minModification;
-		public readonly float minSedimentCapacity;
-
-		public readonly float outputFactor;
-
-		public readonly float sedimentCapacityFactor;
-
-		public readonly float speedStepFactor;
-
-		public readonly float stepLength;
-
-		public readonly float volumeStepFactor;
-		public override int StdSectorSize => maxSectorSize;
-
-		public HydrolicErosion(Coordinate offset, ITGThreadPool threadPool, Algorithm<float> source, float brushRadius, float depositSpeed, float erodeSpeed, float evaporationSpeed, float gravity, float initialSpeed, float initialVolume, int layeringPower, int maxIterations, float minSedimentCapacity, float outputFactor, float sedimentCapacityFactor, float stepLength, float friction, float minModification, int maxSectorSize, float coverageFactor) : base(offset, threadPool, source)
-		{
-			this.brushRadius = brushRadius;
-			this.depositSpeed = depositSpeed;
-			this.erodeSpeed = -erodeSpeed;
-			this.volumeStepFactor = 1f - evaporationSpeed;
-			this.speedStepFactor = 1f - friction;
-			this.gravity = gravity;
-			this.initialSpeed = initialSpeed;
-			this.initialVolume = initialVolume;
-			this.maxIterations = maxIterations;
-			this.minSedimentCapacity = minSedimentCapacity;
-			this.outputFactor = outputFactor;
-			this.sedimentCapacityFactor = sedimentCapacityFactor;
-			this.stepLength = stepLength;
-			this.minModification = minModification;
-			this.maxSectorSize = maxSectorSize;
-
-			errosionBrushes = new CircularFloatBrushGroup(brushRadius, CircularBrushMode.Quadratic_EaseOut, Constants.AROUND_0_POSITIVE, BRUSHGROUP_SIZE);
-			depositBrushes = new CircularFloatBrushGroup(brushRadius, CircularBrushMode.Quadratic_Smooth, Constants.AROUND_0_POSITIVE, BRUSHGROUP_SIZE);
-			layeringEnumeratorBuilder = new LayerungEnumeratorBuilder(layeringPower, coverageFactor);
-
-			extraDropletRadius = (int)( ( brushRadius + stepLength * maxIterations ) / ( Constants.CHUNK_SIZE ) );
-			extraHeightmapRadius = 1 + (int)( extraDropletRadius * 1.125f );
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

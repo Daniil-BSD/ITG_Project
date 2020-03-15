@@ -1,11 +1,12 @@
 ﻿namespace ITG_Core.Basic {
-	using ITG_Core.Base;
 	using System.Runtime.CompilerServices;
+	using ITG_Core.Base;
 
 	/// <summary>
 	/// Defines the <see cref="Vec2Field" />
 	/// </summary>
 	public class Vec2Field : Layer<Vec2, uint> {
+
 		private readonly float magnitude;
 
 		public Vec2Field(Coordinate offset, ITGThreadPool threadPool, Algorithm<uint> algorithm, float magnitude) : base(offset, threadPool, algorithm)

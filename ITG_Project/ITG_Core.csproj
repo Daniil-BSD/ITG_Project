@@ -10,4 +10,8 @@
     <Optimize>true</Optimize>
     <NoWarn>1701;1702;CS0659</NoWarn>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
 </Project>

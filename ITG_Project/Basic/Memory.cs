@@ -1,19 +1,20 @@
 ﻿namespace ITG_Core.Basic {
-	using ITG_Core.Base;
 	using System;
 	using System.Collections.Concurrent;
 	using System.Runtime.CompilerServices;
+	using ITG_Core.Base;
 
 	/// <summary>
 	/// Defines the <see cref="Memory{T}" />
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	public class Memory<T> : Algorithm<T> where T : struct {
+
 		private readonly Algorithm<T> algorithm;
 
 		private ConcurrentDictionary<Coordinate, Chunk<T>> memory;
 
-		public override int StdSectorSize => algorithm.StdSectorSize;
+		public override int StdSectorSize => int.MaxValue;
 
 		public Memory(Coordinate offset, ITGThreadPool threadPool, Algorithm<T> algorithm) : base(offset, threadPool)
 		{
@@ -21,15 +22,60 @@
 			this.algorithm = algorithm;
 		}
 
-		public void Drop()
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private void RemoveBottomRowsFromRequest(ref RequstSector requstSector)
 		{
-			memory.Clear();
+			while ( requstSector.height > 0 ) {
+				CoordinateBasic cell = requstSector.coordinate;
+				for ( int i = 0 ; i < requstSector.width ; i++ ) {
+					if ( !memory.ContainsKey(cell) )
+						return;
+					cell.x++;
+				}
+				requstSector = new RequstSector(requstSector.coordinate + new Coordinate(0, 1), height: requstSector.height - 1, width: requstSector.width);
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void PushData(in Chunk<T> chunk, in Coordinate coordinate)
+		private void RemoveLeftColumnsFromRequest(ref RequstSector requstSector)
 		{
-			TrySavingSector(coordinate, chunk);
+			while ( requstSector.width > 0 ) {
+				CoordinateBasic cell = requstSector.coordinate;
+				for ( int i = 0 ; i < requstSector.height ; i++ ) {
+					if ( !memory.ContainsKey(cell) )
+						return;
+					cell.y++;
+				}
+				requstSector = new RequstSector(requstSector.coordinate + new Coordinate(1, 0), height: requstSector.height, width: requstSector.width - 1);
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private void RemoveRightColumnsFromRequest(ref RequstSector requstSector)
+		{
+			while ( requstSector.width > 0 ) {
+				CoordinateBasic cell = requstSector.coordinate + new Coordinate(requstSector.width - 1, 0);
+				for ( int i = 0 ; i < requstSector.height ; i++ ) {
+					if ( !memory.ContainsKey(cell) )
+						return;
+					cell.y++;
+				}
+				requstSector = new RequstSector(requstSector.coordinate, height: requstSector.height, width: requstSector.width - 1);
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private void RemoveTopRowsFromRequest(ref RequstSector requstSector)
+		{
+			while ( requstSector.height > 0 ) {
+				CoordinateBasic cell = requstSector.coordinate + new Coordinate(0, requstSector.height - 1);
+				for ( int i = 0 ; i < requstSector.width ; i++ ) {
+					if ( !memory.ContainsKey(cell) )
+						return;
+					cell.x++;
+				}
+				requstSector = new RequstSector(requstSector.coordinate, height: requstSector.height - 1, width: requstSector.width);
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -42,24 +88,24 @@
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		protected override Sector<T> SectorPopulation(in RequstSector requstSector)
 		{
-			bool noMissingChunks = true;
-			bool noPresentChunks = true;
+			int missingChunks = 0;
+			int presentChunks = 0;
 			Sector<T> sector = new Sector<T>(requstSector);
 			for ( int i = 0 ; i < sector.width ; i++ ) {
 				for ( int j = 0 ; j < sector.height ; j++ ) {
 					Coordinate coordinate = new Coordinate(i, j) + sector.Coordinate;
 					if ( memory.ContainsKey(coordinate) ) {
 						sector.Chunks[i, j] = memory[coordinate];
-						noPresentChunks = false;
+						presentChunks++;
 					} else {
 						sector.Chunks[i, j] = null;
-						noMissingChunks = false;
+						missingChunks++;
 					}
 				}
 			}
-			if ( noMissingChunks ) {
+			if ( missingChunks == 0 ) {
 				return sector;
-			} else if ( noPresentChunks ) {
+			} else if ( presentChunks == 0 ) {
 				sector = algorithm.GetSector(sector);
 				for ( int i = 0 ; i < sector.width ; i++ ) {
 					for ( int j = 0 ; j < sector.height ; j++ ) {
@@ -68,15 +114,25 @@
 					}
 				}
 			} else {
-				//some are missing - solved individually
-				for ( int i = 0 ; i < sector.width ; i++ ) {
-					for ( int j = 0 ; j < sector.height ; j++ ) {
-						if ( sector.Chunks[i, j] == null ) {
-							Coordinate coordinate = new Coordinate(i, j) + sector.Coordinate;
-							sector.Chunks[i, j] = ChunkPopulation(coordinate);
-						}
+				//some are missing - solved by requesting the whole thing individually
+				RequstSector outgoingRequstSector = requstSector;
+
+				if ( missingChunks <= presentChunks ) {
+					RemoveTopRowsFromRequest(ref outgoingRequstSector);
+					RemoveRightColumnsFromRequest(ref outgoingRequstSector);
+					RemoveBottomRowsFromRequest(ref outgoingRequstSector);
+					RemoveLeftColumnsFromRequest(ref outgoingRequstSector);
+				}
+
+				//Console.WriteLine(outgoingRequstSector.width * outgoingRequstSector.height + "\t\t" + requstSector.width * requstSector.height);
+				Sector<T> requestedSector = algorithm.GetSector(outgoingRequstSector);
+				for ( int i = 0 ; i < requestedSector.width ; i++ ) {
+					for ( int j = 0 ; j < requestedSector.height ; j++ ) {
+						Coordinate coordinate = new Coordinate(i, j) + requestedSector.Coordinate;
+						TrySavingSector(coordinate, requestedSector.Chunks[i, j]);
 					}
 				}
+				return SectorPopulation(requstSector);
 			}
 			return sector;
 		}
@@ -88,6 +144,17 @@
 				if ( !memory[key].Equals(value) )
 					throw new PushConflictException<T>(memory[key], value);
 		}
+
+		public void Drop()
+		{
+			memory.Clear();
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void PushData(in Chunk<T> chunk, in Coordinate coordinate)
+		{
+			TrySavingSector(coordinate, chunk);
+		}
 	}
 
 	/// <summary>
@@ -95,6 +162,7 @@
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	public class PushConflictException<T> : Exception where T : struct {
+
 		public readonly Chunk<T> inMemory;
 
 		public readonly Chunk<T> pushed;

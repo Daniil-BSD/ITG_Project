@@ -1,13 +1,14 @@
 ﻿namespace ITG_Core.Basic.Builders {
-	using ITG_Core.Base;
-	using ITG_Core.Bulders;
 	using System;
 	using System.Collections.Generic;
+	using ITG_Core.Base;
+	using ITG_Core.Bulders;
 
 	/// <summary>
 	/// Defines the <see cref="ParlinGroupBuiler" />
 	/// </summary>
 	public class ParlinGroupBuiler : AlgorithmGroupBuilder<float> {
+
 		public static readonly string IDENTIFIER_INTERPOLATOR = "interpol";
 
 		public static readonly string IDENTIFIER_PERLIN = "perlin";
@@ -34,6 +35,11 @@
 
 		public string Vec2FieldID { get; set; }
 
+		private static int RoundTI(in float f)
+		{
+			return (int)Math.Round(f);
+		}
+
 		public override Dictionary<string, IAlgorithm> BuildGeneric(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
 			Dictionary<string, IAlgorithm> ret = new Dictionary<string, IAlgorithm>();
@@ -50,14 +56,14 @@
 					int perlinScale = scale / interpolatorScacle;
 					if ( interpolatorScacle == 1 ) {
 						string ref_key = IDENTIFIER_PERLIN + sources.Count;
-						var perlin = new PerlinNoise(OffsetGlobal, threadPool, vec2Source, perlinScale);
+						PerlinNoise perlin = new PerlinNoise(OffsetGlobal, threadPool, vec2Source, perlinScale);
 						ret.Add(ref_key, perlin);
 						sources.Insert(0, perlin);
 					} else {
 						string ref_key_perlin = IDENTIFIER_PERLIN + sources.Count;
 						string ref_key_interpol = IDENTIFIER_INTERPOLATOR + sources.Count;
-						var perlin = new PerlinNoise(OffsetGlobal, threadPool, vec2Source, perlinScale);
-						var interpol = new Interpolator(Coordinate.Origin, threadPool, perlin, interpolatorScacle);
+						PerlinNoise perlin = new PerlinNoise(OffsetGlobal, threadPool, vec2Source, perlinScale);
+						Interpolator interpol = new Interpolator(Coordinate.Origin, threadPool, perlin, interpolatorScacle);
 						ret.Add(ref_key_perlin, perlin);
 						ret.Add(ref_key_interpol, interpol);
 						sources.Insert(0, interpol);
@@ -73,14 +79,14 @@
 					int perlinScale = scale / interpolatorScacle;
 					if ( interpolatorScacle == 1 ) {
 						string ref_key = IDENTIFIER_PERLIN + sources.Count;
-						var perlin = new PerlinNoise(OffsetGlobal, threadPool, vec2Source, perlinScale);
+						PerlinNoise perlin = new PerlinNoise(OffsetGlobal, threadPool, vec2Source, perlinScale);
 						ret.Add(ref_key, perlin);
 						sources.Add(perlin);
 					} else {
 						string ref_key_perlin = IDENTIFIER_PERLIN + sources.Count;
 						string ref_key_interpol = IDENTIFIER_INTERPOLATOR + sources.Count;
-						var perlin = new PerlinNoise(OffsetGlobal, threadPool, vec2Source, perlinScale);
-						var interpol = new Interpolator(Coordinate.Origin, threadPool, perlin, interpolatorScacle);
+						PerlinNoise perlin = new PerlinNoise(OffsetGlobal, threadPool, vec2Source, perlinScale);
+						Interpolator interpol = new Interpolator(Coordinate.Origin, threadPool, perlin, interpolatorScacle);
 						ret.Add(ref_key_perlin, perlin);
 						ret.Add(ref_key_interpol, interpol);
 						sources.Add(interpol);
@@ -151,11 +157,6 @@
 			else if ( !landscapeBuilder.TypeOf(Vec2FieldID).IsSubclassOf(typeof(AlgorithmBuilder<Vec2>)) )
 				messages.Add("Source \"" + Vec2FieldID + "\" is of uncompattible type.");
 			return messages;
-		}
-
-		private static int RoundTI(in float f)
-		{
-			return (int) Math.Round(f);
 		}
 	}
 }

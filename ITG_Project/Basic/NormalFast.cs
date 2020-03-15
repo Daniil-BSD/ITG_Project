@@ -1,12 +1,12 @@
 ﻿namespace ITG_Core.Basic {
-	using ITG_Core.Base;
-
 	using System.Runtime.CompilerServices;
+	using ITG_Core.Base;
 
 	/// <summary>
 	/// Defines the <see cref="NormalFast" />
 	/// </summary>
 	public unsafe class NormalFast : NeighbourBasedAgorithm<Vec3, float> {
+
 		private readonly float gridStepOverHeightRange;
 
 		public NormalFast(Coordinate offset, ITGThreadPool threadPool, Algorithm<float> algorithm, float gridStepOverHeightRange) : base(offset, threadPool, algorithm)

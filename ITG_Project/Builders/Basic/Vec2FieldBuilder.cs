@@ -1,10 +1,12 @@
 ﻿namespace ITG_Core.Basic.Builders {
-	using ITG_Core.Bulders;
 	using ITG_Core.Base;
+	using ITG_Core.Bulders;
+
 	/// <summary>
 	/// Defines the <see cref="Vec2FieldBuilder" />
 	/// </summary>
 	public class Vec2FieldBuilder : LayerBuilder<Vec2, uint> {
+
 		public float Magnitude { get; set; } = Constants.SQRT_2_OVER_2_FLOAT;
 
 		public override Algorithm<Vec2> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)

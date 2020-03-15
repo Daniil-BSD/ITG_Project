@@ -1,5 +1,4 @@
 ﻿namespace ITG_Core.Bulders {
-
 	using System.Collections.Generic;
 
 	/// <summary>
@@ -8,6 +7,7 @@
 	/// <typeparam name="T"></typeparam>
 	/// <typeparam name="S"></typeparam>
 	public abstract class LayerBuilder<T, S> : AlgorithmBuilder<T> where T : struct where S : struct {
+
 		public string SourceID { get; set; }
 
 		public override bool IsValid(LandscapeBuilder landscapeBuilder)

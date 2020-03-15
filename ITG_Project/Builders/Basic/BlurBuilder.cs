@@ -1,12 +1,12 @@
 ﻿namespace ITG_Core.Basic.Builders {
-
-	using ITG_Core.Bulders;
 	using ITG_Core.Base;
+	using ITG_Core.Bulders;
 
 	/// <summary>
 	/// Defines the <see cref="BlurBuilder" />
 	/// </summary>
 	public class BlurBuilder : NeighbourBasedAgorithmBuilder<float, float> {
+
 		public float Force { get; set; } = 1;
 
 		public override Algorithm<float> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)

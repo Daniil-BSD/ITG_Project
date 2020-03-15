@@ -1,12 +1,13 @@
 ﻿namespace ITG_Core.Bulders {
 	using System;
-	using ITG_Core.Base;
 	using System.Collections.Generic;
+	using ITG_Core.Base;
 
 	/// <summary>
 	/// Defines the <see cref="IAlgorithmBuilder" />
 	/// </summary>
 	public interface IAlgorithmBuilder {
+
 		Dictionary<string, IAlgorithm> BuildGeneric(LandscapeBuilder.LandscapeIntermidiate landscapeIntermidiate);
 
 		Type GetGenericType();
@@ -21,13 +22,14 @@
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	public abstract class AlgorithmBuilder<T> : IAlgorithmBuilder where T : struct {
+
 		public Coordinate Offset { get; set; } = new Coordinate(0, 0);
 
 		public abstract Algorithm<T> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate);
 
 		public Dictionary<string, IAlgorithm> BuildGeneric(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
-			var ret = new Dictionary<string, IAlgorithm> {
+			Dictionary<string, IAlgorithm> ret = new Dictionary<string, IAlgorithm> {
 				{ LandscapeBuilder.MAIN_ALGORITHM_KEY, Build(intermidiate) }
 			};
 			return ret;

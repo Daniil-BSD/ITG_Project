@@ -7,24 +7,23 @@
 	/// Defines the <see cref="LayeringEnumerator" />
 	/// </summary>
 	public class LayeringEnumerator : IEnumerator<CoordinateBasic> {
+
 		private readonly IEnumerator<CoordinateBasic>[] enumerators;
 
 		private int currentIndex;
 
 		private bool reset;
 
-		public CoordinateBasic Current {
+		public CoordinateBasic Current
+		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get {
-				return enumerators[currentIndex].Current;
-			}
+			get => enumerators[currentIndex].Current;
 		}
 
-		object IEnumerator.Current {
+		object IEnumerator.Current
+		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get {
-				return Current;
-			}
+			get => Current;
 		}
 
 		public LayeringEnumerator(IEnumerator<CoordinateBasic>[] enumerators)
@@ -67,6 +66,13 @@
 	/// Defines the <see cref="LayeringEnumeratorBasic" />
 	/// </summary>
 	public class LayeringEnumeratorBasic : IEnumerator<CoordinateBasic> {
+
+		private CoordinateBasic current;
+
+		private LayeringEnumeratorBasicBuilder parent;
+
+		private int rowIndex;
+
 		public readonly bool checkered;
 
 		public readonly int height;
@@ -81,26 +87,16 @@
 
 		public readonly int width;
 
-		private CoordinateBasic current;
-
-		private LayeringEnumeratorBasicBuilder parent;
-
-		private int rowIndex;
-
-		public CoordinateBasic Current {
-
+		public CoordinateBasic Current
+		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get {
-				return current;
-			}
+			get => current;
 		}
 
-		object IEnumerator.Current {
-
+		object IEnumerator.Current
+		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get {
-				return Current;
-			}
+			get => Current;
 		}
 
 		public LayeringEnumeratorBasic(LayeringEnumeratorBasicBuilder parent, int width, int height)
@@ -108,7 +104,7 @@
 			this.parent = parent;
 			this.width = width;
 			this.height = height;
-			rowIndex = (include00) ? -1 : 0;
+			rowIndex = ( include00 ) ? -1 : 0;
 			current = new CoordinateBasic(width, parent.offsetY - parent.stepY);
 
 			offsetX = parent.offsetX;
@@ -125,11 +121,11 @@
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool MoveNext()
 		{
-			if ( (current.x += stepX) >= width ) {
+			if ( ( current.x += stepX ) >= width ) {
 				current.x = offsetX;
 				if ( checkered )
-					current.x += (++rowIndex % 2 == 0) ? stepY : 0;
-				if ( (current.y += stepY) >= height ) {
+					current.x += ( ++rowIndex % 2 == 0 ) ? stepY : 0;
+				if ( ( current.y += stepY ) >= height ) {
 					return false;
 				}
 			}
@@ -148,6 +144,7 @@
 	/// Defines the <see cref="LayeringEnumeratorBasicBuilder" />
 	/// </summary>
 	public class LayeringEnumeratorBasicBuilder {
+
 		public readonly bool checkered;
 
 		public readonly bool include00;
@@ -168,13 +165,13 @@
 		{
 			this.layeringPower = layeringPower;
 			this.layeringIndex = layeringIndex % layeringPower;
-			int layers = 1 << (layeringPower);
+			int layers = 1 << ( layeringPower );
 			checkered = layeringPower % 2 == 1;
 			include00 = layeringIndex % 2 == 0;
-			stepY = 1 << (layeringPower / 2);
-			stepX = (checkered) ? stepY + stepY : stepY;
-			offsetX = ((checkered) ? layeringIndex / 2 : layeringIndex) % stepY;
-			offsetY = ((checkered) ? layeringIndex / 2 : layeringIndex) / stepY;
+			stepY = 1 << ( layeringPower / 2 );
+			stepX = ( checkered ) ? stepY + stepY : stepY;
+			offsetX = ( ( checkered ) ? layeringIndex / 2 : layeringIndex ) % stepY;
+			offsetY = ( ( checkered ) ? layeringIndex / 2 : layeringIndex ) / stepY;
 		}
 
 		public virtual IEnumerator<CoordinateBasic> GetEnumerator(in int width, in int height)
@@ -187,11 +184,12 @@
 	/// Defines the <see cref="LayeringEnumeratorBuilder" />
 	/// </summary>
 	public class LayeringEnumeratorBuilder {
+
 		private readonly LayeringEnumeratorBasicBuilder[] basicBuilders;
 
 		public LayeringEnumeratorBuilder(in int layeringPower, in int layeringIndex)
 		{
-			this.basicBuilders = new LayeringEnumeratorBasicBuilder[1] { new LayeringEnumeratorBasicBuilder(layeringPower, layeringIndex) };
+			basicBuilders = new LayeringEnumeratorBasicBuilder[1] { new LayeringEnumeratorBasicBuilder(layeringPower, layeringIndex) };
 		}
 
 		public LayeringEnumeratorBuilder(in int layeringPower, in int[] layeringIndexes)
@@ -207,7 +205,7 @@
 			if ( basicBuilders.Length == 1 )
 				return basicBuilders[0].GetEnumerator(width, height);
 
-			var enumerators = new IEnumerator<CoordinateBasic>[basicBuilders.Length];
+			IEnumerator<CoordinateBasic>[] enumerators = new IEnumerator<CoordinateBasic>[basicBuilders.Length];
 			for ( int i = 0 ; i < basicBuilders.Length ; i++ ) {
 				enumerators[i] = basicBuilders[i].GetEnumerator(width, height);
 			}

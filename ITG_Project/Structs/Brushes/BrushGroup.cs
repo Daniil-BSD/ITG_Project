@@ -7,18 +7,21 @@
 	/// <typeparam name="B"></typeparam>
 	/// <typeparam name="T"></typeparam>
 	public abstract class BrushGroup<B, T> where B : Brush<T> where T : struct {
+
+		private B[,] brushes;
+
 		public readonly int size;
 
 		public readonly float step;
 
-		private B[,] brushes;
-
 		public BrushGroup(int size)
 		{
 			this.size = size;
-			this.step = (1f / size);
+			step = ( 1f / size );
 			brushes = new B[size, size];
 		}
+
+		protected abstract B NewBrush(in float offsextX, in float offsetY);
 
 		public void Drop()
 		{
@@ -30,8 +33,8 @@
 			float lx = x.Modulo(1);
 			float ly = y.Modulo(1);
 
-			int indexX = (int) (lx * size);
-			int indexY = (int) (ly * size);
+			int indexX = (int)( lx * size );
+			int indexY = (int)( ly * size );
 			if ( brushes[indexX, indexY] == null )
 				brushes[indexX, indexY] = NewBrush(lx, ly);
 			return brushes[indexX, indexY];
@@ -41,7 +44,5 @@
 		{
 			return GetBrush(vec2.x, vec2.y);
 		}
-
-		protected abstract B NewBrush(in float offsextX, in float offsetY);
 	}
 }

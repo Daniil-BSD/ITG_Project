@@ -7,6 +7,7 @@
 	/// <typeparam name="T"></typeparam>
 	/// <typeparam name="S"></typeparam>
 	public abstract class MultiInputAlgorithm<T, S> : Algorithm<T> where T : struct where S : struct {
+
 		public readonly Algorithm<S>[] sources;
 
 		public MultiInputAlgorithm(Coordinate offset, ITGThreadPool threadPool, List<Algorithm<S>> sources) : base(offset, threadPool)

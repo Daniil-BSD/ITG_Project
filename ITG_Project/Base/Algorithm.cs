@@ -6,6 +6,7 @@
 	/// Defines the <see cref="IAlgorithm" />
 	/// </summary>
 	public interface IAlgorithm {
+
 		Type GetGenericType();
 	}
 
@@ -14,21 +15,40 @@
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	abstract public class Algorithm<T> : IAlgorithm where T : struct {
+
 		public readonly Coordinate offset;
+
 		public readonly ITGThreadPool threadPool;
 
 		// overridable constant for children
-		public virtual int StdSectorSize {
+		public virtual int StdSectorSize
+		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get {
-				return Constants.DEFAULT_SECTOR_SIZE;
-			}
+			get => Constants.DEFAULT_SECTOR_SIZE;
 		}
 
 		public Algorithm(Coordinate offset, ITGThreadPool threadPool)
 		{
 			this.offset = offset;
 			this.threadPool = threadPool;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		protected virtual Chunk<T> ChunkPopulation(in Coordinate coordinate)
+		{
+			return SectorPopulation(new RequstSector(coordinate, 1, 1)).Chunks[0, 0];
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		protected virtual Sector<T> SectorPopulation(in RequstSector requstSector)
+		{
+			Sector<T> sector = new Sector<T>(requstSector, false);
+			for ( int i = 0 ; i < sector.width ; i++ ) {
+				for ( int j = 0 ; j < sector.height ; j++ ) {
+					sector.Chunks[i, j] = ChunkPopulation(new Coordinate(i, j) + sector.Coordinate);
+				}
+			}
+			return sector;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -60,7 +80,7 @@
 						width = requstSector.width - stdSectorSize * i;
 					if ( j == subsectorsY - 1 )
 						height = requstSector.height - stdSectorSize * j;
-					var subsectorsRequest = new RequstSector(new Coordinate(i * stdSectorSize, j * stdSectorSize) + requstSector.coordinate + offset, width, height);
+					RequstSector subsectorsRequest = new RequstSector(new Coordinate(i * stdSectorSize, j * stdSectorSize) + requstSector.coordinate + offset, width, height);
 
 					//TODO: Multithread!!!
 					subsectors[i, j] = SectorPopulation(subsectorsRequest);
@@ -76,25 +96,6 @@
 							sector.Chunks[si * stdSectorSize + i, sj * stdSectorSize + j] = subsectors[si, sj].Chunks[i, j];
 						}
 					}
-				}
-			}
-			return sector.OffsetBack(offset);
-
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected virtual Chunk<T> ChunkPopulation(in Coordinate coordinate)
-		{
-			return SectorPopulation(new RequstSector(coordinate, 1, 1)).Chunks[0, 0];
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected virtual Sector<T> SectorPopulation(in RequstSector requstSector)
-		{
-			Sector<T> sector = new Sector<T>(requstSector, false);
-			for ( int i = 0 ; i < sector.width ; i++ ) {
-				for ( int j = 0 ; j < sector.height ; j++ ) {
-					sector.Chunks[i, j] = ChunkPopulation(new Coordinate(i, j) + sector.Coordinate);
 				}
 			}
 			return sector;

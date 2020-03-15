@@ -1,12 +1,14 @@
 ﻿using System.Runtime.CompilerServices;
 
 namespace ITG_Core.Base {
+
 	/// <summary>
 	/// Defines the <see cref="Layer{T, S}" />
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	/// <typeparam name="S"></typeparam>
 	public abstract class Layer<T, S> : Algorithm<T> where T : struct where S : struct {
+
 		protected readonly Algorithm<S> source;
 
 		public Layer(Coordinate offset, ITGThreadPool threadPool, Algorithm<S> source) : base(offset, threadPool)

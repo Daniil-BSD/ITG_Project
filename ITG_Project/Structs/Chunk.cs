@@ -1,19 +1,26 @@
 ﻿namespace ITG_Core {
-	public class Chunk<T> where T : struct {
-		public T[,] value;
 
-		public T this[in int x, in int y] {
-			get {
-				return value[x, y];
-			}
-			set {
-				this.value[x, y] = value;
-			}
-		}
+	public class Chunk<T> where T : struct {
+
+		public const int CHUNK_COMPARISON_STEP = Constants.CHUNK_SIZE + 7;
+
+		public T[,] value;
 
 		public Chunk()
 		{
 			value = new T[Constants.CHUNK_SIZE, Constants.CHUNK_SIZE];
+		}
+
+		public override bool Equals(object obj)
+		{
+			if ( obj == null || GetType() != obj.GetType() ) {
+				return false;
+			}
+			Chunk<T> ch = (Chunk<T>)obj;
+			for ( int i = 0 ; i < Constants.CHUNK_NUMBER_OF_VALUES ; i += CHUNK_COMPARISON_STEP )
+				if ( !value[i % Constants.CHUNK_SIZE, i / Constants.CHUNK_SIZE].Equals(ch.value[i % Constants.CHUNK_SIZE, i / Constants.CHUNK_SIZE]) )
+					return false;
+			return true;
 		}
 
 		public Chunk<T> GetCopy()
@@ -39,17 +46,10 @@
 			return ret + "";
 		}
 
-		public const int CHUNK_COMPARISON_STEP = Constants.CHUNK_SIZE + 7;
-		public override bool Equals(object obj)
+		public T this[in int x, in int y]
 		{
-			if ( obj == null || GetType() != obj.GetType() ) {
-				return false;
-			}
-			Chunk<T> ch = (Chunk<T>) obj;
-			for ( int i = 0 ; i < Constants.CHUNK_NUMBER_OF_VALUES ; i += CHUNK_COMPARISON_STEP )
-				if ( !value[i % Constants.CHUNK_SIZE, i / Constants.CHUNK_SIZE].Equals(ch.value[i % Constants.CHUNK_SIZE, i / Constants.CHUNK_SIZE]) )
-					return false;
-			return true;
+			get => value[x, y];
+			set => this.value[x, y] = value;
 		}
 	}
 }

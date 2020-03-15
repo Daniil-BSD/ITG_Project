@@ -5,14 +5,15 @@
 	/// Defines the <see cref="MathExt" />
 	/// </summary>
 	public static class MathExt {
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int IntegerDevisionConsistent(this in int dividedivident, in int deviser)
 		{
 			if ( deviser < 0 )
 				if ( dividedivident > 0 )
-					return -1 - ((dividedivident - 1) / -deviser);
+					return -1 - ( ( dividedivident - 1 ) / -deviser );
 			if ( dividedivident < 0 )
-				return -1 - ((-dividedivident - 1) / deviser);
+				return -1 - ( ( -dividedivident - 1 ) / deviser );
 			return dividedivident / deviser;
 		}
 
@@ -21,16 +22,16 @@
 		{
 			if ( deviser < 0 )
 				if ( dividedivident > 0 )
-					return -1 - ((dividedivident - 1) / -deviser);
+					return -1 - ( ( dividedivident - 1 ) / -deviser );
 			if ( dividedivident < 0 )
-				return -1 - ((-dividedivident - 1) / deviser);
+				return -1 - ( ( -dividedivident - 1 ) / deviser );
 			return dividedivident / deviser;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static float Max(in float a, in float b)
 		{
-			return (a < b) ? b : a;
+			return ( a < b ) ? b : a;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -42,7 +43,7 @@
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Max(in int a, in int b)
 		{
-			return (a < b) ? b : a;
+			return ( a < b ) ? b : a;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -54,7 +55,7 @@
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static float Min(in float a, in float b)
 		{
-			return (a > b) ? b : a;
+			return ( a > b ) ? b : a;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -66,7 +67,7 @@
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Min(in int a, in int b)
 		{
-			return (a > b) ? b : a;
+			return ( a > b ) ? b : a;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -80,7 +81,7 @@
 		{
 			if ( number % modulo == 0 )
 				return 0;
-			return (number < 0) ? modulo - (-number % modulo) : number % modulo;
+			return ( number < 0 ) ? modulo - ( -number % modulo ) : number % modulo;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -88,7 +89,7 @@
 		{
 			if ( number % modulo == 0 )
 				return 0;
-			return (number < 0) ? modulo - (-number % modulo) : number % modulo;
+			return ( number < 0 ) ? modulo - ( -number % modulo ) : number % modulo;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -96,7 +97,7 @@
 		{
 			if ( number % modulo == 0 )
 				return 0;
-			return (number < 0) ? modulo - (-number % modulo) : number % modulo;
+			return ( number < 0 ) ? modulo - ( -number % modulo ) : number % modulo;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -104,19 +105,19 @@
 		{
 			if ( number % modulo == 0 )
 				return 0;
-			return (number < 0) ? modulo - (-number % modulo) : number % modulo;
+			return ( number < 0 ) ? modulo - ( -number % modulo ) : number % modulo;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int ToIntegerConsistent(this in double f)
 		{
-			return (f < 0) ? (int) f - 1 : (int) f;
+			return ( f < 0 ) ? (int)f - 1 : (int)f;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int ToIntegerConsistent(this in float f)
 		{
-			return (f < 0 && f % 1 != 0) ? (int) f - 1 : (int) f;
+			return ( f < 0 && f % 1 != 0 ) ? (int)f - 1 : (int)f;
 		}
 	}
 }

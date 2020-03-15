@@ -1,30 +1,25 @@
 ﻿namespace ITG_Core {
-	using ITG_Core.Base;
 	using System;
 	using System.Collections.Generic;
+	using ITG_Core.Base;
 
 	/// <summary>
 	/// Defines the <see cref="Landscape" />
 	/// </summary>
 	public class Landscape {
 
+		private Dictionary<string, IAlgorithm> algorithms;
+
 		public Landscape(Dictionary<string, IAlgorithm> algorithms)
 		{
 			this.algorithms = algorithms;
-		}
-
-		private Dictionary<string, IAlgorithm> algorithms;
-		public IAlgorithm this[string key] {
-			get {
-				return algorithms[key];
-			}
 		}
 
 		public Algorithm<T> GetAlgorithm<T>(string key) where T : struct
 		{
 			if ( algorithms.ContainsKey(key) ) {
 				if ( Object.ReferenceEquals(algorithms[key].GetGenericType(), typeof(T)) ) {
-					return (Algorithm<T>) algorithms[key];
+					return (Algorithm<T>)algorithms[key];
 				}
 				throw new InvalidOperationException("Type mismatch");
 			}
@@ -40,5 +35,7 @@
 			GetAlgorithm<Angle>("");
 			GetAlgorithm<int>("");
 		}
+
+		public IAlgorithm this[string key] => algorithms[key];
 	}
 }
