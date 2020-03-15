@@ -1,4 +1,5 @@
-﻿namespace ITG_Core {
+﻿namespace ITG_Core.Basic {
+	using ITG_Core.Base;
 	using System;
 	using System.Collections.Concurrent;
 	using System.Runtime.CompilerServices;
@@ -8,9 +9,11 @@
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	public class Memory<T> : Algorithm<T> where T : struct {
-		private Algorithm<T> algorithm;
+		private readonly Algorithm<T> algorithm;
 
 		private ConcurrentDictionary<Coordinate, Chunk<T>> memory;
+
+		public override int StdSectorSize => algorithm.StdSectorSize;
 
 		public Memory(Coordinate offset, ITGThreadPool threadPool, Algorithm<T> algorithm) : base(offset, threadPool)
 		{

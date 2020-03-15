@@ -1,5 +1,7 @@
-﻿namespace ITG_Core {
+﻿namespace ITG_Core.Basic.Builders {
 	using System.Collections.Generic;
+	using ITG_Core.Base;
+	using ITG_Core.Bulders;
 
 	/// <summary>
 	/// Defines the <see cref="FloatAdderBuilder" />

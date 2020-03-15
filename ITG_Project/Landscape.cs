@@ -1,4 +1,5 @@
 ﻿namespace ITG_Core {
+	using ITG_Core.Base;
 	using System;
 	using System.Collections.Generic;
 
@@ -7,13 +8,13 @@
 	/// </summary>
 	public class Landscape {
 
-		public Landscape(Dictionary<string, Algorithm> algorithms)
+		public Landscape(Dictionary<string, IAlgorithm> algorithms)
 		{
 			this.algorithms = algorithms;
 		}
 
-		private Dictionary<string, Algorithm> algorithms;
-		public Algorithm this[string key] {
+		private Dictionary<string, IAlgorithm> algorithms;
+		public IAlgorithm this[string key] {
 			get {
 				return algorithms[key];
 			}

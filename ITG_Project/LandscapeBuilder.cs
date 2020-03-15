@@ -1,4 +1,6 @@
 ﻿namespace ITG_Core {
+	using ITG_Core.Base;
+	using ITG_Core.Bulders;
 	using System;
 	using System.Collections.Generic;
 
@@ -9,12 +11,12 @@
 		public static readonly string SUBKEY_SEPARATOR = "->";
 		public static readonly string MAIN_ALGORITHM_KEY = "MAIN";
 
-		private Dictionary<string, AlgorithmBuilder> builders;
+		private Dictionary<string, IAlgorithmBuilder> builders;
 		private ITGThreadpoolBuilder threadpoolBuilder;
 
 		public ITGThreadpoolBuilder ThreadpoolBuilder { get => threadpoolBuilder; set => threadpoolBuilder = value; }
 
-		public AlgorithmBuilder this[string key] {
+		public IAlgorithmBuilder this[string key] {
 			get {
 				if ( builders.ContainsKey(key) )
 					return builders[key];
@@ -29,7 +31,7 @@
 
 		public LandscapeBuilder()
 		{
-			builders = new Dictionary<string, AlgorithmBuilder>();
+			builders = new Dictionary<string, IAlgorithmBuilder>();
 			threadpoolBuilder = new ITGThreadpoolBuilder();
 		}
 		public bool IsValid()
@@ -49,9 +51,9 @@
 			if (
 				keys.Length == 2 && //keys are in a vlid form
 				builders.ContainsKey(keys[0]) && // first key is valid
-				builders[keys[0]].GetType().IsSubclassOf(typeof(AlgorithmGroupBuilder))// second key can be used
+				builders[keys[0]].GetType().IsSubclassOf(typeof(IAlgorithmGroupBuilder))// second key can be used
 				) {
-				AlgorithmGroupBuilder groupBuilder = (AlgorithmGroupBuilder) builders[keys[0]];
+				IAlgorithmGroupBuilder groupBuilder = (IAlgorithmGroupBuilder) builders[keys[0]];
 				return groupBuilder.GetGenericType(keys[1]);
 			}
 			return typeof(NULL_CLASS);
@@ -72,7 +74,7 @@
 			return new Landscape(algorithms);
 		}
 
-		public string GetKeyFor(AlgorithmBuilder builder)
+		public string GetKeyFor(IAlgorithmBuilder builder)
 		{
 			foreach ( var key in builders.Keys )
 				if ( object.ReferenceEquals(builders[key], builder) )
@@ -83,7 +85,7 @@
 		public class LandscapeIntermidiate {
 
 			private Queue<string> buildQueue;
-			private Dictionary<string, Algorithm> algorithms;
+			private Dictionary<string, IAlgorithm> algorithms;
 			private LandscapeBuilder builder;
 			private ITGThreadPool threadPool;
 
@@ -94,7 +96,7 @@
 			public LandscapeIntermidiate(LandscapeBuilder builder, IEnumerable<string> roots)
 			{
 				this.builder = builder;
-				algorithms = new Dictionary<string, Algorithm>();
+				algorithms = new Dictionary<string, IAlgorithm>();
 				buildQueue = new Queue<string>(roots);
 				threadPool = builder.threadpoolBuilder.Build();
 				Build();
@@ -129,7 +131,7 @@
 					if (
 						keys.Length != 2 || //keys are in a vlid form
 						!builder.builders.ContainsKey(keys[0]) || // first key is valid
-						!builder.builders[keys[0]].GetType().IsSubclassOf(typeof(AlgorithmGroupBuilder))// second key can be used
+						!builder.builders[keys[0]].GetType().IsSubclassOf(typeof(IAlgorithmGroupBuilder))// second key can be used
 					) {
 						throw new KeyNotFoundException();
 					} else {
@@ -144,14 +146,14 @@
 				return (Algorithm<T>) algorithms[key];
 			}
 
-			public void AddAlgorithm(string key, AlgorithmBuilder builder)
+			public void AddAlgorithm(string key, IAlgorithmBuilder builder)
 			{
 				if ( algorithms.ContainsKey(key) )
 					return;
 				var newAlgoruthms = builder.BuildGeneric(this);
 				if ( newAlgoruthms.Count == 1 ) {
 					//convert dictionary to a single object
-					Algorithm[] temp = new Algorithm[1];
+					IAlgorithm[] temp = new IAlgorithm[1];
 					newAlgoruthms.Values.CopyTo(temp, 0);
 					algorithms.Add(key, temp[0]);
 				} else if ( newAlgoruthms.Count > 1 ) {
@@ -163,12 +165,12 @@
 					}
 				}
 			}
-			public string GetKeyFor(AlgorithmBuilder builder)
+			public string GetKeyFor(IAlgorithmBuilder builder)
 			{
 				return this.builder.GetKeyFor(builder);
 			}
 
-			public Dictionary<string, Algorithm> GetAlgorithms()
+			public Dictionary<string, IAlgorithm> GetAlgorithms()
 			{
 				return algorithms;
 			}

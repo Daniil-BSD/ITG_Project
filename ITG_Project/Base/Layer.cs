@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace ITG_Core {
+namespace ITG_Core.Base {
 	/// <summary>
 	/// Defines the <see cref="Layer{T, S}" />
 	/// </summary>
@@ -17,8 +17,7 @@ namespace ITG_Core {
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		protected override Chunk<T> ChunkPopulation(in Coordinate coordinate)
 		{
-			Chunk<T> ret;
-			ChunkPopulation(out ret, source.GetChunck(coordinate), coordinate);
+			ChunkPopulation(out Chunk<T> ret, source.GetChunck(coordinate), coordinate);
 			return ret;
 		}
 

@@ -1,4 +1,5 @@
-﻿namespace ITG_Core {
+﻿namespace ITG_Core.Bulders {
+
 	using System.Collections.Generic;
 
 	/// <summary>
@@ -15,7 +16,7 @@
 				return false;
 			if ( !landscapeBuilder.CheckValidityOf(SourceID) )
 				return false;
-			if ( !(landscapeBuilder.TypeOf(SourceID).IsSubclassOf(typeof(AlgorithmBuilder<S>)) || landscapeBuilder.TypeOf(SourceID).IsSubclassOf(typeof(AlgorithmGroupBuilder<S>))) )
+			if ( !( landscapeBuilder.TypeOf(SourceID).IsSubclassOf(typeof(AlgorithmBuilder<S>)) || landscapeBuilder.TypeOf(SourceID).IsSubclassOf(typeof(AlgorithmGroupBuilder<S>)) ) )
 				return false;
 			return true;
 		}

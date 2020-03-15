@@ -1,4 +1,4 @@
-﻿namespace ITG_Core {
+﻿namespace ITG_Core.Bulders {
 	using System;
 	using System.Collections.Generic;
 

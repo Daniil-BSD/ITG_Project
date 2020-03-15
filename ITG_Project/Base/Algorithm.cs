@@ -1,11 +1,11 @@
-﻿namespace ITG_Core {
+﻿namespace ITG_Core.Base {
 	using System;
 	using System.Runtime.CompilerServices;
 
 	/// <summary>
-	/// Defines the <see cref="Algorithm" />
+	/// Defines the <see cref="IAlgorithm" />
 	/// </summary>
-	public interface Algorithm {
+	public interface IAlgorithm {
 		Type GetGenericType();
 	}
 
@@ -13,7 +13,7 @@
 	/// Defines the <see cref="Algorithm{T}" />
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	abstract public class Algorithm<T> : Algorithm where T : struct {
+	abstract public class Algorithm<T> : IAlgorithm where T : struct {
 		public readonly Coordinate offset;
 		public readonly ITGThreadPool threadPool;
 

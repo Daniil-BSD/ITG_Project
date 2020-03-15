@@ -1,12 +1,13 @@
-﻿namespace ITG_Core {
+﻿namespace ITG_Core.Bulders {
 	using System;
+	using ITG_Core.Base;
 	using System.Collections.Generic;
 
 	/// <summary>
-	/// Defines the <see cref="AlgorithmBuilder" />
+	/// Defines the <see cref="IAlgorithmBuilder" />
 	/// </summary>
-	public interface AlgorithmBuilder {
-		Dictionary<string, Algorithm> BuildGeneric(LandscapeBuilder.LandscapeIntermidiate landscapeIntermidiate);
+	public interface IAlgorithmBuilder {
+		Dictionary<string, IAlgorithm> BuildGeneric(LandscapeBuilder.LandscapeIntermidiate landscapeIntermidiate);
 
 		Type GetGenericType();
 
@@ -19,14 +20,14 @@
 	/// Defines the <see cref="AlgorithmBuilder{T}" />
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	public abstract class AlgorithmBuilder<T> : AlgorithmBuilder where T : struct {
+	public abstract class AlgorithmBuilder<T> : IAlgorithmBuilder where T : struct {
 		public Coordinate Offset { get; set; } = new Coordinate(0, 0);
 
 		public abstract Algorithm<T> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate);
 
-		public Dictionary<string, Algorithm> BuildGeneric(LandscapeBuilder.LandscapeIntermidiate intermidiate)
+		public Dictionary<string, IAlgorithm> BuildGeneric(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
-			var ret = new Dictionary<string, Algorithm> {
+			var ret = new Dictionary<string, IAlgorithm> {
 				{ LandscapeBuilder.MAIN_ALGORITHM_KEY, Build(intermidiate) }
 			};
 			return ret;

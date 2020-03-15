@@ -1,4 +1,4 @@
-﻿namespace ITG_Core {
+﻿namespace ITG_Core.Base {
 	using System;
 	using System.Runtime.CompilerServices;
 

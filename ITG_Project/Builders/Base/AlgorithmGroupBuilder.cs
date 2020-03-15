@@ -1,11 +1,13 @@
-﻿namespace ITG_Core {
+﻿namespace ITG_Core.Bulders {
+	using ITG_Core;
 	using System;
 	using System.Collections.Generic;
+	using ITG_Core.Base;
 
 	/// <summary>
-	/// Defines the <see cref="AlgorithmGroupBuilder" />
+	/// Defines the <see cref="IAlgorithmGroupBuilder" />
 	/// </summary>
-	public interface AlgorithmGroupBuilder {
+	public interface IAlgorithmGroupBuilder {
 		Type GetGenericType(string key);
 	}
 
@@ -13,14 +15,14 @@
 	/// Defines the <see cref="AlgorithmGroupBuilder{T}" />
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	public abstract class AlgorithmGroupBuilder<T> : AlgorithmBuilder, AlgorithmGroupBuilder where T : struct {
+	public abstract class AlgorithmGroupBuilder<T> : IAlgorithmBuilder, IAlgorithmGroupBuilder where T : struct {
 		public Algorithm<float> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
 			string key = intermidiate.GetKeyFor(this);
 			return intermidiate.Get<float>(key);
 		}
 
-		public abstract Dictionary<string, Algorithm> BuildGeneric(LandscapeBuilder.LandscapeIntermidiate landscapeIntermidiate);
+		public abstract Dictionary<string, IAlgorithm> BuildGeneric(LandscapeBuilder.LandscapeIntermidiate landscapeIntermidiate);
 
 		public Type GetGenericType()
 		{

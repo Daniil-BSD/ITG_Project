@@ -1,4 +1,4 @@
-﻿namespace ITG_Core {
+﻿namespace ITG_Core.old {
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Runtime.CompilerServices;

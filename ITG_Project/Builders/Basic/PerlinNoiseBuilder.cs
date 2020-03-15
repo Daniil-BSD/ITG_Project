@@ -1,4 +1,6 @@
-﻿namespace ITG_Core {
+﻿namespace ITG_Core.Basic.Builders {
+	using ITG_Core.Bulders;
+	using ITG_Core.Base;
 	/// <summary>
 	/// Defines the <see cref="PerlinNoiseBuilder" />
 	/// </summary>

@@ -1,4 +1,6 @@
-﻿namespace ITG_Core {
+﻿namespace ITG_Core.Basic.Builders {
+	using ITG_Core.Base;
+	using ITG_Core.Bulders;
 	using System;
 	using System.Collections.Generic;
 
@@ -32,9 +34,9 @@
 
 		public string Vec2FieldID { get; set; }
 
-		public override Dictionary<string, Algorithm> BuildGeneric(LandscapeBuilder.LandscapeIntermidiate intermidiate)
+		public override Dictionary<string, IAlgorithm> BuildGeneric(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
-			Dictionary<string, Algorithm> ret = new Dictionary<string, Algorithm>();
+			Dictionary<string, IAlgorithm> ret = new Dictionary<string, IAlgorithm>();
 			List<Algorithm<float>> sources = new List<Algorithm<float>>();
 			Algorithm<Vec2> vec2Source = intermidiate.Get<Vec2>(Vec2FieldID);
 			ITGThreadPool threadPool = intermidiate.ThreadPool;
