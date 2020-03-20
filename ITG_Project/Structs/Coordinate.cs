@@ -57,6 +57,23 @@
 			return new Coordinate(c1.x + c2.x, c1.y + c2.y);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Coordinate operator /(in Coordinate c1, in int i)
+		{
+			return new Coordinate(c1.x.IntegerDevisionConsistent(i), c1.y.IntegerDevisionConsistent(i));
+		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Coordinate operator %(in Coordinate c1, in int i)
+		{
+			return new Coordinate(c1.x.Modulo(i), c1.y.Modulo(i));
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Coordinate operator *(in Coordinate c1, in int i)
+		{
+			return new Coordinate(c1.x * i, c1.y * i);
+		}
+
 		public override bool Equals(object obj)
 		{
 			if ( !( obj is Coordinate ) ) {
@@ -66,6 +83,7 @@
 			return x == coordinate.x && y == coordinate.y;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public override int GetHashCode()
 		{
 			return ( ( x << 16 ) | ( y & 0b0000_0000_0000_0000_1111_1111_1111_1111 ) );

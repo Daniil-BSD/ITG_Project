@@ -2,18 +2,11 @@
 	using System;
 	using System.Runtime.CompilerServices;
 
-	/// <summary>
-	/// Defines the <see cref="IAlgorithm" />
-	/// </summary>
 	public interface IAlgorithm {
 
 		Type GetGenericType();
 	}
 
-	/// <summary>
-	/// Defines the <see cref="Algorithm{T}" />
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
 	abstract public class Algorithm<T> : IAlgorithm where T : struct {
 
 		public readonly Coordinate offset;
@@ -51,6 +44,10 @@
 			return sector;
 		}
 
+		public virtual void Drop()
+		{
+		}
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Chunk<T> GetChunck(in Coordinate coordinate)
 		{
@@ -71,7 +68,7 @@
 			if ( subsectorsX <= 1 && subsectorsY <= 1 )
 				return SectorPopulation(requstSector.GetOffsetCopy(offset)).OffsetBack(offset);
 
-			Sector<T>[,] subsectors = new Sector<T>[subsectorsX, subsectorsY];
+			RequstSector[] subsectorRequests = new RequstSector[subsectorsX * subsectorsY];
 			for ( int i = 0 ; i < subsectorsX ; i++ ) {
 				for ( int j = 0 ; j < subsectorsY ; j++ ) {
 					int width = stdSectorSize;
@@ -80,25 +77,25 @@
 						width = requstSector.width - stdSectorSize * i;
 					if ( j == subsectorsY - 1 )
 						height = requstSector.height - stdSectorSize * j;
-					RequstSector subsectorsRequest = new RequstSector(new Coordinate(i * stdSectorSize, j * stdSectorSize) + requstSector.coordinate + offset, width, height);
-
-					//TODO: Multithread!!!
-					subsectors[i, j] = SectorPopulation(subsectorsRequest);
+					subsectorRequests[i * subsectorsY + j] = new RequstSector(new Coordinate(i * stdSectorSize, j * stdSectorSize) + requstSector.coordinate + offset, width, height);
 				}
 			}
-
+			Sector<T>[] subsectors = threadPool.Execute(subsectorRequests, SectorPopulation);
 			Sector<T> sector = new Sector<T>(requstSector);
 
 			for ( int si = 0 ; si < subsectorsX ; si++ ) {
 				for ( int sj = 0 ; sj < subsectorsY ; sj++ ) {
-					for ( int i = 0 ; i < subsectors[si, sj].width ; i++ ) {
-						for ( int j = 0 ; j < subsectors[si, sj].height ; j++ ) {
-							sector.Chunks[si * stdSectorSize + i, sj * stdSectorSize + j] = subsectors[si, sj].Chunks[i, j];
+					int subsectorIndex = si * subsectorsY + sj;
+					for ( int i = 0 ; i < subsectors[subsectorIndex].width ; i++ ) {
+						for ( int j = 0 ; j < subsectors[subsectorIndex].height ; j++ ) {
+							sector.Chunks[si * stdSectorSize + i, sj * stdSectorSize + j] = subsectors[subsectorIndex].Chunks[i, j];
 						}
 					}
 				}
 			}
 			return sector;
 		}
+
+		public delegate Sector<T> SectorPopulationDelegate(in RequstSector requstSector);
 	}
 }

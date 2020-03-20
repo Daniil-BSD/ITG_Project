@@ -121,7 +121,8 @@
 				for ( lifetime = 0 ; lifetime < maxIterations && sedimentCapacity > -1 ; lifetime++ ) {
 					gradients = GetGradients(heightmap, positionWithinCell, positionInt);
 					gradients.Magnitude = stepLength;
-
+					if ( gradients.x == 0 && gradients.y == 0 )
+						dir = dir * speedStepFactor;
 					dir = dir * speedStepFactor + gradients.NormalizedCopy * -gravity;
 					speed = dir.Magnitude;
 					if ( float.IsInfinity(speed) )

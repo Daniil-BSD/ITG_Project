@@ -14,7 +14,7 @@
 
 		public readonly float retFactor;
 
-		public override int StdSectorSize => 128;
+		public override int StdSectorSize => 32;
 
 		public FloatAdder(Coordinate offset, ITGThreadPool threadPool, List<Algorithm<float>> sources, float deltaFactor, float retFactor) : base(offset, threadPool, sources)
 		{

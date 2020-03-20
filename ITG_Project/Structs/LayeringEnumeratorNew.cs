@@ -147,13 +147,16 @@ namespace ITG_Core {
 			int sideLength = 1 << power;
 			int x = 0;
 			int y = 0;
-			for ( int p = powerMone ; p >= 0 ; p-- ) {
+			for ( int p = 0 ; p < power ; p++ ) {
 				int temp = ( indexIN >> ( p * 2 ) ) & 3;
 				int a = temp & 1;
 				int b = temp >> 1;
 				int pInverse = powerMone - p;
-				x += a << pInverse;
-				y += ( a ^ b ) << pInverse;
+
+				x = ( x << 1 ) | a;
+				y = ( y << 1 ) | ( a ^ b );
+				//x += a << pInverse;
+				//y += ( a ^ b ) << pInverse;
 			}
 			int indexOut = y * sideLength + x;
 			return indexOut;

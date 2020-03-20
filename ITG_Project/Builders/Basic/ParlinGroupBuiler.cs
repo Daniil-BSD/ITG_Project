@@ -33,6 +33,8 @@
 
 		public float UpperTargetScale { get; set; } = 1024;
 
+		public float MinNoiseFactor { get; set; } = 0.00f;
+
 		public string Vec2FieldID { get; set; }
 
 		private static int RoundTI(in float f)
@@ -70,7 +72,8 @@
 					}
 				}
 			} else {
-				for ( float f = UpperTargetScale ; f > LowerTargetScale && sources.Count < MaxLayers ; f /= ScaleStep ) {
+				float factor = 1;
+				for ( float f = UpperTargetScale ; f > LowerTargetScale && sources.Count < MaxLayers && factor > MinNoiseFactor ; f /= ScaleStep ) {
 					int scale = RoundTI(f);
 					int interpolatorScacle = 1;
 					while ( scale / interpolatorScacle > MaxPerlinScale && interpolatorScacle < MaxInterpolationScale ) {
@@ -91,8 +94,10 @@
 						ret.Add(ref_key_interpol, interpol);
 						sources.Add(interpol);
 					}
+					factor *= DeltaFactor;
 				}
 			}
+
 			ret.Add(LandscapeBuilder.MAIN_ALGORITHM_KEY, new FloatAdder(OffsetGlobal, intermidiate.ThreadPool, sources, DeltaFactor, RetFactor));
 			return ret;
 		}

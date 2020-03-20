@@ -4,22 +4,17 @@
 	using System.Runtime.CompilerServices;
 	using ITG_Core.Base;
 
-	/// <summary>
-	/// Defines the <see cref="Memory{T}" />
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	public class Memory<T> : Algorithm<T> where T : struct {
 
-		private readonly Algorithm<T> algorithm;
+	public class Memory<T> : Layer<T, T> where T : struct {
 
 		private ConcurrentDictionary<Coordinate, Chunk<T>> memory;
 
-		public override int StdSectorSize => int.MaxValue;
+		public const bool ASSUME_NO_ADD_CONFLICT = true;
 
-		public Memory(Coordinate offset, ITGThreadPool threadPool, Algorithm<T> algorithm) : base(offset, threadPool)
+
+		public Memory(Coordinate offset, ITGThreadPool threadPool, Algorithm<T> source) : base(offset, threadPool, source)
 		{
 			memory = new ConcurrentDictionary<Coordinate, Chunk<T>>();
-			this.algorithm = algorithm;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -81,7 +76,7 @@
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		protected override Chunk<T> ChunkPopulation(in Coordinate coordinate)
 		{
-			TrySavingSector(coordinate, algorithm.GetChunck(coordinate));
+			TrySavingSector(coordinate, source.GetChunck(coordinate));
 			return memory[coordinate];
 		}
 
@@ -106,7 +101,7 @@
 			if ( missingChunks == 0 ) {
 				return sector;
 			} else if ( presentChunks == 0 ) {
-				sector = algorithm.GetSector(sector);
+				sector = source.GetSector(sector);
 				for ( int i = 0 ; i < sector.width ; i++ ) {
 					for ( int j = 0 ; j < sector.height ; j++ ) {
 						Coordinate coordinate = new Coordinate(i, j) + sector.Coordinate;
@@ -125,7 +120,7 @@
 				}
 
 				//Console.WriteLine(outgoingRequstSector.width * outgoingRequstSector.height + "\t\t" + requstSector.width * requstSector.height);
-				Sector<T> requestedSector = algorithm.GetSector(outgoingRequstSector);
+				Sector<T> requestedSector = source.GetSector(outgoingRequstSector);
 				for ( int i = 0 ; i < requestedSector.width ; i++ ) {
 					for ( int j = 0 ; j < requestedSector.height ; j++ ) {
 						Coordinate coordinate = new Coordinate(i, j) + requestedSector.Coordinate;
@@ -141,11 +136,11 @@
 		protected void TrySavingSector(in Coordinate key, in Chunk<T> value)
 		{
 			if ( !memory.TryAdd(key, value) )
-				if ( !memory[key].Equals(value) )
+				if ( !ASSUME_NO_ADD_CONFLICT && !memory[key].Equals(value) )
 					throw new PushConflictException<T>(memory[key], value);
 		}
 
-		public void Drop()
+		public override void Drop()
 		{
 			memory.Clear();
 		}
@@ -163,13 +158,13 @@
 	/// <typeparam name="T"></typeparam>
 	public class PushConflictException<T> : Exception where T : struct {
 
-		public readonly Chunk<T> inMemory;
+		public readonly object inMemory;
 
-		public readonly Chunk<T> pushed;
+		public readonly object pushed;
 
 		public override string Message => "\noriginal:\t" + inMemory + "\nnew:\t\t" + pushed;
 
-		public PushConflictException(Chunk<T> inMemory, Chunk<T> pushed)
+		public PushConflictException(object inMemory, object pushed)
 		{
 			this.inMemory = inMemory;
 			this.pushed = pushed;

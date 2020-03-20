@@ -29,7 +29,7 @@
 
 		public int MaxIterations { get; set; } = 80;
 
-		public int MaxSectorSize { get; set; } = 32;
+		public int MaxSectorSize { get; set; } = 64;
 
 		public float MinModification { get; set; } = 0.005f;
 
@@ -44,6 +44,7 @@
 		//TODO
 		public override Algorithm<float> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
+			VerifyVallidity(intermidiate);
 			return new HydrolicErosion(
 				offset: Offset,
 				threadPool: intermidiate.ThreadPool,

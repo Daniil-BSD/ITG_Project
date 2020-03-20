@@ -12,6 +12,7 @@
 		//TODO
 		public override Algorithm<Vec3> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
+			VerifyVallidity(intermidiate);
 			return new NormalFast(Offset, intermidiate.ThreadPool, intermidiate.Get<float>(SourceID), gridStepOverHeightRange: GridStepOverHeightRange);
 		}
 	}

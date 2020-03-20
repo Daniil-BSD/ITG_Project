@@ -12,7 +12,7 @@
 		public override Algorithm<float> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
 			VerifyVallidity(intermidiate);
-			if ( Force == 0 )
+			if ( Force == 1 )
 				return new BlurBasic(Offset, intermidiate.ThreadPool, intermidiate.Get<float>(SourceID));
 			return new BlurAdvanced(Offset, intermidiate.ThreadPool, intermidiate.Get<float>(SourceID), Force);
 		}

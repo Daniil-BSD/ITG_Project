@@ -14,11 +14,11 @@ namespace ConsoleApp1 {
 
 		private static readonly bool LAYERED = false;
 
-		private static readonly int LAYERS = 1;
+		private static readonly int LAYERS = 2;
 
-		private static readonly int RADIUS = 16;//128;
+		private static readonly int SIZE = 32;//128;
 
-		private static readonly int SCALE = 512;//512;
+		private static readonly int SCALE = 3072;//512;
 
 		private static void Main()
 		{
@@ -29,7 +29,7 @@ namespace ConsoleApp1 {
 			Console.WriteLine("Dot(v1, v2): " + Vec3.Dot(v1, v2));
 			Console.WriteLine("Cross(v1, v2): " + Vec3.Cross(v1, v2));
 			Console.WriteLine("Cross(v2, v1): " + Vec3.Cross(v2, v1));
-			Console.WriteLine("v1 + v2: " + ( v1 + v2 ));
+			Console.WriteLine("v1 + v2: " + ( v1 + v2 ));1
 			Console.WriteLine("v2 + v1: " + ( v2 + v1 ));
 			Console.WriteLine("v1 - v2: " + ( v1 - v2 ));
 			Console.WriteLine("v2 - v1: " + ( v2 - v1 ));
@@ -70,21 +70,23 @@ namespace ConsoleApp1 {
 			landscapeBuilder["random"] = new RandomBuilder() { Seed = 6 };
 			landscapeBuilder["vec2"] = new Vec2FieldBuilder() { SourceID = "random", Magnitude = Constants.SQRT_2_OVER_2_FLOAT };
 			landscapeBuilder["mem1"] = new MemoryBuilder<Vec2>() { SourceID = "vec2" };
-			landscapeBuilder["perlin"] = new ParlinGroupBuiler() { Vec2FieldID = "mem1", UpperTargetScale = SCALE * 2, MaxPerlinScale = SCALE / 4, DeltaFactor = 0.625f, ScaleStep = 1.875f, RetFactor = 1.375f, BottomUp = true, OffsetGlobal = new Coordinate(64, 64), LowerTargetScale = 8 };
+			landscapeBuilder["perlin"] = new ParlinGroupBuiler() { Vec2FieldID = "mem1", UpperTargetScale = SCALE, MaxPerlinScale = SCALE / 4, DeltaFactor = 0.5f, ScaleStep = 2f, RetFactor = 1.375f, BottomUp = false, OffsetGlobal = new Coordinate(64, 64), LowerTargetScale = 6 };
+			//landscapeBuilder["mem2"] = new MemoryBuilder<float>() { SourceID = "perlin" };
+			//0.5325f
 			landscapeBuilder["mem2"] = new MemoryBuilder<float>() { SourceID = "perlin" };
 			landscapeBuilder["HE"] = new HydraulicErosionBuilder() {
 				SourceID = "mem2",
 				LayeringPower = 8,
-				CoverageFactor = 0.25f,
+				CoverageFactor = 1 / 16f,
 				BrushRadius = 8,
 				StepLength = 4,
+				Gravity = 2,
 			};
 
-			landscapeBuilder["HEmem"] = new MemoryBuilder<float>() { SourceID = "HE", };
-
-			landscapeBuilder["HEmblur"] = new BlurBuilder { SourceID = "HEmem", Force = 0.5f };
-
-			landscapeBuilder["HEinv"] = new FloatAdderBuilder() { Sources = new string[] { "HEmem" }, RetFactor = -1 };
+			landscapeBuilder["HEmem"] = new MemoryStrictSectoringBuilder<float>() { SourceID = "HE", SectorSize = 32 };
+			landscapeBuilder["HEmblur"] = new BlurBuilder { SourceID = "HEmem" };
+			landscapeBuilder["HEmblurMeM"] = new MemoryBuilder<float>() { SourceID = "HEmblur" };
+			landscapeBuilder["HEinv"] = new FloatAdderBuilder() { Sources = new string[] { "HEmblurMeM" }, RetFactor = -1 };
 			landscapeBuilder["HEdiff"] = new FloatAdderBuilder() { Sources = new string[] { "HEinv", "mem2" }, RetFactor = 2 };
 
 			//landscapeBuilder["blur1"] = new BlurBuilder() { SourceID = "mem2" };
@@ -96,13 +98,13 @@ namespace ConsoleApp1 {
 
 			sw.Restart();
 			ITG_Core.Base.Algorithm<float> outputPerlin = landscape.GetAlgorithm<float>("mem2");
-			ITG_Core.Base.Algorithm<float> outputHE = landscape.GetAlgorithm<float>("HEmem");
+			ITG_Core.Base.Algorithm<float> outputHE = landscape.GetAlgorithm<float>("HEmblurMeM");
 			ITG_Core.Base.Algorithm<float> outputdiff = landscape.GetAlgorithm<float>("HEdiff");
 
-			RequstSector request = new RequstSector(new Coordinate(-RADIUS, -RADIUS), RADIUS * 2, RADIUS * 2);
+			RequstSector request = new RequstSector(new Coordinate(0, 0), SIZE, SIZE);
+			Sector<float> sectordiff = outputdiff.GetSector(request);
 			Sector<float> sectorHE = outputHE.GetSector(request);
 			Sector<float> sectorPerlin = outputPerlin.GetSector(request);
-			Sector<float> sectordiff = outputdiff.GetSector(request);
 			//Sector<float> area = output.GetSector(new RequstSector(new Coordinate(0, 0), 4, 4));
 
 			sw.Stop();
@@ -123,7 +125,7 @@ namespace ConsoleApp1 {
 
 			//Console.WriteLine("min: " + min + " max: " + max + " avg: " + (double) total / (width * height) + " errors: " + errors);
 			Console.WriteLine("Saved");
-
+			GC.Collect();
 			Console.ReadKey();
 		}
 

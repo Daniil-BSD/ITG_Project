@@ -4,7 +4,7 @@
 
 		public ITGThreadPool Build()
 		{
-			return new ITGThreadPool();
+			return new ITGThreadPool(16);
 		}
 	}
 }

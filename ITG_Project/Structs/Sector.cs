@@ -94,11 +94,13 @@
 
 		public Chunk<T>[,] Chunks => chunks;
 
+
 		public Coordinate Coordinate => coordinate;
 
 		public int Height_units => height * Constants.CHUNK_SIZE;
 
 		public int Width_units => width * Constants.CHUNK_SIZE;
+
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Sector(in Coordinate coordinate, in int width, in int height, in bool fillup = true)
@@ -246,6 +248,11 @@
 			get => chunks[coordinate.x / Constants.CHUNK_SIZE, coordinate.y / Constants.CHUNK_SIZE][coordinate.x % Constants.CHUNK_SIZE, coordinate.y % Constants.CHUNK_SIZE];
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			set => chunks[coordinate.x / Constants.CHUNK_SIZE, coordinate.y / Constants.CHUNK_SIZE][coordinate.x % Constants.CHUNK_SIZE, coordinate.y % Constants.CHUNK_SIZE] = value;
+		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Chunk<T> GetChunk(in CoordinateBasic coordinate)
+		{
+			return chunks[coordinate.x, coordinate.y];
 		}
 
 		public delegate void ChunkPopulationDelegate<S>(out Chunk<T> main, in Chunk<S> request, in Coordinate coordinate) where S : struct;
