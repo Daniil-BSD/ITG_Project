@@ -1,13 +1,11 @@
 ﻿namespace ITG_Core {
-	using ITG_Core.Base;
-
-	public class ThreadingFork<T> where T : struct {
+	public class ThreadingForkSector<T> where T : struct {
 		private readonly ITGThreadPool pool;
 		private readonly SectorJob<T>[] jobs;
 		private bool areEnqueued = false;
 
 		public bool AreEnqueued => areEnqueued;
-		public ThreadingFork(ITGThreadPool pool, in RequstSector[] requstSectors, Algorithm<T>.SectorPopulationDelegate SectorPopulation)
+		public ThreadingForkSector(ITGThreadPool pool, in RequstSector[] requstSectors, SectorJob<T>.Process SectorPopulation)
 		{
 			this.pool = pool;
 			jobs = new SectorJob<T>[requstSectors.Length];
@@ -16,7 +14,7 @@
 			}
 		}
 
-		public ThreadingFork(ITGThreadPool pool, in SectorJob<T>[] jobs)
+		public ThreadingForkSector(ITGThreadPool pool, in SectorJob<T>[] jobs)
 		{
 			this.pool = pool;
 			this.jobs = jobs;

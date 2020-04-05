@@ -44,16 +44,31 @@
 			x = unchecked((int)X);
 			y = unchecked((int)Y);
 		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Coordinate operator -(in Coordinate c1)
+		{
+			if ( c1.x == 0 && c1.y == 0 )
+				return c1;
+			return new Coordinate(-c1.x, -c1.y);
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Coordinate operator -(in Coordinate c1, in Coordinate c2)
 		{
+			if ( c2.x == 0 && c2.y == 0 )
+				return c1;
+			if ( c1.x == 0 && c1.y == 0 )
+				return -c2;
 			return new Coordinate(c1.x - c2.x, c1.y - c2.y);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Coordinate operator +(in Coordinate c1, in Coordinate c2)
 		{
+			if ( c2.x == 0 && c2.y == 0 )
+				return c1;
+			if ( c1.x == 0 && c1.y == 0 )
+				return c2;
 			return new Coordinate(c1.x + c2.x, c1.y + c2.y);
 		}
 
@@ -71,6 +86,8 @@
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Coordinate operator *(in Coordinate c1, in int i)
 		{
+			if ( i == 1 )
+				return c1;
 			return new Coordinate(c1.x * i, c1.y * i);
 		}
 

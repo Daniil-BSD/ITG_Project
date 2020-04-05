@@ -1,10 +1,5 @@
 ﻿namespace ITG_Core {
-	using ITG_Core.Base;
-
-
-
-
-	public interface ISectorJob {
+	public interface ITGJob {
 
 		bool InProcess { get; }
 
@@ -14,7 +9,9 @@
 
 	}
 
-	public class SectorJob<T> : ISectorJob where T : struct {
+	public class Job<Ret, Req> : ITGJob {
+
+		public delegate Ret Process(in Req request);
 
 		private volatile bool inProcess = false;
 
@@ -22,35 +19,35 @@
 
 		private volatile bool ready = false;
 
-		private Sector<T> sector = null;
+		private Ret result = default;
 
-		private readonly Algorithm<T>.SectorPopulationDelegate SectorPopulation;
+		public readonly Req request;
 
-		public readonly RequstSector requstSector;
+		public readonly Process process;
 
 		public bool InProcess => inProcess;
 
 		public bool Ready => ready;
 
-		public Sector<T> Sector => sector;
+		public Ret Result => result;
 
-		public SectorJob(RequstSector requstSector, Algorithm<T>.SectorPopulationDelegate SectorPopulation)
+		public Job(Req request, Process process)
 		{
-			this.requstSector = requstSector;
-			this.SectorPopulation = SectorPopulation;
+			this.request = request;
+			this.process = process;
 		}
 
-		public Sector<T> ExecuteFromMainThread()
+		public Ret ExecuteFromMainThread()
 		{
 			inProcess = true;
 			lock ( mutex ) {
 				if ( ready )
-					return sector;
-				sector = SectorPopulation(requstSector);
+					return result;
+				result = process(request);
 				ready = true;
 			}
 			inProcess = false;
-			return sector;
+			return result;
 		}
 
 		public void ExecuteFromWorkerThread()
@@ -59,10 +56,17 @@
 				return;
 			inProcess = true;
 			lock ( mutex ) {
-				sector = SectorPopulation(requstSector);
+				result = process(request);
 				ready = true;
 			}
 			inProcess = false;
+		}
+	}
+
+
+	public class SectorJob<T> : Job<Sector<T>, RequstSector> where T : struct {
+		public SectorJob(RequstSector request, Process process) : base(request, process)
+		{
 		}
 	}
 }

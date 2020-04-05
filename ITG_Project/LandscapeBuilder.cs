@@ -29,8 +29,9 @@
 		{
 			if ( !IsValid() )
 				throw new InvalidOperationException("LandscapeBuilder is in invalid state for building Landscape.");
-			Dictionary<string, IAlgorithm> algorithms = new LandscapeIntermidiate(this).GetAlgorithms();
-			return new Landscape(algorithms);
+			LandscapeIntermidiate intermediate = new LandscapeIntermidiate(this);
+			Dictionary<string, IAlgorithm> algorithms = intermediate.GetAlgorithms();
+			return new Landscape(algorithms, intermediate.ThreadPool);
 		}
 
 		public bool CheckValidityOf(string sourceID)

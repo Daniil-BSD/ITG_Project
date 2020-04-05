@@ -81,6 +81,7 @@ namespace ITG_Core.Basic {
 			}
 
 			Sector<T> sector = new Sector<T>(requstSector);
+			System.Console.WriteLine(sectorSize);
 			for ( int x = 0 ; x < requstSector.width ; x++ ) {
 				for ( int y = 0 ; y < requstSector.height ; y++ ) {
 					Coordinate chunkCoordinate = new Coordinate(x, y) + requstSector.coordinate;

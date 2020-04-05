@@ -17,6 +17,8 @@
 
 		private readonly int maxSectorSize;
 
+		public readonly float maxModification;
+
 		public static readonly int BRUSHGROUP_SIZE = 4;
 
 		public readonly float brushRadius;
@@ -51,9 +53,11 @@
 
 		public readonly float volumeStepFactor;
 
+		public readonly float sedimentFactor;
+
 		public override int StdSectorSize => maxSectorSize;
 
-		public HydrolicErosion(Coordinate offset, ITGThreadPool threadPool, Algorithm<float> source, float brushRadius, float depositSpeed, float erodeSpeed, float evaporationSpeed, float gravity, float initialSpeed, float initialVolume, int layeringPower, int maxIterations, float minSedimentCapacity, float outputFactor, float sedimentCapacityFactor, float stepLength, float friction, float minModification, int maxSectorSize, float coverageFactor) : base(offset, threadPool, source)
+		public HydrolicErosion(Coordinate offset, ITGThreadPool threadPool, Algorithm<float> source, float brushRadius, float depositSpeed, float erodeSpeed, float evaporationSpeed, float gravity, float initialSpeed, float initialVolume, int layeringPower, int maxIterations, float minSedimentCapacity, float outputFactor, float sedimentCapacityFactor, float stepLength, float friction, float minModification, int maxSectorSize, float coverageFactor, float maxModification, float sedimentFactor) : base(offset, threadPool, source)
 		{
 			this.brushRadius = brushRadius;
 			this.depositSpeed = depositSpeed;
@@ -70,6 +74,8 @@
 			this.stepLength = stepLength;
 			this.minModification = minModification;
 			this.maxSectorSize = maxSectorSize;
+			this.maxModification = maxModification;
+			this.sedimentFactor = sedimentFactor;
 
 			errosionBrushes = new CircularFloatBrushGroup(brushRadius, CircularBrushMode.Quadratic_EaseOut, Constants.AROUND_0_POSITIVE, BRUSHGROUP_SIZE);
 			depositBrushes = new CircularFloatBrushGroup(brushRadius, CircularBrushMode.Quadratic_Smooth, Constants.AROUND_0_POSITIVE, BRUSHGROUP_SIZE);
@@ -161,7 +167,7 @@
 							sediment -= MathExt.Min(amountToDeposit, sediment);
 							CircularFloatBrush depositBrush = depositBrushes.GetBrush(position);
 							BrushTouple<float>[] depositBrushSamples = depositBrush.Touples;
-							float depositHeight = ( amountToDeposit / depositBrush.sum ) * outputFactor;
+							float depositHeight = ( amountToDeposit / depositBrush.sum ) * outputFactor * sedimentFactor;
 
 							for ( int i = 0 ; i < depositBrushSamples.Length ; i++ ) {
 								heightmap[depositBrushSamples[i].offset + positionInt] += depositBrushSamples[i].value * depositHeight;
@@ -175,6 +181,7 @@
 						float amountToErode = sedimentMinusSedimentCapacity * erodeSpeed;
 
 						if ( amountToErode >= minModification ) {
+							amountToErode = MathExt.Min(amountToErode, maxModification);
 							CircularFloatBrush errosionBrush = errosionBrushes.GetBrush(position);
 							BrushTouple<float>[] errosionBrushSamples = errosionBrush.Touples;
 							float errosionHeight = MathExt.Min(( amountToErode / errosionBrush.sum ), -deltaHeight) * outputFactor;

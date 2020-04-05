@@ -9,10 +9,14 @@
 	public class Landscape {
 
 		private Dictionary<string, IAlgorithm> algorithms;
+		public ITGThreadPool threadPool;
 
-		public Landscape(Dictionary<string, IAlgorithm> algorithms)
+		public int RunnningThreads => threadPool.ThreadsRunning;
+
+		public Landscape(Dictionary<string, IAlgorithm> algorithms, ITGThreadPool threadPool)
 		{
 			this.algorithms = algorithms;
+			this.threadPool = threadPool;
 		}
 
 		public Algorithm<T> GetAlgorithm<T>(string key) where T : struct
@@ -20,6 +24,17 @@
 			if ( algorithms.ContainsKey(key) ) {
 				if ( Object.ReferenceEquals(algorithms[key].GetGenericType(), typeof(T)) ) {
 					return (Algorithm<T>)algorithms[key];
+				}
+				throw new InvalidOperationException("Type mismatch");
+			}
+			throw new KeyNotFoundException();
+		}
+
+		public Outputter<O> GetOutputter<O>(string key)
+		{
+			if ( algorithms.ContainsKey(key) ) {
+				if ( algorithms[key].GetType().IsSubclassOf(typeof(Outputter<O>)) ) {
+					return (Outputter<O>)algorithms[key];
 				}
 				throw new InvalidOperationException("Type mismatch");
 			}

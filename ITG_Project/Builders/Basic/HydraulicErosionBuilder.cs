@@ -33,6 +33,8 @@
 
 		public float MinModification { get; set; } = 0.005f;
 
+		public float MaxModification { get; set; } = 0.025f;
+
 		public float MinSedimentCapacity { get; set; } = 0;
 
 		public float OutputFactor { get; set; } = 0.375f;
@@ -40,6 +42,7 @@
 		public float SedimentCapacityFactor { get; set; } = 20;
 
 		public float StepLength { get; set; } = 1f;
+		public float SedimentFactor { get; set; } = 1f;
 
 		//TODO
 		public override Algorithm<float> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)
@@ -65,7 +68,9 @@
 				friction: Friction,
 				minModification: MinModification,
 				maxSectorSize: MaxSectorSize,
-				coverageFactor: CoverageFactor
+				coverageFactor: CoverageFactor,
+				maxModification: MaxModification,
+				sedimentFactor: SedimentFactor
 			);
 		}
 
