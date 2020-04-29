@@ -63,20 +63,29 @@
 			jobs.Push(job);
 			hasJobs.Set();
 		}
-		public void Enqueue(in ITGJob[] newJobs)
+		public void Enqueue(in ITGJob[] newJobs, int timeout = -1)
 		{
-			jobs.PushRange(newJobs);
-			hasJobs.Set();
+			if ( timeout < 0 ) {
+				jobs.PushRange(newJobs);
+				hasJobs.Set();
+			} else {
+				foreach ( ITGJob job in jobs ) {
+					Enqueue(job);
+					if ( timeout > 0 ) {
+						Thread.Sleep(timeout);
+					}
+				}
+			}
 		}
 
-		public void Enqueue(in ITGJob[,] newJobs)
+		public void Enqueue(in ITGJob[,] newJobs, int timeout = -1)
 		{
 			ITGJob[] temp = new ITGJob[newJobs.Length];
 			int index = 0;
 			for ( int i = 0 ; i < newJobs.GetLength(0) ; i++ )
 				for ( int j = 0 ; j < newJobs.GetLength(1) ; j++ )
 					temp[index++] = newJobs[i, j];
-			Enqueue(temp);
+			Enqueue(temp, timeout);
 		}
 
 		public Sector<T>[] Execute<T>(in RequstSector[] requstSectors, SectorJob<T>.Process SectorPopulation) where T : struct

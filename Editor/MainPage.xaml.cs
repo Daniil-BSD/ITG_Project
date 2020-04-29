@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -8,6 +9,7 @@ using Editor.DataModels;
 using ITG_Core;
 using ITG_Core.Basic.Builders;
 using ITG_Core.Bulders;
+using Microsoft.Toolkit.Uwp.UI.Controls;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -29,7 +31,7 @@ namespace Editor {
 
     public sealed partial class MainPage : Page {
         public List<Type> PossibleBuilders { get; private set; }
-        public List<BuilderModel> BuilderModels { get; private set; }
+        public ObservableCollection<BuilderModel> BuilderModels { get; private set; }
         public List<string> PossibleBuildersNames
         {
             get {
@@ -50,12 +52,19 @@ namespace Editor {
                 new BlurBuilder(),
                 new HydraulicErosionBuilder()
             };
-            BuilderModels = new List<BuilderModel>();
+            BuilderModels = new ObservableCollection<BuilderModel>();
             foreach ( IAlgorithmBuilder builder in temp ) {
                 BuilderModels.Add(new BuilderModel(builder));
             }
 
             InitializeComponent();
+        }
+
+        private void AddBuilder_Click(object sender, RoutedEventArgs e)
+        {
+            ComboBox buildersComboBox = (ComboBox)FindName("BuildersComboBox");
+            Type builderType = PossibleBuilders[buildersComboBox.SelectedIndex];
+            BuilderModels.Add(new BuilderModel((IAlgorithmBuilder)Activator.CreateInstance(builderType)));
         }
     }
 }

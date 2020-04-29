@@ -1,15 +1,20 @@
 ﻿namespace ITG_Core {
 	using System;
 	using System.Collections.Generic;
+	using System.IO;
+	using System.Runtime.Serialization;
+	using System.Xml;
+	using System.Xml.Serialization;
 	using ITG_Core.Base;
 	using ITG_Core.Bulders;
+	using ITG_Core.Structs;
 
 	/// <summary>
 	/// Defines the <see cref="LandscapeBuilder" />
 	/// </summary>
 	public class LandscapeBuilder {
 
-		private Dictionary<string, IAlgorithmBuilder> builders;
+		public SerializableDictionary<string, IAlgorithmBuilder> builders;
 
 		private ITGThreadpoolBuilder threadpoolBuilder;
 
@@ -21,8 +26,21 @@
 
 		public LandscapeBuilder()
 		{
-			builders = new Dictionary<string, IAlgorithmBuilder>();
+			builders = new SerializableDictionary<string, IAlgorithmBuilder>();
 			threadpoolBuilder = new ITGThreadpoolBuilder();
+		}
+
+
+		public string XML
+		{
+			get => new LandscapeBuilderDataModel(this).XML;
+			set {
+				LandscapeBuilderDataModel dm = new LandscapeBuilderDataModel(this) {
+					XML = value
+				};
+				builders = dm.builders;
+				threadpoolBuilder = dm.threadpoolBuilder;
+			}
 		}
 
 		public Landscape Build()
@@ -86,6 +104,46 @@
 				if ( !builders.ContainsKey(key) )
 					builders.Add(key, value);
 			}
+		}
+
+		public class LandscapeBuilderDataModel {
+
+			public SerializableDictionary<string, IAlgorithmBuilder> builders;
+
+			public ITGThreadpoolBuilder threadpoolBuilder;
+			public LandscapeBuilderDataModel()
+			{
+				builders = new SerializableDictionary<string, IAlgorithmBuilder>();
+				threadpoolBuilder = new ITGThreadpoolBuilder();
+			}
+			public LandscapeBuilderDataModel(LandscapeBuilder landscapeBuilder)
+			{
+				builders = landscapeBuilder.builders;
+				threadpoolBuilder = landscapeBuilder.threadpoolBuilder;
+			}
+			[XmlIgnore]
+			public string XML
+			{
+				get {
+					XmlSerializer serializer = new XmlSerializer(typeof(LandscapeBuilderDataModel));
+					string ret = "";
+					using ( StringWriter writer = new StringWriter() ) {
+						serializer.Serialize(writer, this);
+						ret = writer.ToString();
+					}
+					return ret;
+				}
+
+				set {
+					XmlSerializer serializer = new XmlSerializer(typeof(LandscapeBuilderDataModel));
+					using ( StringReader reader = new StringReader(value) ) {
+						LandscapeBuilderDataModel val = (LandscapeBuilderDataModel)serializer.Deserialize(reader);
+						builders = val.builders;
+						threadpoolBuilder = val.threadpoolBuilder;
+					}
+				}
+			}
+
 		}
 
 		public class LandscapeIntermidiate {

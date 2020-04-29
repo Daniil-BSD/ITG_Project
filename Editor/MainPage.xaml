@@ -1,21 +1,93 @@
-﻿<Page
+﻿<Page xmlns:my="using:Microsoft.Toolkit.Uwp.UI.Controls" 
     x:Class="Editor.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Editor"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:ext="using:Editor.DataModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-    <StackPanel Orientation="Vertical">
-        <CommandBar Grid.Column ="0" Grid.Row ="0"  Grid.ColumnSpan ="4">
-            <AppBarToggleButton Icon="Shuffle" Label="Shuffle" />
-            <AppBarToggleButton Icon="RepeatAll" Label="Repeat"/>
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Margin="-2,0,0,0">
+    <Page.Resources>
+
+        <local:PropertyDataTemplateSelector x:Key="PDTS" 
+            PropertyModel_int="{StaticResource PropertyModel_int}"
+            PropertyModel_string="{StaticResource PropertyModel_string}"
+            PropertyModel_float="{StaticResource PropertyModel_float}"
+            PropertyModel_Coordinate="{StaticResource PropertyModel_Coordinate}"
+            PropertyModel_bool="{StaticResource PropertyModel_bool}"
+                                            />
+        <DataTemplate x:Key="PropertyModel_int" x:DataType="ext:PropertyModel_int" >
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" MinWidth="160"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{x:Bind Name}" ToolTipService.ToolTip="{x:Bind Type_Name}" VerticalAlignment="Center"  />
+                <muxc:NumberBox Grid.Column="1" Value="{x:Bind Value, Mode=TwoWay}" VerticalAlignment="Center" />
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="PropertyModel_bool" x:DataType="ext:PropertyModel_bool" >
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" MinWidth="160"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{x:Bind Name}" ToolTipService.ToolTip="{x:Bind Type_Name}" VerticalAlignment="Center"  />
+                <CheckBox  Grid.Column="1" IsChecked="{x:Bind Value, Mode=TwoWay}"/>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="PropertyModel_float" x:DataType="ext:PropertyModel_float" >
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" MinWidth="160"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{x:Bind Name}" ToolTipService.ToolTip="{x:Bind Type_Name}" VerticalAlignment="Center"  />
+                <muxc:NumberBox Grid.Column="1" Value="{x:Bind Value, Mode=TwoWay}" VerticalAlignment="Center" />
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="PropertyModel_string" x:DataType="ext:PropertyModel_string" >
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" MinWidth="160"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{x:Bind Name}" ToolTipService.ToolTip="{x:Bind Type_Name}" VerticalAlignment="Center"  />
+                <TextBox Grid.Column="1" Text="{x:Bind Value, Mode=TwoWay}" VerticalAlignment="Center" />
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="PropertyModel_Coordinate" x:DataType="ext:PropertyModel_Coordinate" >
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" MinWidth="160"/>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{x:Bind Name}" ToolTipService.ToolTip="{x:Bind Type_Name}" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" Width="32" Text="X :" ToolTipService.ToolTip="X component" VerticalAlignment="Center" TextAlignment="Center"/>
+                <muxc:NumberBox Grid.Column="2" Value="{x:Bind X, Mode=TwoWay}" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="3" Width="32" Text="Y :" ToolTipService.ToolTip="Y component" VerticalAlignment="Center" TextAlignment="Center"/>
+                <muxc:NumberBox Grid.Column="4" Value="{x:Bind Y, Mode=TwoWay}" VerticalAlignment="Center" />
+            </Grid>
+        </DataTemplate>
+
+
+    </Page.Resources>
+    <Page.TopAppBar>
+        <CommandBar IsSticky="True">
+            <AppBarButton Icon="Download" Label="Load" />
+            <AppBarButton Icon="Save" Label="Save" />
+            <AppBarButton Icon="Play" Label="Run"/>
             <AppBarSeparator/>
-            <AppBarButton Icon="Back" Label="Back" />
-            <AppBarButton Icon="Stop" Label="Stop" />
-            <AppBarButton Icon="Play" Label="Play"/>
-            <AppBarButton Icon="Forward" Label="Forward"/>
+            <AppBarButton Icon="Delete" Label="Delete"/>
+            <AppBarButton Icon="Add" Label="Add"/>
+            <AppBarElementContainer>
+                <TextBlock>hi</TextBlock>
+            </AppBarElementContainer>
 
             <CommandBar.SecondaryCommands>
                 <AppBarButton Icon="Like" Label="Like" />
@@ -26,30 +98,79 @@
                 <TextBlock Text="Now playing..." Margin="12,14"/>
             </CommandBar.Content>
         </CommandBar>
-
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Padding="16,8">
-            <Image/>
-            <ScrollViewer>
-                <StackPanel Orientation="Vertical"  Padding="16,8">
-                    <ComboBox x:Name="BuildersComboBox" Header="Builders" ItemsSource="{x:Bind PossibleBuildersNames}"  PlaceholderText="Select Builder"/>
-                    <ListView  ItemsSource="{x:Bind BuilderModels}" SelectionMode="None" IsItemClickEnabled = "True" >
-                        <ListView.ItemTemplate >
-                            <DataTemplate>
-                                <StackPanel Orientation="Vertical" Width="Auto">
-                                    <TextBlock Text="{Binding Name}" />
-                                    <ListView  ItemsSource="{Binding Properties}" SelectionMode="None" IsItemClickEnabled = "True">
-                                        <ListView.ItemTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding Name}" />
-                                            </DataTemplate>
-                                        </ListView.ItemTemplate>
-                                    </ListView>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                </StackPanel>
+    </Page.TopAppBar>
+    <Grid >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*" MinWidth="576" MaxWidth="700"/>
+        </Grid.ColumnDefinitions>
+        <Image/>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Horizontal">
+                <ComboBox x:Name="BuildersComboBox" SelectedIndex="0" ItemsSource="{x:Bind PossibleBuildersNames}"  PlaceholderText="Select Builder" Grid.Row="0" Margin="48,8,8,8"/>
+                <Button x:Name="AddBuilder" Click="AddBuilder_Click" Padding="32,4">
+                    Add Builder
+                </Button>
+            </StackPanel>
+            <ScrollViewer VerticalScrollMode="Auto" Grid.Row="1" >
+                <ListView Name="BuilderModelsList" AllowDrop="True" ItemsSource="{x:Bind BuilderModels}" SelectionMode="Extended" CanReorderItems="True" IsItemClickEnabled="True">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Padding" Value="16, 8" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="32,4" >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <my:Expander Name="PropertiesExpander" IsExpanded="True" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" >
+                                    <my:Expander.Header>
+                                        <TextBlock Text="{Binding ElementName=PropertiesExpander, Path=DataContext.Name, Mode=OneWay}" VerticalAlignment="Center" Grid.Column="0" />
+                                    </my:Expander.Header>
+                                    <my:Expander.ContentOverlay >
+                                        <Grid Margin="32,4" >
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*" MinWidth="160"/>
+                                                <ColumnDefinition Width="3*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="ID" ToolTipService.ToolTip="string" VerticalAlignment="Center"  />
+                                            <TextBox Grid.Column="1" x:Name="IDTextBox" Text="{Binding ID, Mode=TwoWay}" VerticalAlignment="Center" />
+                                        </Grid>
+                                    </my:Expander.ContentOverlay>
+                                    <my:Expander.Content >
+                                        <StackPanel HorizontalAlignment="Stretch" Orientation="Vertical" >
+                                            <Grid Margin="32,4" HorizontalAlignment="Stretch" >
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="1*" MinWidth="160"/>
+                                                    <ColumnDefinition Width="3*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" Text="ID" ToolTipService.ToolTip="string" VerticalAlignment="Center"  />
+                                                <TextBox Grid.Column="1"  VerticalAlignment="Center" Text="{Binding Path=Text, ElementName=IDTextBox, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            </Grid>
+                                            <ListView ItemsSource="{Binding Properties}" HorizontalContentAlignment="Stretch" SelectionMode="None" ItemTemplateSelector="{StaticResource PDTS}">
+                                                <ListView.ItemContainerStyle>
+                                                    <Style TargetType="ListViewItem">
+                                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                                        <Setter Property="Padding" Value="32,4" />
+                                                    </Style>
+                                                </ListView.ItemContainerStyle>
+                                            </ListView>
+                                        </StackPanel>
+                                    </my:Expander.Content>
+                                </my:Expander>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </ScrollViewer>
-        </StackPanel>
-    </StackPanel>
+        </Grid>
+    </Grid>
 </Page>

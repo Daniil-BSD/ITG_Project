@@ -1,6 +1,7 @@
 ﻿namespace ITG_Core.Bulders {
 	using System;
 	using System.Collections.Generic;
+	using System.Xml.Serialization;
 	using ITG_Core.Base;
 
 	/// <summary>
