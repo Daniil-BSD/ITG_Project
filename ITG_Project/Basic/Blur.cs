@@ -13,7 +13,7 @@
 			forceOverFactorSum = force / factorSum;
 		}
 
-		public override float Compute(Neighbourhood<float> n)
+		public override float Compute(Neighborhood<float> n)
 		{
 			float sum =
 				n.data[0, 2] * Constants.SQRT_2_OVER_2_FLOAT + n.data[1, 2] + n.data[2, 2] * Constants.SQRT_2_OVER_2_FLOAT +
@@ -34,7 +34,7 @@
 		{
 		}
 
-		public override float Compute(Neighbourhood<float> n)
+		public override float Compute(Neighborhood<float> n)
 		{
 			float sum =
 				n.data[0, 2] * Constants.SQRT_2_OVER_2_FLOAT + n.data[1, 2] + n.data[2, 2] * Constants.SQRT_2_OVER_2_FLOAT +

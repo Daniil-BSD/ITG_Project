@@ -10,23 +10,25 @@
 	public abstract class InterpolatableAlgorithm<T, S> : Layer<T, S> where T : struct where S : struct {
 
 		public readonly int scale;
+		public readonly float initialOffset;
+		public readonly float step;
 
 		public InterpolatableAlgorithm(Coordinate offset, ITGThreadPool threadPool, Algorithm<S> source, int scale) : base(offset, threadPool, source)
 		{
 			this.scale = scale;
+			step = 1f / scale;
+			initialOffset = step / 2;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected override Chunk<T> ChunkPopulation(in Coordinate coordinate)
+		protected sealed override Chunk<T> ChunkPopulation(in Coordinate coordinate)
 		{
 			return SectorPopulation(new RequstSector(coordinate, 1, 1)).Chunks[0, 0];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected override Sector<T> SectorPopulation(in RequstSector requstSector)
+		protected sealed override Sector<T> SectorPopulation(in RequstSector requstSector)
 		{
-			float step = 1f / scale;
-			float initialOffset = step / 2;
 			int corX = requstSector.coordinate.x;
 			int corY = requstSector.coordinate.y;
 			//used to find the corresponding index
@@ -48,8 +50,7 @@
 						sourceSector[sectorIndexX, sectorIndexY + 1],
 						sourceSector[sectorIndexX + 1, sectorIndexY],
 						sourceSector[sectorIndexX + 1, sectorIndexY + 1],
-						x % 1, y % 1,
-						initialOffset
+						x % 1, y % 1
 					);
 				}
 			}
@@ -64,6 +65,6 @@
 		/// |					|
 		/// |	00			01	|
 		/// ---------------------
-		public abstract T Compute(in S val00, in S val01, in S val10, in S val11, in float x, in float y, in float offset);
+		public abstract T Compute(in S val00, in S val01, in S val10, in S val11, in float x, in float y);
 	}
 }

@@ -13,33 +13,34 @@
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected override Chunk<T> ChunkPopulation(in Coordinate coordinate)
+		protected sealed override Chunk<T> ChunkPopulation(in Coordinate coordinate)
 		{
 			return SectorPopulation(new RequstSector(coordinate, 1, 1)).Chunks[0, 0];
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected override Sector<T> SectorPopulation(in RequstSector requstSector)
+		protected sealed override Sector<T> SectorPopulation(in RequstSector requstSector)
 		{
 			RequstSector outgoingRequstSector = requstSector.GetExpandedCopy(1);
 			Sector<S> sourceSector = source.GetSector(outgoingRequstSector);
 			Sector<T> sector = new Sector<T>(requstSector);
 			for ( int i = 0 ; i < sector.Width_units ; i++ ) {
 				for ( int j = 0 ; j < sector.Height_units ; j++ ) {
-					sector[i, j] = Compute(new Neighbourhood<S>(sourceSector, i, j));
+					sector[i, j] = Compute(new Neighborhood<S>(sourceSector, i, j));
 				}
 			}
 			return sector;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public abstract T Compute(Neighbourhood<S> n);
+		public abstract T Compute(Neighborhood<S> n);
 
-		public class Neighbourhood<NT> where NT : struct {
+		public class Neighborhood<NT> where NT : struct {
 
 			public readonly NT[,] data;
 
-			public Neighbourhood(Sector<NT> s, in int i, in int j)
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public Neighborhood(Sector<NT> s, in int i, in int j)
 			{
 				int x = i + Constants.CHUNK_SIZE;
 				int y = j + Constants.CHUNK_SIZE;

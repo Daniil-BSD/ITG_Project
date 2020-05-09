@@ -79,45 +79,37 @@
     </Page.Resources>
     <Page.TopAppBar>
         <CommandBar IsSticky="True">
-            <AppBarButton Icon="Download" Label="Load" />
-            <AppBarButton Icon="Save" Label="Save" />
-            <AppBarButton Icon="Play" Label="Run"/>
+            <AppBarButton Icon="Download" Label="Load" Click="LoadButton_Click"/>
+            <AppBarButton Icon="Save" Label="Save" Click="SaveButton_Click"/>
+            <AppBarButton Icon="Play" Label="Run" Click="RunButton_Click"/>
+            <AppBarButton Icon="Pictures"  Label="Save Result" Click="CaptureButton_Click"/>
             <AppBarSeparator/>
-            <AppBarButton Icon="Delete" Label="Delete"/>
-            <AppBarButton Icon="Add" Label="Add"/>
-            <AppBarElementContainer>
-                <TextBlock>hi</TextBlock>
-            </AppBarElementContainer>
-
-            <CommandBar.SecondaryCommands>
-                <AppBarButton Icon="Like" Label="Like" />
-                <AppBarButton Icon="Dislike" Label="Dislike" />
-            </CommandBar.SecondaryCommands>
+            <AppBarButton Icon="Delete" Label="Delete" Click="DeleteButton_Click"/>
 
             <CommandBar.Content>
-                <TextBlock Text="Now playing..." Margin="12,14"/>
+                <TextBlock Text="ITG Basic Editor" Margin="12,14"/>
             </CommandBar.Content>
         </CommandBar>
     </Page.TopAppBar>
-    <Grid >
+    <Grid Padding="0,20,0,0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1*" MinWidth="576" MaxWidth="700"/>
         </Grid.ColumnDefinitions>
-        <Image/>
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal">
-                <ComboBox x:Name="BuildersComboBox" SelectedIndex="0" ItemsSource="{x:Bind PossibleBuildersNames}"  PlaceholderText="Select Builder" Grid.Row="0" Margin="48,8,8,8"/>
+                <ComboBox x:Name="BuildersComboBox" SelectedIndex="0" ItemsSource="{x:Bind PossibleBuildersNames}"  PlaceholderText="Select Builder" Grid.Row="0" Margin="8" MinWidth="200"/>
+                <ComboBox x:Name="TypeParameterComboBox" SelectedIndex="0" ItemsSource="{x:Bind PossibleTypeParametersNames}"  PlaceholderText="Select Builder" Grid.Row="0" Margin="8" MinWidth="10"/>
                 <Button x:Name="AddBuilder" Click="AddBuilder_Click" Padding="32,4">
                     Add Builder
                 </Button>
             </StackPanel>
             <ScrollViewer VerticalScrollMode="Auto" Grid.Row="1" >
-                <ListView Name="BuilderModelsList" AllowDrop="True" ItemsSource="{x:Bind BuilderModels}" SelectionMode="Extended" CanReorderItems="True" IsItemClickEnabled="True">
+                <ListView x:Name="BuilderModelsList" AllowDrop="True" ItemsSource="{x:Bind BuilderModels}" SelectionMode="Extended" CanReorderItems="True" IsItemClickEnabled="True">
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -126,15 +118,12 @@
                         </Style>
                     </ListView.ItemContainerStyle>
                     <ListView.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate x:DataType="ext:BuilderModel">
                             <Grid Margin="32,4" >
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
-                                <my:Expander Name="PropertiesExpander" IsExpanded="True" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" >
-                                    <my:Expander.Header>
-                                        <TextBlock Text="{Binding ElementName=PropertiesExpander, Path=DataContext.Name, Mode=OneWay}" VerticalAlignment="Center" Grid.Column="0" />
-                                    </my:Expander.Header>
+                                <my:Expander Name="PropertiesExpander" IsExpanded="True" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Header="{x:Bind Name}" >
                                     <my:Expander.ContentOverlay >
                                         <Grid Margin="32,4" >
                                             <Grid.ColumnDefinitions>
@@ -171,6 +160,20 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </ScrollViewer>
+        </Grid>
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Image Grid.Row="0" x:Name="preview" />
+            <my:Expander Grid.Row="1" ExpandDirection="Up" Header="Output" MaxHeight="300" HorizontalContentAlignment="Stretch">
+                <my:Expander.Content >
+                    <ScrollViewer VerticalScrollMode="Auto" HorizontalAlignment="Stretch" Padding="8">
+                        <TextBlock x:Name="output" Text="console"/>
+                    </ScrollViewer>
+                </my:Expander.Content>
+            </my:Expander>
         </Grid>
     </Grid>
 </Page>

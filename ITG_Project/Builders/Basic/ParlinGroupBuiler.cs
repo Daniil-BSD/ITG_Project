@@ -25,7 +25,7 @@
 
 		public float MaxPerlinScale { get; set; } = 128;
 
-		public Coordinate OffsetGlobal { get; set; } = new Coordinate(0, 0);
+		public CoordinateBasic OffsetGlobal { get; set; } = new CoordinateBasic(0, 0);
 
 		public float RetFactor { get; set; } = 1.375f;
 

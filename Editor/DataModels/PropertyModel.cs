@@ -92,13 +92,13 @@ namespace Editor.DataModels {
 		}
 	}
 
-	public class PropertyModel_Coordinate : PropertyModel<Coordinate> {
+	public class PropertyModel_Coordinate : PropertyModel<CoordinateBasic> {
 
 		public int X
 		{
 			get => Value.x;
 			set {
-				Value = new Coordinate(value, Value.x);
+				Value = new CoordinateBasic(value, Value.x);
 				InvokePropertyChanged(nameof(X));
 			}
 		}
@@ -107,7 +107,7 @@ namespace Editor.DataModels {
 		{
 			get => Value.y;
 			set {
-				Value = new Coordinate(Value.y, value);
+				Value = new CoordinateBasic(Value.y, value);
 				InvokePropertyChanged(nameof(Y));
 			}
 		}

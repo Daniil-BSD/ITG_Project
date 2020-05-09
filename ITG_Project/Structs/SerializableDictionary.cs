@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Xml.Serialization;
 
 namespace ITG_Core.Structs {
@@ -35,15 +36,21 @@ namespace ITG_Core.Structs {
 				TKey key = (TKey)keySerializer.Deserialize(reader);
 				reader.ReadEndElement();
 				reader.ReadStartElement(valueType_tag);
-				Type type = Type.GetType((string)stringSerializer.Deserialize(reader));
-				XmlSerializer valueSerializer = new XmlSerializer(type);
+				string typeName = (string)stringSerializer.Deserialize(reader);
 				reader.ReadEndElement();
 				reader.ReadStartElement(value_tag);
-				TValue value = (TValue)valueSerializer.Deserialize(reader);
-				reader.ReadEndElement();
-				Add(key, value);
-				reader.ReadEndElement();
-				reader.MoveToContent();
+				try {
+					Type type = Type.GetType(typeName);
+					XmlSerializer valueSerializer = new XmlSerializer(type);
+					TValue value = (TValue)valueSerializer.Deserialize(reader);
+					Add(key, value);
+				} catch ( Exception ) {
+
+				} finally {
+					reader.ReadEndElement();
+					reader.ReadEndElement();
+					reader.MoveToContent();
+				}
 			}
 			reader.ReadEndElement();
 		}
@@ -57,7 +64,7 @@ namespace ITG_Core.Structs {
 				writer.WriteEndElement();
 				writer.WriteStartElement(valueType_tag);
 				TValue value = this[key];
-				string type = value.GetType().FullName;
+				string type = value.GetType().AssemblyQualifiedName;
 				stringSerializer.Serialize(writer, type);
 				writer.WriteEndElement();
 				writer.WriteStartElement(value_tag);

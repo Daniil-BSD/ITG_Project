@@ -111,7 +111,7 @@
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int ToIntegerConsistent(this in double f)
 		{
-			return ( f < 0 ) ? (int)f - 1 : (int)f;
+			return ( f < 0 && f % 1 != 0 ) ? (int)f - 1 : (int)f;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

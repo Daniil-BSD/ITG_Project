@@ -6,6 +6,7 @@ namespace ConsoleApp1 {
 	using System.IO;
 	using System.Xml.Serialization;
 	using ITG_Core;
+	using ITG_Core.Base;
 	using ITG_Core.Basic.Builders;
 
 	public class Program {
@@ -98,6 +99,7 @@ namespace ConsoleApp1 {
 			landscapeBuilder["fianlMem"] = new MemoryBuilder<float>() { SourceID = "HEmblur" };
 			landscapeBuilder["HEinv"] = new FloatAdderBuilder() { Sources = new string[] { "fianlMem" }, RetFactor = -1 };
 			landscapeBuilder["HEdiff"] = new FloatAdderBuilder() { Sources = new string[] { "HEinv", "mem2" }, RetFactor = 2 };
+			landscapeBuilder["output"] = new HeightMapImageOutputterBuilder() { SourceID = "mem2", Layeers = 3, Size = 100, Min = -1, Max = 1 };
 
 			//landscapeBuilder["blur1"] = new BlurBuilder() { SourceID = "mem2" };
 			//landscapeBuilder["brush"] = new BrushTestBuilder();
@@ -116,30 +118,26 @@ namespace ConsoleApp1 {
 			Console.WriteLine("Computing...");
 
 			sw.Restart();
-			ITG_Core.Base.Algorithm<float> outputPerlin = landscape.GetAlgorithm<float>("mem2");
-			ITG_Core.Base.Algorithm<float> outputHE = landscape.GetAlgorithm<float>("fianlMem");
-			ITG_Core.Base.Algorithm<float> outputdiff = landscape.GetAlgorithm<float>("HEdiff");
+			Algorithm<float> outputPerlin = landscape.GetAlgorithm<float>("mem2");
+			Algorithm<float> outputHE = landscape.GetAlgorithm<float>("fianlMem");
+			Algorithm<float> outputdiff = landscape.GetAlgorithm<float>("HEdiff");
+			Outputter<Bitmap> bitmapOutputter = landscape.GetOutputter<Bitmap>("output");
 
 			RequstSector request = new RequstSector(new Coordinate(0, 0), SIZE, SIZE);
-			Sector<float> sectordiff = outputdiff.GetSector(request);
-			Sector<float> sectorHE = outputHE.GetSector(request);
-			Sector<float> sectorPerlin = outputPerlin.GetSector(request);
-			//Sector<float> area = output.GetSector(new RequstSector(new Coordinate(0, 0), 4, 4));
+			//Sector<float> sectordiff = outputdiff.GetSector(request);
+			//Sector<float> sectorHE = outputHE.GetSector(request);
+			//Sector<float> sectorPerlin = outputPerlin.GetSector(request);
 
 			sw.Stop();
 			Console.WriteLine("Elapsed={0}", sw.Elapsed);
-			Console.WriteLine("Press \"Enter\" to save", sw.Elapsed);
+			//Console.WriteLine("Press \"Enter\" to save", sw.Elapsed);
 			//Console.ReadKey();
-			Console.WriteLine("Saving...");
 
 			int width = request.Width_units * 3;
 			int height = request.Height_units;
-			Bitmap bmp = new Bitmap(width, height);
 
-			Draw(sectorPerlin, bmp, 0, LAYERED);
-			Draw(sectorHE, bmp, request.Width_units, LAYERED);
-			Draw(sectordiff, bmp, request.Width_units * 2, true);
-
+			Bitmap bmp = bitmapOutputter.GetObject(new Coordinate());
+			Console.WriteLine("Saving...");
 			bmp.Save("D:\\output.png", ImageFormat.Png);
 
 			//Console.WriteLine("min: " + min + " max: " + max + " avg: " + (double) total / (width * height) + " errors: " + errors);
@@ -148,60 +146,5 @@ namespace ConsoleApp1 {
 			Console.ReadKey();
 		}
 
-		public static void Draw(Sector<float> area, in Bitmap bmp, int offset, bool layered)
-		{
-			for ( int i = 0 ; i < area.Width_units ; i++ ) {
-				for ( int j = 0 ; j < area.Height_units ; j++ ) {
-					if ( layered ) {
-						int saturation = ( (int)( ( ( area[i, j] * FACTOR ) ) * 256 ) * LAYERS ).Modulo(256);
-						bmp.SetPixel(offset + i, j, Color.FromArgb(( saturation == 0 || saturation == 255 ) ? 127 : saturation, ( i % Constants.CHUNK_SIZE == 0 && BORDERS ) ? 255 : saturation, ( j % Constants.CHUNK_SIZE == 0 && BORDERS ) ? 255 : saturation));
-					} else {
-						int position = ( (int)( ( ( area[i, j] * -FACTOR ) / 2 + 0.5f ) * 256 * 6 ) ).Modulo(256);
-						int section = (int)( ( area[i, j] * -FACTOR / 2 + 0.5f ) * 6 );
-						int R = 0;
-						int G = 0;
-						int B = 0;
-						switch ( section ) {
-							case 0:
-								R = position;
-								break;
-
-							case 1:
-								R = 255;
-								G = position;
-								break;
-
-							case 2:
-								R = 255 - position;
-								G = 255 - position / 8;
-								break;
-
-							case 3:
-								G = 255 - ( ( 255 - position ) / 8 );
-								B = position;
-								break;
-
-							case 4:
-								G = 255 - position;
-								B = 255;
-								break;
-
-							case 5:
-								R = position;
-								G = position;
-								B = 255;
-								break;
-
-							default:
-								R = 255;
-								G = 255;
-								B = 255;
-								break;
-						}
-						bmp.SetPixel(offset + i, j, Color.FromArgb(R, G, B));
-					}
-				}
-			}
-		}
 	}
 }

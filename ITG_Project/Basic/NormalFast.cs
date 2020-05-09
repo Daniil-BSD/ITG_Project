@@ -15,7 +15,7 @@
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public override Vec3 Compute(Neighbourhood<float> n)
+		public override Vec3 Compute(Neighborhood<float> n)
 		{
 			return new Vec3(n[-1, 0] - n[1, 0], n[0, 1] - n[0, -1], 2 * gridStepOverHeightRange).Normalize();
 		}

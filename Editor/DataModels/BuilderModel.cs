@@ -24,8 +24,9 @@ namespace Editor.DataModels {
 					PropertyChanged.Invoke(this, new PropertyChangedEventArgs(nameof(ID)));
 			}
 		}
-		public string Name => builder.GetType().Name;
+		public string Name => builder.GetType().Name.Replace("`1", " ") + ( ( builder.GetType().IsGenericType ) ? "<" + builder.GetType().GetGenericArguments()[0].Name + ">" : "" );
 		public List<IPropertyModel> Properties => properties;
+		public IAlgorithmBuilder Builder => builder;
 
 		public BuilderModel(IAlgorithmBuilder builder)
 		{

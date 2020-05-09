@@ -15,7 +15,9 @@
 
 		bool IsValid(LandscapeBuilder landscapeBuilder);
 
-		string ValidityMessage(LandscapeBuilder landscapeBuilder);
+		void VerifyVallidity(LandscapeBuilder.LandscapeIntermidiate intermidiate);
+
+		List<string> ValidityMessages(LandscapeBuilder landscapeBuilder);
 	}
 
 	/// <summary>
@@ -24,7 +26,7 @@
 	/// <typeparam name="T"></typeparam>
 	public abstract class AlgorithmBuilder<T> : IAlgorithmBuilder where T : struct {
 
-		public Coordinate Offset { get; set; } = new Coordinate(0, 0);
+		public CoordinateBasic Offset { get; set; } = new CoordinateBasic(0, 0);
 
 		public abstract Algorithm<T> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate);
 
@@ -44,14 +46,6 @@
 		public virtual bool IsValid(LandscapeBuilder landscapeBuilder)
 		{
 			return true;
-		}
-
-		public virtual string ValidityMessage(LandscapeBuilder landscapeBuilder)
-		{
-			if ( IsValid(landscapeBuilder) )
-				return "Valid.";
-			else
-				return string.Join("\n", ValidityMessages(landscapeBuilder));
 		}
 
 		public virtual List<string> ValidityMessages(LandscapeBuilder landscapeBuilder)

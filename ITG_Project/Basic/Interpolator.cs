@@ -27,7 +27,7 @@
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public override float Compute(in float val00, in float val01, in float val10, in float val11, in float x, in float y, in float offset)
+		public override float Compute(in float val00, in float val01, in float val10, in float val11, in float x, in float y)
 		{
 			return ComputeStatic(val00, val01, val10, val11, x, y);
 		}

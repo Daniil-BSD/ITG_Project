@@ -14,7 +14,7 @@
 	/// </summary>
 	public class LandscapeBuilder {
 
-		public SerializableDictionary<string, IAlgorithmBuilder> builders;
+		private SerializableDictionary<string, IAlgorithmBuilder> builders;
 
 		private ITGThreadpoolBuilder threadpoolBuilder;
 
@@ -29,7 +29,11 @@
 			builders = new SerializableDictionary<string, IAlgorithmBuilder>();
 			threadpoolBuilder = new ITGThreadpoolBuilder();
 		}
-
+		public LandscapeBuilder(string xml) : this()
+		{
+			XML = xml;
+		}
+		public SerializableDictionary<string, IAlgorithmBuilder> Builders => builders;
 
 		public string XML
 		{
@@ -41,6 +45,18 @@
 				builders = dm.builders;
 				threadpoolBuilder = dm.threadpoolBuilder;
 			}
+		}
+
+		public List<string> GetFullReport()
+		{
+			List<string> ret = new List<string>();
+			foreach ( string key in builders.Keys ) {
+				IAlgorithmBuilder builder = builders[key];
+				string str = builder.GetType().Name + ": " + key;
+				ret.Add(str);
+				ret.AddRange(builder.ValidityMessages(this));
+			}
+			return ret;
 		}
 
 		public Landscape Build()
@@ -120,6 +136,10 @@
 			{
 				builders = landscapeBuilder.builders;
 				threadpoolBuilder = landscapeBuilder.threadpoolBuilder;
+			}
+			public LandscapeBuilderDataModel(string xml)
+			{
+				XML = xml;
 			}
 			[XmlIgnore]
 			public string XML

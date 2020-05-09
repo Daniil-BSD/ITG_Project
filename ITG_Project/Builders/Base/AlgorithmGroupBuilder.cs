@@ -53,5 +53,11 @@
 		{
 			return new List<string>();
 		}
+
+		public void VerifyVallidity(LandscapeBuilder.LandscapeIntermidiate intermidiate)
+		{
+			if ( !IsValid(intermidiate) )
+				throw new InvalidOperationException("Builder is in an invalid satate and thus cannot build an instance.");
+		}
 	}
 }

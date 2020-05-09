@@ -27,10 +27,10 @@
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public override float Compute(in Vec2 val00, in Vec2 val01, in Vec2 val10, in Vec2 val11, in float x, in float y, in float offset)
+		public override float Compute(in Vec2 val00, in Vec2 val01, in Vec2 val10, in Vec2 val11, in float x, in float y)
 		{
-			float X = x + offset;
-			float Y = y + offset;
+			float X = x + initialOffset;
+			float Y = y + initialOffset;
 			float Xm1 = X - 1;
 			float Ym1 = Y - 1;
 

@@ -130,6 +130,7 @@
     <Compile Include="DataModels\BuilderModel.cs" />
     <Compile Include="DataModels\PropertyDataTemplateSelector.cs" />
     <Compile Include="DataModels\PropertyModel.cs" />
+    <Compile Include="Extention\HeightMapImageOutputter.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
