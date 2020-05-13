@@ -94,13 +94,15 @@
 
 		public Chunk<T>[,] Chunks => chunks;
 
-
 		public Coordinate Coordinate => coordinate;
 
 		public int Height_units => height * Constants.CHUNK_SIZE;
 
 		public int Width_units => width * Constants.CHUNK_SIZE;
 
+		public delegate void ChunkPopulationDelegate<S>(out Chunk<T> main, in Chunk<S> request, in Coordinate coordinate) where S : struct;
+
+		public delegate void ForeachChunkDelegate<T1, T2, P>(ref Chunk<T1> main, in Chunk<T2> secondary, in P param) where T1 : struct where T2 : struct;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Sector(in Coordinate coordinate, in int width, in int height, in bool fillup = true)
@@ -169,6 +171,12 @@
 		public bool Equals<S>(Sector<S> sec) where S : struct
 		{
 			return sec.Coordinate.Equals(coordinate) && sec.width == width && sec.height == height;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public Chunk<T> GetChunk(in CoordinateBasic coordinate)
+		{
+			return chunks[coordinate.x, coordinate.y];
 		}
 
 		public Sector<T> GetCopy()
@@ -249,14 +257,5 @@
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			set => chunks[coordinate.x / Constants.CHUNK_SIZE, coordinate.y / Constants.CHUNK_SIZE][coordinate.x % Constants.CHUNK_SIZE, coordinate.y % Constants.CHUNK_SIZE] = value;
 		}
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Chunk<T> GetChunk(in CoordinateBasic coordinate)
-		{
-			return chunks[coordinate.x, coordinate.y];
-		}
-
-		public delegate void ChunkPopulationDelegate<S>(out Chunk<T> main, in Chunk<S> request, in Coordinate coordinate) where S : struct;
-
-		public delegate void ForeachChunkDelegate<T1, T2, P>(ref Chunk<T1> main, in Chunk<T2> secondary, in P param) where T1 : struct where T2 : struct;
 	}
 }

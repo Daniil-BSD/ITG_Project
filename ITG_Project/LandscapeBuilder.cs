@@ -2,8 +2,6 @@
 	using System;
 	using System.Collections.Generic;
 	using System.IO;
-	using System.Runtime.Serialization;
-	using System.Xml;
 	using System.Xml.Serialization;
 	using ITG_Core.Base;
 	using ITG_Core.Bulders;
@@ -22,18 +20,9 @@
 
 		public static readonly string SUBKEY_SEPARATOR = "->";
 
-		public ITGThreadpoolBuilder ThreadpoolBuilder { get => threadpoolBuilder; set => threadpoolBuilder = value; }
-
-		public LandscapeBuilder()
-		{
-			builders = new SerializableDictionary<string, IAlgorithmBuilder>();
-			threadpoolBuilder = new ITGThreadpoolBuilder();
-		}
-		public LandscapeBuilder(string xml) : this()
-		{
-			XML = xml;
-		}
 		public SerializableDictionary<string, IAlgorithmBuilder> Builders => builders;
+
+		public ITGThreadpoolBuilder ThreadpoolBuilder { get => threadpoolBuilder; set => threadpoolBuilder = value; }
 
 		public string XML
 		{
@@ -47,16 +36,15 @@
 			}
 		}
 
-		public List<string> GetFullReport()
+		public LandscapeBuilder()
 		{
-			List<string> ret = new List<string>();
-			foreach ( string key in builders.Keys ) {
-				IAlgorithmBuilder builder = builders[key];
-				string str = builder.GetType().Name + ": " + key;
-				ret.Add(str);
-				ret.AddRange(builder.ValidityMessages(this));
-			}
-			return ret;
+			builders = new SerializableDictionary<string, IAlgorithmBuilder>();
+			threadpoolBuilder = new ITGThreadpoolBuilder();
+		}
+
+		public LandscapeBuilder(string xml) : this()
+		{
+			XML = xml;
 		}
 
 		public Landscape Build()
@@ -73,6 +61,20 @@
 			if ( builders.ContainsKey(sourceID) )
 				return builders[sourceID].IsValid(this);
 			return false;
+		}
+
+		public List<string> GetFullReport()
+		{
+			List<string> ret = new List<string>();
+			foreach ( string key in builders.Keys ) {
+				IAlgorithmBuilder builder = builders[key];
+				string str = builder.GetType().Name + ": \"" + key + "\"";
+				ret.Add(str);
+				foreach ( string message in builder.ValidityMessages(this) ) {
+					ret.Add("\t" + message);
+				}
+			}
+			return ret;
 		}
 
 		public string GetKeyFor(IAlgorithmBuilder builder)
@@ -127,20 +129,7 @@
 			public SerializableDictionary<string, IAlgorithmBuilder> builders;
 
 			public ITGThreadpoolBuilder threadpoolBuilder;
-			public LandscapeBuilderDataModel()
-			{
-				builders = new SerializableDictionary<string, IAlgorithmBuilder>();
-				threadpoolBuilder = new ITGThreadpoolBuilder();
-			}
-			public LandscapeBuilderDataModel(LandscapeBuilder landscapeBuilder)
-			{
-				builders = landscapeBuilder.builders;
-				threadpoolBuilder = landscapeBuilder.threadpoolBuilder;
-			}
-			public LandscapeBuilderDataModel(string xml)
-			{
-				XML = xml;
-			}
+
 			[XmlIgnore]
 			public string XML
 			{
@@ -164,6 +153,22 @@
 				}
 			}
 
+			public LandscapeBuilderDataModel()
+			{
+				builders = new SerializableDictionary<string, IAlgorithmBuilder>();
+				threadpoolBuilder = new ITGThreadpoolBuilder();
+			}
+
+			public LandscapeBuilderDataModel(LandscapeBuilder landscapeBuilder)
+			{
+				builders = landscapeBuilder.builders;
+				threadpoolBuilder = landscapeBuilder.threadpoolBuilder;
+			}
+
+			public LandscapeBuilderDataModel(string xml)
+			{
+				XML = xml;
+			}
 		}
 
 		public class LandscapeIntermidiate {

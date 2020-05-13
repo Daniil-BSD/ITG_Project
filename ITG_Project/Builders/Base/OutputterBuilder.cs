@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using ITG_Core.Base;
 using ITG_Core.Bulders;
 
 namespace ITG_Core.Builders.Base {
+
 	public abstract class OutputterBuilder<O> : IAlgorithmBuilder {
+
 		public CoordinateBasic Offset { get; set; } = new CoordinateBasic(0, 0);
 
 		public abstract Outputter<O> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate);
@@ -32,12 +33,14 @@ namespace ITG_Core.Builders.Base {
 		{
 			return new List<string>();
 		}
+
 		public void VerifyVallidity(LandscapeBuilder.LandscapeIntermidiate intermidiate)
 		{
 			if ( !IsValid(intermidiate) )
 				throw new InvalidOperationException("Builder is in an invalid satate and thus cannot build an instance.");
 		}
 	}
+
 	public abstract class OutputterBuilder<O, S> : OutputterBuilder<O> where S : struct {
 
 		public string SourceID { get; set; }
@@ -59,10 +62,9 @@ namespace ITG_Core.Builders.Base {
 
 			if ( !landscapeBuilder.CheckValidityOf(SourceID) )
 				messages.Add("Source Layer \"" + SourceID + "\" is missing or invalid.");
-			else if ( !landscapeBuilder.TypeOf(SourceID).IsSubclassOf(typeof(AlgorithmBuilder<S>)) )
+			if ( !( landscapeBuilder.TypeOf(SourceID).IsSubclassOf(typeof(AlgorithmBuilder<S>)) || landscapeBuilder.TypeOf(SourceID).IsSubclassOf(typeof(AlgorithmGroupBuilder<S>)) ) )
 				messages.Add("Source \"" + SourceID + "\" is of uncompattible type.");
 			return messages;
 		}
-
 	}
 }

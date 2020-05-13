@@ -118,7 +118,8 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
-    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+    <UseDotNetNativeToolchain>false</UseDotNetNativeToolchain>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
@@ -127,13 +128,15 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DataModels\BuilderModel.cs" />
-    <Compile Include="DataModels\PropertyDataTemplateSelector.cs" />
-    <Compile Include="DataModels\PropertyModel.cs" />
+    <Compile Include="ViewModels\BuilderModel.cs" />
+    <Compile Include="ViewModels\PropertyDataTemplateSelector.cs" />
+    <Compile Include="ViewModels\PropertyModel.cs" />
+    <Compile Include="ViewModels\Editor.cs" />
     <Compile Include="Extention\HeightMapImageOutputter.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\ObervableWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

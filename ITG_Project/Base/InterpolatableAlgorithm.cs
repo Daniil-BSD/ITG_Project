@@ -9,8 +9,10 @@
 	/// <typeparam name="S"></typeparam>
 	public abstract class InterpolatableAlgorithm<T, S> : Layer<T, S> where T : struct where S : struct {
 
-		public readonly int scale;
 		public readonly float initialOffset;
+
+		public readonly int scale;
+
 		public readonly float step;
 
 		public InterpolatableAlgorithm(Coordinate offset, ITGThreadPool threadPool, Algorithm<S> source, int scale) : base(offset, threadPool, source)

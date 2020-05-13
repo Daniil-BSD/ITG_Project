@@ -17,8 +17,6 @@
 
 		private readonly int maxSectorSize;
 
-		public readonly float maxModification;
-
 		public static readonly int BRUSHGROUP_SIZE = 4;
 
 		public readonly float brushRadius;
@@ -39,6 +37,8 @@
 
 		public readonly int maxIterations;
 
+		public readonly float maxModification;
+
 		public readonly float minModification;
 
 		public readonly float minSedimentCapacity;
@@ -47,13 +47,13 @@
 
 		public readonly float sedimentCapacityFactor;
 
+		public readonly float sedimentFactor;
+
 		public readonly float speedStepFactor;
 
 		public readonly float stepLength;
 
 		public readonly float volumeStepFactor;
-
-		public readonly float sedimentFactor;
 
 		public override int StdSectorSize => maxSectorSize;
 

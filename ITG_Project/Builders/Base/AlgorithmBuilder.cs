@@ -1,7 +1,6 @@
 ﻿namespace ITG_Core.Bulders {
 	using System;
 	using System.Collections.Generic;
-	using System.Xml.Serialization;
 	using ITG_Core.Base;
 
 	/// <summary>
@@ -15,9 +14,9 @@
 
 		bool IsValid(LandscapeBuilder landscapeBuilder);
 
-		void VerifyVallidity(LandscapeBuilder.LandscapeIntermidiate intermidiate);
-
 		List<string> ValidityMessages(LandscapeBuilder landscapeBuilder);
+
+		void VerifyVallidity(LandscapeBuilder.LandscapeIntermidiate intermidiate);
 	}
 
 	/// <summary>

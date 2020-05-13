@@ -3,8 +3,6 @@ namespace ConsoleApp1 {
 	using System.Diagnostics;
 	using System.Drawing;
 	using System.Drawing.Imaging;
-	using System.IO;
-	using System.Xml.Serialization;
 	using ITG_Core;
 	using ITG_Core.Base;
 	using ITG_Core.Basic.Builders;
@@ -19,9 +17,11 @@ namespace ConsoleApp1 {
 
 		private static readonly int LAYERS = 2;
 
+		private static readonly int SCALE = 1024;
+
 		private static readonly int SIZE = 9;//128;
 
-		private static readonly int SCALE = 1024;//512;
+		//512;
 
 		private static void Main()
 		{
@@ -104,10 +104,6 @@ namespace ConsoleApp1 {
 			//landscapeBuilder["blur1"] = new BlurBuilder() { SourceID = "mem2" };
 			//landscapeBuilder["brush"] = new BrushTestBuilder();
 
-
-
-
-
 			Landscape landscape = landscapeBuilder.Build();
 
 			//string xml = landscapeBuilder.XML;
@@ -145,6 +141,5 @@ namespace ConsoleApp1 {
 			GC.Collect();
 			Console.ReadKey();
 		}
-
 	}
 }

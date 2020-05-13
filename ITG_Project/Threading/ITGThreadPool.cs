@@ -4,18 +4,25 @@
 
 	public class ITGThreadPool {
 
+		private ManualResetEvent hasJobs = new ManualResetEvent(false);
+
 		private ConcurrentStack<ITGJob> jobs;
-		private volatile bool terminating = false;
-		private volatile int threadsRunning = 0;
-		private Thread[] workers;
-		public readonly int threadCapacity;
-		public readonly int minimumForkingFactor = 2;
 
 		private object mutex = new object();
-		private ManualResetEvent hasJobs = new ManualResetEvent(false);
-		private ManualResetEvent terminationResetEvent = new ManualResetEvent(false);
-		public int ThreadsRunning => threadsRunning;
 
+		private volatile bool terminating = false;
+
+		private ManualResetEvent terminationResetEvent = new ManualResetEvent(false);
+
+		private volatile int threadsRunning = 0;
+
+		private Thread[] workers;
+
+		public readonly int minimumForkingFactor = 2;
+
+		public readonly int threadCapacity;
+
+		public int ThreadsRunning => threadsRunning;
 
 		public ITGThreadPool(int threadCapacity)
 		{
@@ -31,6 +38,19 @@
 				workers[i].Start();
 			}
 		}
+
+		private bool TryGet(out ITGJob job)
+		{
+			job = null;
+			bool ret = false;
+			if ( jobs.IsEmpty )
+				hasJobs.Reset();
+			if ( WaitHandle.WaitAny(new WaitHandle[] { hasJobs, terminationResetEvent }) == 0 ) {
+				ret = jobs.TryPop(out job);
+			}
+			return ret;
+		}
+
 		private void WorkerThread()
 		{
 			lock ( mutex ) {
@@ -47,22 +67,12 @@
 			}
 		}
 
-		private bool TryGet(out ITGJob job)
-		{
-			job = null;
-			bool ret = false;
-			if ( jobs.IsEmpty )
-				hasJobs.Reset();
-			if ( WaitHandle.WaitAny(new WaitHandle[] { hasJobs, terminationResetEvent }) == 0 ) {
-				ret = jobs.TryPop(out job);
-			}
-			return ret;
-		}
 		public void Enqueue(in ITGJob job)
 		{
 			jobs.Push(job);
 			hasJobs.Set();
 		}
+
 		public void Enqueue(in ITGJob[] newJobs, int timeout = -1)
 		{
 			if ( timeout < 0 ) {

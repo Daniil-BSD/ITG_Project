@@ -1,10 +1,15 @@
 ﻿namespace ITG_Core {
+
 	public class ThreadingForkSector<T> where T : struct {
-		private readonly ITGThreadPool pool;
+
 		private readonly SectorJob<T>[] jobs;
+
+		private readonly ITGThreadPool pool;
+
 		private bool areEnqueued = false;
 
 		public bool AreEnqueued => areEnqueued;
+
 		public ThreadingForkSector(ITGThreadPool pool, in RequstSector[] requstSectors, SectorJob<T>.Process SectorPopulation)
 		{
 			this.pool = pool;

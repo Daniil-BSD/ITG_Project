@@ -1,9 +1,9 @@
 ﻿<Application
-    x:Class="Editor.App"
+    x:Class="ITG_Editor.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
-    xmlns:local="using:Editor">
+    xmlns:local="using:ITG_Editor">
     <Application.Resources>
         <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
     </Application.Resources>

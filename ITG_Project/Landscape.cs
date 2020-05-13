@@ -9,6 +9,7 @@
 	public class Landscape {
 
 		private Dictionary<string, IAlgorithm> algorithms;
+
 		public ITGThreadPool threadPool;
 
 		public int RunnningThreads => threadPool.ThreadsRunning;

@@ -1,16 +1,29 @@
 ﻿using System;
 
 namespace ITG_Core.Base {
+
 	public abstract class Outputter<O> : IAlgorithm {
 
-		public readonly ITGThreadPool threadPool;
-
 		public readonly Coordinate offset;
+
+		public readonly ITGThreadPool threadPool;
 
 		public Outputter(Coordinate offset, ITGThreadPool threadPool)
 		{
 			this.threadPool = threadPool;
 			this.offset = offset;
+		}
+
+		protected abstract O GenerarteObject(in Coordinate coordinate);
+
+		public Type GetGenericType()
+		{
+			return typeof(NULL_CLASS);
+		}
+
+		public O GetObject(in Coordinate coordinate)
+		{
+			return GenerarteObject(coordinate + offset);
 		}
 
 		public O[,] GetObjects(in RequstSector requstSector)
@@ -30,18 +43,7 @@ namespace ITG_Core.Base {
 			}
 			return ret;
 		}
-
-		public O GetObject(in Coordinate coordinate)
-		{
-			return GenerarteObject(coordinate + offset);
-		}
-		protected abstract O GenerarteObject(in Coordinate coordinate);
-		public Type GetGenericType()
-		{
-			return typeof(NULL_CLASS);
-		}
 	}
-
 
 	public abstract class Outputter<O, S> : Outputter<O> where S : struct {
 

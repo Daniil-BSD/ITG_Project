@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Xml.Serialization;
 
 namespace ITG_Core.Structs {
-
 
 	/// <summary>
 	/// taken from https://weblogs.asp.net/pwelter34/444961 and improved
@@ -14,16 +12,23 @@ namespace ITG_Core.Structs {
 	[XmlRoot("dictionary")]
 	public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, IXmlSerializable {
 
-		private XmlSerializer keySerializer = new XmlSerializer(typeof(TKey));
-		private XmlSerializer stringSerializer = new XmlSerializer(typeof(string));
-		private const string value_tag = "value";
 		private const string item_tag = "item";
+
 		private const string key_tag = "key";
+
+		private const string value_tag = "value";
+
 		private const string valueType_tag = "valueType";
+
+		private XmlSerializer keySerializer = new XmlSerializer(typeof(TKey));
+
+		private XmlSerializer stringSerializer = new XmlSerializer(typeof(string));
+
 		public System.Xml.Schema.XmlSchema GetSchema()
 		{
 			return null;
 		}
+
 		public void ReadXml(System.Xml.XmlReader reader)
 		{
 			bool wasEmpty = reader.IsEmptyElement;
@@ -45,7 +50,6 @@ namespace ITG_Core.Structs {
 					TValue value = (TValue)valueSerializer.Deserialize(reader);
 					Add(key, value);
 				} catch ( Exception ) {
-
 				} finally {
 					reader.ReadEndElement();
 					reader.ReadEndElement();

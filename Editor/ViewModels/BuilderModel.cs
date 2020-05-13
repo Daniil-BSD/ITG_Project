@@ -1,20 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using ITG_Core;
 using ITG_Core.Bulders;
 
-namespace Editor.DataModels {
+namespace ITG_Editor.ViewModels {
+	/// <summary>
+	/// A ViewModel for all IAlgorithmBuilders.
+	/// </summary>
 	public partial class BuilderModel : INotifyPropertyChanged {
+
 		private readonly IAlgorithmBuilder builder;
+
+		//Displayable properties
 		private readonly List<IPropertyModel> properties;
 
-		public event PropertyChangedEventHandler PropertyChanged;
+		/// <summary>
+		/// String identifier used in the Dictionary
+		/// </summary>
 		private string id;
+
+		public IAlgorithmBuilder Builder => builder;
+
 		public string ID
 		{
 			get => id;
@@ -24,9 +31,12 @@ namespace Editor.DataModels {
 					PropertyChanged.Invoke(this, new PropertyChangedEventArgs(nameof(ID)));
 			}
 		}
+
 		public string Name => builder.GetType().Name.Replace("`1", " ") + ( ( builder.GetType().IsGenericType ) ? "<" + builder.GetType().GetGenericArguments()[0].Name + ">" : "" );
+
 		public List<IPropertyModel> Properties => properties;
-		public IAlgorithmBuilder Builder => builder;
+
+		public event PropertyChangedEventHandler PropertyChanged;
 
 		public BuilderModel(IAlgorithmBuilder builder)
 		{

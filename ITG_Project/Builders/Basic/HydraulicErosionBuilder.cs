@@ -29,11 +29,11 @@
 
 		public int MaxIterations { get; set; } = 80;
 
+		public float MaxModification { get; set; } = 0.025f;
+
 		public int MaxSectorSize { get; set; } = 64;
 
 		public float MinModification { get; set; } = 0.005f;
-
-		public float MaxModification { get; set; } = 0.025f;
 
 		public float MinSedimentCapacity { get; set; } = 0;
 
@@ -41,8 +41,9 @@
 
 		public float SedimentCapacityFactor { get; set; } = 20;
 
-		public float StepLength { get; set; } = 1f;
 		public float SedimentFactor { get; set; } = 1f;
+
+		public float StepLength { get; set; } = 1f;
 
 		//TODO
 		public override Algorithm<float> Build(LandscapeBuilder.LandscapeIntermidiate intermidiate)

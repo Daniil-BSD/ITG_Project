@@ -20,6 +20,8 @@
 			get => Constants.DEFAULT_SECTOR_SIZE;
 		}
 
+		public delegate Sector<T> SectorPopulationDelegate(in RequstSector requstSector);
+
 		public Algorithm(Coordinate offset, ITGThreadPool threadPool)
 		{
 			this.offset = offset;
@@ -95,7 +97,5 @@
 			}
 			return sector;
 		}
-
-		public delegate Sector<T> SectorPopulationDelegate(in RequstSector requstSector);
 	}
 }

@@ -4,13 +4,11 @@
 	using System.Runtime.CompilerServices;
 	using ITG_Core.Base;
 
-
 	public class Memory<T> : Layer<T, T> where T : struct {
 
 		private ConcurrentDictionary<Coordinate, Chunk<T>> memory;
 
 		public const bool ASSUME_NO_ADD_CONFLICT = true;
-
 
 		public Memory(Coordinate offset, ITGThreadPool threadPool, Algorithm<T> source) : base(offset, threadPool, source)
 		{

@@ -1,4 +1,5 @@
 ﻿namespace ITG_Core {
+
 	public interface ITGJob {
 
 		bool InProcess { get; }
@@ -6,12 +7,9 @@
 		bool Ready { get; }
 
 		void ExecuteFromWorkerThread();
-
 	}
 
 	public class Job<Ret, Req> : ITGJob {
-
-		public delegate Ret Process(in Req request);
 
 		private volatile bool inProcess = false;
 
@@ -21,15 +19,17 @@
 
 		private Ret result = default;
 
-		public readonly Req request;
-
 		public readonly Process process;
+
+		public readonly Req request;
 
 		public bool InProcess => inProcess;
 
 		public bool Ready => ready;
 
 		public Ret Result => result;
+
+		public delegate Ret Process(in Req request);
 
 		public Job(Req request, Process process)
 		{
@@ -63,8 +63,8 @@
 		}
 	}
 
-
 	public class SectorJob<T> : Job<Sector<T>, RequstSector> where T : struct {
+
 		public SectorJob(RequstSector request, Process process) : base(request, process)
 		{
 		}

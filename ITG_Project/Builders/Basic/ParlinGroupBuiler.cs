@@ -25,6 +25,8 @@
 
 		public float MaxPerlinScale { get; set; } = 128;
 
+		public float MinNoiseFactor { get; set; } = 0.00f;
+
 		public CoordinateBasic OffsetGlobal { get; set; } = new CoordinateBasic(0, 0);
 
 		public float RetFactor { get; set; } = 1.375f;
@@ -32,8 +34,6 @@
 		public float ScaleStep { get; set; } = 2;
 
 		public float UpperTargetScale { get; set; } = 1024;
-
-		public float MinNoiseFactor { get; set; } = 0.00f;
 
 		public string Vec2FieldID { get; set; }
 
