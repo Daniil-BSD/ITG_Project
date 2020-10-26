@@ -52,8 +52,8 @@
 			if ( !IsValid() )
 				throw new InvalidOperationException("LandscapeBuilder is in invalid state for building Landscape.");
 			LandscapeIntermidiate intermediate = new LandscapeIntermidiate(this);
-			Dictionary<string, IAlgorithm> algorithms = intermediate.GetAlgorithms();
-			return new Landscape(algorithms, intermediate.ThreadPool);
+			intermediate.Run();
+			return new Landscape(intermediate.GetAlgorithms(), intermediate.ThreadPool);
 		}
 
 		public bool CheckValidityOf(string sourceID)
@@ -97,7 +97,7 @@
 		public Type TypeOf(string sourceID)
 		{
 			if ( builders.ContainsKey(sourceID) )
-				return builders[sourceID].GetType();
+				return builders[sourceID].GetGenericType();
 			string[] keys = sourceID.Split(SUBKEY_SEPARATOR.ToCharArray());
 			if (
 				keys.Length == 2 && //keys are in a vlid form
@@ -181,6 +181,9 @@
 
 			private ITGThreadPool threadPool;
 
+			private bool hadRun;
+			public bool HadRun => hadRun;
+
 			public ITGThreadPool ThreadPool => threadPool;
 
 			public LandscapeIntermidiate(LandscapeBuilder builder) : this(builder, builder.builders.Keys)
@@ -192,17 +195,18 @@
 				this.builder = builder;
 				algorithms = new Dictionary<string, IAlgorithm>();
 				buildQueue = new Queue<string>(roots);
-				threadPool = builder.threadpoolBuilder.Build();
-				Build();
+				hadRun = false;
 			}
 
-			private void Build()
+			public void Run()
 			{
+				threadPool = builder.threadpoolBuilder.Build();
 				while ( buildQueue.Count > 0 ) {
 					string key = buildQueue.Dequeue();
 					IAlgorithmBuilder algorithmBuilder = builder[key];
 					AddAlgorithm(key, algorithmBuilder);
 				}
+				hadRun = true;
 			}
 
 			public static implicit operator LandscapeBuilder(LandscapeIntermidiate li)
@@ -234,7 +238,13 @@
 			{
 				if ( algorithms.ContainsKey(key) )
 					return (Algorithm<T>)algorithms[key];
-				if ( !builder.builders.ContainsKey(key) ) {
+				if ( builder.builders.ContainsKey(key) ) {
+					if ( !builder.TypeOf(key).IsSubclassOf(typeof(AlgorithmBuilder<T>)) && !builder.TypeOf(key).IsSubclassOf(typeof(AlgorithmGroupBuilder<T>)) ) {
+						throw new InvalidOperationException($"Icompatible Types:\nType : {builder.TypeOf(key)}\nExpected: AlgorithmBuilder<{typeof(T)}>\nKey: {key}");
+					}
+					AddAlgorithm(key, builder[key]);
+					return (Algorithm<T>)algorithms[key];
+				} else {
 					string[] keys = key.Split(SUBKEY_SEPARATOR.ToCharArray());
 					if (
 						keys.Length != 2 || //keys are in a vlid form
@@ -243,15 +253,14 @@
 					) {
 						throw new KeyNotFoundException();
 					} else {
-						if ( !object.ReferenceEquals(typeof(T), builder[keys[0]].GetGenericType()) )
+						if ( !object.ReferenceEquals(typeof(T), builder[keys[0]].GetGenericType()) ) {
 							throw new InvalidOperationException($"Icompatible Types:\nType : {builder[keys[0]].GetGenericType()}\nExpected:{typeof(T)}\nKey: {key}");
+						} else {
+							AddAlgorithm(keys[0], builder[keys[0]]);
+							return (Algorithm<T>)algorithms[key];
+						}
 					}
-				} else {
-					if ( !builder.TypeOf(key).IsSubclassOf(typeof(AlgorithmBuilder<T>)) && !builder.TypeOf(key).IsSubclassOf(typeof(AlgorithmGroupBuilder<T>)) )
-						throw new InvalidOperationException($"Icompatible Types:\nType : {builder.TypeOf(key)}\nExpected: AlgorithmBuilder<{typeof(T)}>\nKey: {key}");
 				}
-				AddAlgorithm(key, builder[key]);
-				return (Algorithm<T>)algorithms[key];
 			}
 
 			public Dictionary<string, IAlgorithm> GetAlgorithms()

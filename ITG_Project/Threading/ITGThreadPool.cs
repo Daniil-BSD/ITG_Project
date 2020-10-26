@@ -1,4 +1,5 @@
 ﻿namespace ITG_Core {
+	using System;
 	using System.Collections.Concurrent;
 	using System.Threading;
 
@@ -37,6 +38,21 @@
 				};
 				workers[i].Start();
 			}
+		}
+
+		~ITGThreadPool()
+		{
+			terminating = true;
+			terminationResetEvent.Set();
+		}
+
+		public bool Acisst()
+		{
+			ITGJob job;
+			bool ret = jobs.TryPop(out job);
+			if ( ret )
+				job.ExecuteFromWorkerThread();
+			return ret;
 		}
 
 		private bool TryGet(out ITGJob job)

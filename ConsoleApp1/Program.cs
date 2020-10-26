@@ -1,3 +1,10 @@
+
+/// <summary>
+/// THIS IS A TEST-RUN APPLICATION THAT IS USED FOR RUNING AND DEBUGGING COMPONENTS OF THE ITG_CORE.
+/// THE CONTENTS OF THIS FILE ARE TO BE IGNORED.
+/// </summary>
+
+
 namespace ConsoleApp1 {
 	using System;
 	using System.Diagnostics;

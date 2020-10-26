@@ -103,6 +103,7 @@ namespace ITG_Editor.ViewModels {
 			return null;
 		}
 	}
+	//Concrete types for UI mapping
 
 	public class PropertyModel_bool : PropertyModel<bool> {
 

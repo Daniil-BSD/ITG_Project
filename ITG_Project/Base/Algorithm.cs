@@ -1,6 +1,8 @@
 ﻿namespace ITG_Core.Base {
 	using System;
 	using System.Runtime.CompilerServices;
+	using System.Threading;
+	using System.Threading.Tasks;
 
 	public interface IAlgorithm {
 

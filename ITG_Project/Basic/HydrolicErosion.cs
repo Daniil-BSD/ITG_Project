@@ -100,7 +100,7 @@
 			int margin_top = heightmap.Height_units - margin;
 
 			int margin_big = margin + (int)( stepLength * maxIterations );
-			float minSedimentCapacityPlusMinModificatioon = minSedimentCapacity + minModification;
+			float minSedimentCapacityPlusMinModification = minSedimentCapacity + minModification;
 			while ( enumerator.MoveNext() ) {
 				float sediment = 0;
 				float speed = initialSpeed;
@@ -161,8 +161,7 @@
 					sedimentCapacity = MathExt.Max(-deltaHeight * speed * volume * sedimentCapacityFactor, minSedimentCapacity);
 					float sedimentMinusSedimentCapacity = sediment - sedimentCapacity;
 					if ( sedimentMinusSedimentCapacity > 0 || deltaHeight > 0 ) {
-						//float amountToDeposit = (deltaHeight > 0) ? MathExt.Min(deltaHeight, sediment) : MathExt.Max((sediment - sedimentCapacity) * depositSpeed, (sedimentCapacity < minDeposit * 10) ? minDeposit : 0);
-						float amountToDeposit = ( deltaHeight > 0 ) ? MathExt.Min(deltaHeight, sediment) : MathExt.Max(sedimentMinusSedimentCapacity * depositSpeed, ( sedimentCapacity <= minSedimentCapacityPlusMinModificatioon ) ? minModification : 0);
+						float amountToDeposit = ( deltaHeight > 0 ) ? MathExt.Min(deltaHeight, sediment) : MathExt.Max(sedimentMinusSedimentCapacity * depositSpeed, ( sedimentCapacity <= minSedimentCapacityPlusMinModification ) ? minModification : 0);
 						if ( amountToDeposit >= minModification ) {
 							sediment -= MathExt.Min(amountToDeposit, sediment);
 							CircularFloatBrush depositBrush = depositBrushes.GetBrush(position);

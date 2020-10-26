@@ -131,7 +131,7 @@
 				return false;
 			if ( !landscapeBuilder.CheckValidityOf(Vec2FieldID) )
 				return false;
-			if ( !landscapeBuilder.TypeOf(Vec2FieldID).IsSubclassOf(typeof(AlgorithmBuilder<Vec2>)) )
+			if ( !landscapeBuilder.TypeOf(Vec2FieldID).Equals(typeof(Vec2)) )
 				return false;
 			return true;
 		}
@@ -159,7 +159,7 @@
 				messages.Add("MaxInterpolationScale has to be a greater than zero.");
 			if ( !landscapeBuilder.CheckValidityOf(Vec2FieldID) )
 				messages.Add("Source Layer \"" + Vec2FieldID + "\" is missing or invalid.");
-			else if ( !landscapeBuilder.TypeOf(Vec2FieldID).IsSubclassOf(typeof(AlgorithmBuilder<Vec2>)) )
+			else if ( !landscapeBuilder.TypeOf(Vec2FieldID).Equals(typeof(Vec2)) )
 				messages.Add("Source \"" + Vec2FieldID + "\" is of uncompattible type.");
 			return messages;
 		}

@@ -228,9 +228,7 @@
 		{
 			float f = Magnitude;
 			f = ( f == 0 ) ? 0 : 1 / f;
-			x *= f;
-			y *= f;
-			z *= f;
+			this *= f;
 			return this;
 		}
 

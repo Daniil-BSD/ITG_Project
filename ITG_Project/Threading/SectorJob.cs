@@ -37,8 +37,15 @@
 			this.process = process;
 		}
 
-		public Ret ExecuteFromMainThread()
+		public Ret ExecuteFromMainThread(ITGThreadPool activeWaitingThreadpool = null)
 		{
+			if ( ready )
+				return result;
+			if ( activeWaitingThreadpool != null && inProcess ) {
+				while ( inProcess && activeWaitingThreadpool.Acisst() ) { }
+				if ( ready )
+					return result;
+			}
 			inProcess = true;
 			lock ( mutex ) {
 				if ( ready )

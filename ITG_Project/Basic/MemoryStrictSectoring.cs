@@ -26,7 +26,7 @@ namespace ITG_Core.Basic {
 				return memory[coordinate];
 			RequstSector requestSector = GetSectorRequestByCoordinate(coordinate);
 			Sector<T> sector = source.GetSector(requestSector);
-			memory.TryAdd(coordinate, sector);
+			memory.TryAdd(coordinate, new SectorPlaceholder(sector, this));
 			return sector;
 		}
 
@@ -36,7 +36,7 @@ namespace ITG_Core.Basic {
 			if ( memory.ContainsKey(coordinate) )
 				return memory[coordinate];
 			RequstSector requestSector = GetSectorRequestByCoordinate(coordinate);
-			SectorPlaceholder placeholder = new SectorPlaceholder(new SectorJob<T>(requestSector, SectorPopulationDelegateImpl));
+			SectorPlaceholder placeholder = new SectorPlaceholder(new SectorJob<T>(requestSector, SectorPopulationDelegateImpl), this);
 			memory.TryAdd(coordinate, placeholder);
 			return placeholder;
 		}
@@ -102,6 +102,8 @@ namespace ITG_Core.Basic {
 
 			private SectorJob<T> sectorJob;
 
+			private MemoryStrictSectoring<T> parent;
+
 			public bool IsComplete
 			{
 				[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -114,22 +116,24 @@ namespace ITG_Core.Basic {
 				get {
 					if ( IsComplete )
 						return sector;
-					sector = sectorJob.ExecuteFromMainThread();
+					sector = sectorJob.ExecuteFromMainThread(parent.threadPool);
 					sectorJob = null;
 					return sector;
 				}
 			}
 
-			public SectorPlaceholder(SectorJob<T> sectorJob)
+			public SectorPlaceholder(SectorJob<T> sectorJob, MemoryStrictSectoring<T> parent)
 			{
 				sector = null;
 				this.sectorJob = sectorJob;
+				this.parent = parent;
 			}
 
-			public SectorPlaceholder(Sector<T> sector)
+			public SectorPlaceholder(Sector<T> sector, MemoryStrictSectoring<T> parent)
 			{
 				this.sector = sector;
 				sectorJob = null;
+				this.parent = parent;
 			}
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -148,12 +152,6 @@ namespace ITG_Core.Basic {
 			public static implicit operator Sector<T>(SectorPlaceholder placeholder)
 			{
 				return placeholder.Sector;
-			}
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public static implicit operator SectorPlaceholder(Sector<T> sector)
-			{
-				return new SectorPlaceholder(sector);
 			}
 		}
 	}

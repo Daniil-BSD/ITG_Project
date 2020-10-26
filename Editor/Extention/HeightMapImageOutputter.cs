@@ -95,10 +95,10 @@ namespace Extention {
 			return imageArray;
 		}
 
-		public static void SetPixelOverride(byte[] img, in int x, in int y, in int width, int R, int G, int B, bool borders, bool markBordeeres = false)
+		public static void SetPixelOverride(byte[] img, in int x, in int y, in int width, int R, int G, int B, bool borders, bool markBorderes = false)
 		{
 			int index = ( y * width + x ) * 4;
-			img[index + 2] = (byte)( ( markBordeeres && ( R == 0 || R == MAX_SATURAION ) ) ? MAX_SATURAION_p1 / 2 : R );//Red
+			img[index + 2] = (byte)( ( markBorderes && ( R == 0 || R == MAX_SATURAION ) ) ? MAX_SATURAION_p1 / 2 : R );//Red
 			img[index + 1] = (byte)( ( x % Constants.CHUNK_SIZE == 0 && borders ) ? MAX_SATURAION_p1 / 2 : G );//Green
 			img[index] = (byte)( ( y % Constants.CHUNK_SIZE == 0 && borders ) ? MAX_SATURAION_p1 / 2 : B );//Blue
 			img[index + 3] = 255;
@@ -106,7 +106,7 @@ namespace Extention {
 
 		public static void SetPixelOverride(byte[] img, in int x, in int y, in int width, int saturation, bool borders)
 		{
-			SetPixelOverride(img, x, y, width, saturation, saturation, saturation, borders, markBordeeres: true);
+			SetPixelOverride(img, x, y, width, saturation, saturation, saturation, borders, markBorderes: true);
 		}
 
 		public SoftwareBitmap BytesToBitmap(byte[] imageArray)

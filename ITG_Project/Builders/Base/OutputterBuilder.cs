@@ -51,7 +51,7 @@ namespace ITG_Core.Builders.Base {
 				return false;
 			if ( !landscapeBuilder.CheckValidityOf(SourceID) )
 				return false;
-			if ( !( landscapeBuilder.TypeOf(SourceID).IsSubclassOf(typeof(AlgorithmBuilder<S>)) || landscapeBuilder.TypeOf(SourceID).IsSubclassOf(typeof(AlgorithmGroupBuilder<S>)) ) )
+			if ( !landscapeBuilder.TypeOf(SourceID).Equals(typeof(S)) )
 				return false;
 			return true;
 		}
@@ -62,7 +62,7 @@ namespace ITG_Core.Builders.Base {
 
 			if ( !landscapeBuilder.CheckValidityOf(SourceID) )
 				messages.Add("Source Layer \"" + SourceID + "\" is missing or invalid.");
-			if ( !( landscapeBuilder.TypeOf(SourceID).IsSubclassOf(typeof(AlgorithmBuilder<S>)) || landscapeBuilder.TypeOf(SourceID).IsSubclassOf(typeof(AlgorithmGroupBuilder<S>)) ) )
+			if ( !landscapeBuilder.TypeOf(SourceID).Equals(typeof(S)) )
 				messages.Add("Source \"" + SourceID + "\" is of uncompattible type.");
 			return messages;
 		}

@@ -16,7 +16,7 @@
 				return false;
 			if ( !landscapeBuilder.CheckValidityOf(SourceID) )
 				return false;
-			if ( !( landscapeBuilder.TypeOf(SourceID).IsSubclassOf(typeof(AlgorithmBuilder<S>)) || landscapeBuilder.TypeOf(SourceID).IsSubclassOf(typeof(AlgorithmGroupBuilder<S>)) ) )
+			if ( !landscapeBuilder.TypeOf(SourceID).Equals(typeof(S)) )
 				return false;
 			return true;
 		}
@@ -27,9 +27,8 @@
 
 			if ( !landscapeBuilder.CheckValidityOf(SourceID) )
 				messages.Add("Source Layer \"" + SourceID + "\" is missing or invalid.");
-			else if ( !landscapeBuilder.TypeOf(SourceID).IsSubclassOf(typeof(AlgorithmBuilder<S>)) )
+			else if ( !landscapeBuilder.TypeOf(SourceID).Equals(typeof(S)) )
 				messages.Add("Source \"" + SourceID + "\" is of uncompattible type.");
-
 			return messages;
 		}
 	}
