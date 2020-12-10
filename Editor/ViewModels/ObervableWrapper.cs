@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace ITG_Editor.ViewModels {
+
 	/// <summary>
 	/// A costume wrapper for making any object use INotifyPropertyChanged.
 	/// Also provides the ability for value editing from outside of the UI thread.

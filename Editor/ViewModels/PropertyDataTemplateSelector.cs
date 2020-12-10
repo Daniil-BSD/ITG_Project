@@ -4,7 +4,6 @@ using Windows.UI.Xaml.Controls;
 
 namespace ITG_Editor {
 
-
 	/// <summary>
 	/// A vary basic DataTemplateSelector for all defined Datatemplatess.
 	/// </summary>

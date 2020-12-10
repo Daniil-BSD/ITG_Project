@@ -2,7 +2,7 @@
 using System.Drawing;
 using ITG_Core;
 using ITG_Core.Base;
-using ITG_Core.Builders.Base;
+using ITG_Core.Builders;
 
 namespace ConsoleApp1 {
 
@@ -112,7 +112,7 @@ namespace ConsoleApp1 {
 
 		public bool Colored { get; set; } = true;
 
-		public int Layeers { get; set; } = 1;
+		public int Layers { get; set; } = 1;
 
 		public float Max { get; set; } = 1;
 
@@ -130,7 +130,7 @@ namespace ConsoleApp1 {
 				size: Size,
 				min: Min,
 				max: Max,
-				layers: Layeers,
+				layers: Layers,
 				borders: Borders,
 				colored: Colored);
 		}

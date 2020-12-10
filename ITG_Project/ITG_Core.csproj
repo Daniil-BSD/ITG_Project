@@ -4,6 +4,7 @@
     <FileUpgradeFlags>40</FileUpgradeFlags>
     <UpgradeBackupLocation>C:\Users\MSI GS63\source\repos\ITG_Project\Backup\ITG_Project\</UpgradeBackupLocation>
     <OldToolsVersion>2.0</OldToolsVersion>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

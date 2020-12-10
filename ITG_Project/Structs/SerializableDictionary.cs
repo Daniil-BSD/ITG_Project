@@ -49,7 +49,8 @@ namespace ITG_Core.Structs {
 					XmlSerializer valueSerializer = new XmlSerializer(type);
 					TValue value = (TValue)valueSerializer.Deserialize(reader);
 					Add(key, value);
-				} catch ( Exception ) {
+				} catch ( Exception e ) {
+					throw e;
 				} finally {
 					reader.ReadEndElement();
 					reader.ReadEndElement();

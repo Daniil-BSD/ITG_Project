@@ -14,10 +14,15 @@
 			this.seed = seed;
 		}
 
+		private interface IRandom {
+
+			public uint Next();
+		}
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		protected override Chunk<uint> ChunkPopulation(in Coordinate coordinate)
 		{
-			LehmerPlusSRNG random = new LehmerPlusSRNG(coordinate, seed);
+			IRandom random = new LehmerPlusSRNG(coordinate, seed);
 			Chunk<uint> chunk = new Chunk<uint>();
 			for ( int i = 0 ; i < Constants.CHUNK_SIZE ; i++ ) {
 				for ( int j = 0 ; j < Constants.CHUNK_SIZE ; j++ ) {
@@ -30,7 +35,7 @@
 		/// <summary>
 		/// Defines the <see cref="LehmerPlusSRNG" />
 		/// </summary>
-		private class LehmerPlusSRNG {
+		private class LehmerPlusSRNG : IRandom {
 
 			//Hard-coded values below are prime numbers with a very specific binary representations
 			private static readonly ulong INPUT_SEED = 373447861;
@@ -55,7 +60,7 @@
 			public uint Next()
 			{
 				state = unchecked(state * SEED);
-				return (uint)( state >> ( 8 + (int)( state >> 61 ) ) );
+				return (uint)( state >> ( 16 ) );
 			}
 		}
 	}

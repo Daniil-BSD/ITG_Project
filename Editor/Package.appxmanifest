@@ -9,7 +9,7 @@
   <Identity
     Name="740eaee8-ae9e-46fa-8a81-9fdee860698f"
     Publisher="CN=MSI GS63"
-    Version="1.0.0.0" />
+    Version="1.0.1.0" />
 
   <mp:PhoneIdentity PhoneProductId="740eaee8-ae9e-46fa-8a81-9fdee860698f" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
@@ -39,6 +39,8 @@
         BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
+        <uap:InitialRotationPreference>
+          <uap:Rotation Preference="landscape"/></uap:InitialRotationPreference>
       </uap:VisualElements>
     </Application>
   </Applications>

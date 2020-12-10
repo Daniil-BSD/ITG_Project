@@ -2,7 +2,7 @@
 	using System;
 	using System.Collections.Generic;
 	using ITG_Core.Base;
-	using ITG_Core.Bulders;
+	using ITG_Core.Builders;
 
 	/// <summary>
 	/// Defines the <see cref="ParlinGroupBuiler" />

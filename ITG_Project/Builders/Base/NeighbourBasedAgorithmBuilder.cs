@@ -1,4 +1,4 @@
-﻿namespace ITG_Core.Bulders {
+﻿namespace ITG_Core.Builders {
 
 	/// <summary>
 	/// Defines the <see cref="NeighbourBasedAgorithmBuilder{T, S}" />

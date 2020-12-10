@@ -142,12 +142,6 @@
 		{
 			memory.Clear();
 		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void PushData(in Chunk<T> chunk, in Coordinate coordinate)
-		{
-			TrySavingSector(coordinate, chunk);
-		}
 	}
 
 	/// <summary>

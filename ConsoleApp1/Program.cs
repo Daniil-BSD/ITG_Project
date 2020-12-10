@@ -1,9 +1,7 @@
-
 /// <summary>
 /// THIS IS A TEST-RUN APPLICATION THAT IS USED FOR RUNING AND DEBUGGING COMPONENTS OF THE ITG_CORE.
 /// THE CONTENTS OF THIS FILE ARE TO BE IGNORED.
 /// </summary>
-
 
 namespace ConsoleApp1 {
 	using System;
@@ -106,7 +104,7 @@ namespace ConsoleApp1 {
 			landscapeBuilder["fianlMem"] = new MemoryBuilder<float>() { SourceID = "HEmblur" };
 			landscapeBuilder["HEinv"] = new FloatAdderBuilder() { Sources = new string[] { "fianlMem" }, RetFactor = -1 };
 			landscapeBuilder["HEdiff"] = new FloatAdderBuilder() { Sources = new string[] { "HEinv", "mem2" }, RetFactor = 2 };
-			landscapeBuilder["output"] = new HeightMapImageOutputterBuilder() { SourceID = "mem2", Layeers = 3, Size = 100, Min = -1, Max = 1 };
+			landscapeBuilder["output"] = new HeightMapImageOutputterBuilder() { SourceID = "mem2", Layers = 3, Size = 100, Min = -1, Max = 1 };
 
 			//landscapeBuilder["blur1"] = new BlurBuilder() { SourceID = "mem2" };
 			//landscapeBuilder["brush"] = new BrushTestBuilder();

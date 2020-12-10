@@ -31,7 +31,7 @@
 
 		public delegate Ret Process(in Req request);
 
-		public Job(Req request, Process process)
+		public Job(in Req request, Process process)
 		{
 			this.request = request;
 			this.process = process;
@@ -63,16 +63,27 @@
 				return;
 			inProcess = true;
 			lock ( mutex ) {
+				if ( ready )
+					return;
 				result = process(request);
 				ready = true;
 			}
 			inProcess = false;
 		}
+
+		public Ret ExecuteProcess()
+		{
+			if ( ready )
+				return result;
+			result = process(request);
+			ready = true;
+			return result;
+		}
 	}
 
 	public class SectorJob<T> : Job<Sector<T>, RequstSector> where T : struct {
 
-		public SectorJob(RequstSector request, Process process) : base(request, process)
+		public SectorJob(in RequstSector request, Process process) : base(request, process)
 		{
 		}
 	}

@@ -98,11 +98,11 @@ namespace ITG_Core.Basic {
 
 		private class SectorPlaceholder {
 
+			private MemoryStrictSectoring<T> parent;
+
 			private Sector<T> sector;
 
 			private SectorJob<T> sectorJob;
-
-			private MemoryStrictSectoring<T> parent;
 
 			public bool IsComplete
 			{

@@ -4,7 +4,7 @@
 	using System.IO;
 	using System.Xml.Serialization;
 	using ITG_Core.Base;
-	using ITG_Core.Bulders;
+	using ITG_Core.Builders;
 	using ITG_Core.Structs;
 
 	/// <summary>
@@ -179,9 +179,10 @@
 
 			private Queue<string> buildQueue;
 
+			private bool hadRun;
+
 			private ITGThreadPool threadPool;
 
-			private bool hadRun;
 			public bool HadRun => hadRun;
 
 			public ITGThreadPool ThreadPool => threadPool;
@@ -196,17 +197,6 @@
 				algorithms = new Dictionary<string, IAlgorithm>();
 				buildQueue = new Queue<string>(roots);
 				hadRun = false;
-			}
-
-			public void Run()
-			{
-				threadPool = builder.threadpoolBuilder.Build();
-				while ( buildQueue.Count > 0 ) {
-					string key = buildQueue.Dequeue();
-					IAlgorithmBuilder algorithmBuilder = builder[key];
-					AddAlgorithm(key, algorithmBuilder);
-				}
-				hadRun = true;
 			}
 
 			public static implicit operator LandscapeBuilder(LandscapeIntermidiate li)
@@ -239,8 +229,8 @@
 				if ( algorithms.ContainsKey(key) )
 					return (Algorithm<T>)algorithms[key];
 				if ( builder.builders.ContainsKey(key) ) {
-					if ( !builder.TypeOf(key).IsSubclassOf(typeof(AlgorithmBuilder<T>)) && !builder.TypeOf(key).IsSubclassOf(typeof(AlgorithmGroupBuilder<T>)) ) {
-						throw new InvalidOperationException($"Icompatible Types:\nType : {builder.TypeOf(key)}\nExpected: AlgorithmBuilder<{typeof(T)}>\nKey: {key}");
+					if ( !object.ReferenceEquals(typeof(T), builder.TypeOf(key)) ) {
+						throw new InvalidOperationException($"Icompatible Types:\nType : {builder.TypeOf(key)}\nExpected: {typeof(T)}\nKey: {key}");
 					}
 					AddAlgorithm(key, builder[key]);
 					return (Algorithm<T>)algorithms[key];
@@ -271,6 +261,17 @@
 			public string GetKeyFor(IAlgorithmBuilder builder)
 			{
 				return this.builder.GetKeyFor(builder);
+			}
+
+			public void Run()
+			{
+				threadPool = builder.threadpoolBuilder.Build();
+				while ( buildQueue.Count > 0 ) {
+					string key = buildQueue.Dequeue();
+					IAlgorithmBuilder algorithmBuilder = builder[key];
+					AddAlgorithm(key, algorithmBuilder);
+				}
+				hadRun = true;
 			}
 
 			public void UsedOnlyForAOTCodeGeneration()

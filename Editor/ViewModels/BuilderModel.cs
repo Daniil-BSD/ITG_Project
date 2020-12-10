@@ -2,9 +2,10 @@
 using System.ComponentModel;
 using System.Reflection;
 using ITG_Core;
-using ITG_Core.Bulders;
+using ITG_Core.Builders;
 
 namespace ITG_Editor.ViewModels {
+
 	/// <summary>
 	/// A ViewModel for all IAlgorithmBuilders.
 	/// </summary>

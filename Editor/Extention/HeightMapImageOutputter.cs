@@ -4,7 +4,7 @@ using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
 using ITG_Core;
 using ITG_Core.Base;
-using ITG_Core.Builders.Base;
+using ITG_Core.Builders;
 using Windows.Graphics.Imaging;
 using Windows.UI.Xaml.Media.Imaging;
 

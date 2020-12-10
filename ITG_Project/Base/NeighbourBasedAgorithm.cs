@@ -19,7 +19,7 @@
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected sealed override Sector<T> SectorPopulation(in RequstSector requstSector)
+		protected override Sector<T> SectorPopulation(in RequstSector requstSector)
 		{
 			RequstSector outgoingRequstSector = requstSector.GetExpandedCopy(1);
 			Sector<S> sourceSector = source.GetSector(outgoingRequstSector);

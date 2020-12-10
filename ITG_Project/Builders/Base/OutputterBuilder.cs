@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using ITG_Core.Base;
-using ITG_Core.Bulders;
 
-namespace ITG_Core.Builders.Base {
+namespace ITG_Core.Builders {
 
 	public abstract class OutputterBuilder<O> : IAlgorithmBuilder {
 

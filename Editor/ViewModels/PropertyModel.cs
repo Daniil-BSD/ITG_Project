@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 using ITG_Core;
-using ITG_Core.Bulders;
+using ITG_Core.Builders;
 
 namespace ITG_Editor.ViewModels {
 
@@ -20,6 +20,7 @@ namespace ITG_Editor.ViewModels {
 
 		object Value { get; set; }
 	}
+
 	/// <summary>
 	/// A wrapper for a property of an IAlgorithmBuilder
 	/// </summary>
@@ -103,6 +104,7 @@ namespace ITG_Editor.ViewModels {
 			return null;
 		}
 	}
+
 	//Concrete types for UI mapping
 
 	public class PropertyModel_bool : PropertyModel<bool> {

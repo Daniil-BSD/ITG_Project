@@ -1,5 +1,4 @@
 ﻿namespace ITG_Core {
-	using System;
 	using System.Collections.Concurrent;
 	using System.Threading;
 
@@ -23,6 +22,8 @@
 
 		public readonly int threadCapacity;
 
+		public int QueueLength => jobs.Count;
+
 		public int ThreadsRunning => threadsRunning;
 
 		public ITGThreadPool(int threadCapacity)
@@ -34,7 +35,7 @@
 			for ( int i = 0 ; i < threadCapacity ; i++ ) {
 				workers[i] = new Thread(WorkerThread) {
 					IsBackground = true,
-					Priority = ThreadPriority.Lowest,
+					Priority = ThreadPriority.Normal,
 				};
 				workers[i].Start();
 			}
@@ -44,15 +45,8 @@
 		{
 			terminating = true;
 			terminationResetEvent.Set();
-		}
-
-		public bool Acisst()
-		{
-			ITGJob job;
-			bool ret = jobs.TryPop(out job);
-			if ( ret )
-				job.ExecuteFromWorkerThread();
-			return ret;
+			foreach ( Thread thread in workers )
+				thread.Join();
 		}
 
 		private bool TryGet(out ITGJob job)
@@ -81,6 +75,15 @@
 			lock ( mutex ) {
 				threadsRunning--;
 			}
+		}
+
+		public bool Acisst()
+		{
+			ITGJob job;
+			bool ret = jobs.TryPop(out job);
+			if ( ret )
+				job.ExecuteFromWorkerThread();
+			return ret;
 		}
 
 		public void Enqueue(in ITGJob job)
