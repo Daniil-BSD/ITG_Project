@@ -1,4 +1,5 @@
 ﻿namespace ITG_Core.Basic.Builders {
+	using System.Collections.Generic;
 	using ITG_Core.Base;
 	using ITG_Core.Builders;
 
@@ -110,6 +111,42 @@
 			if ( MaxSectorSize <= 0 )
 				return false;
 			return true;
+		}
+
+		public override List<string> ValidityMessages(LandscapeBuilder landscapeBuilder)
+		{
+			List<string> messages = base.ValidityMessages(landscapeBuilder);
+			if ( BrushRadius < 1 )
+				messages.Add("BrushRadius must be at least 1.");
+			if ( DepositSpeed > 1 || DepositSpeed <= 0 )
+				messages.Add("DepositSpeed must be between 1(no restriction) and 0 (no deposit). 0 is invalid.");
+			if ( ErodeSpeed > 1 || ErodeSpeed <= 0 )
+				messages.Add("ErodeSpeed must be between 1(no restriction) and 0 (no deposit). 0 is invalid.");
+			if ( EvaporationSpeed > 1 || EvaporationSpeed < 0 )
+				messages.Add("ErodeSpeed must be between 1 and 0.");
+			if ( Friction > 1 || Friction < 0 )
+				messages.Add("Friction must be between 1 and 0.");
+			if ( InitialVolume <= 0 )
+				messages.Add("InitialVolume must be positive.");
+			if ( CoverageFactor <= 0 )
+				messages.Add("CoverageFactor must be at least 1.");
+			if ( LayeringPower < 0 )
+				messages.Add("LayeringPower must be at least 1.");
+			if ( MaxIterations <= 0 )
+				messages.Add("MaxIterations must be at least 1.");
+			if ( MinModification < 0 )
+				messages.Add("MinModification must be positive.");
+			if ( MinSedimentCapacity < 0 )
+				messages.Add("MinSedimentCapacity must be positive.");
+			if ( OutputFactor <= 0 )
+				messages.Add("OutputFactor must be positive.");
+			if ( SedimentCapacityFactor <= 0 )
+				messages.Add("SedimentCapacityFactor must be positive.");
+			if ( StepLength <= 0 )
+				messages.Add("StepLength must be positive.");
+			if ( MaxSectorSize <= 0 )
+				messages.Add("MaxSectorSize must be at least 1.");
+			return messages;
 		}
 	}
 }
