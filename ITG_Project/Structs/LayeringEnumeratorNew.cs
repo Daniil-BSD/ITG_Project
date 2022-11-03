@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace ITG_Core {
+namespace ITG_Core
+{
 
-	public struct LayeringProperties {
+	public struct LayeringProperties
+	{
 
 		public readonly bool checkered;
 
@@ -23,7 +25,8 @@ namespace ITG_Core {
 		}
 	}
 
-	public class LayerEnumerator : IEnumerator<CoordinateBasic> {
+	public class LayerEnumerator : IEnumerator<CoordinateBasic>
+	{
 
 		private CoordinateBasic current;
 
@@ -60,10 +63,10 @@ namespace ITG_Core {
 			this.properties = properties;
 
 			include00 = layerIndex % 2 == 1;
-			rowIndex = ( include00 ) ? -1 : 0;
+			rowIndex = include00 ? -1 : 0;
 
-			offsetX = ( ( properties.checkered ) ? layerIndex / 2 : layerIndex ) % properties.stepY;
-			offsetY = ( ( properties.checkered ) ? layerIndex / 2 : layerIndex ) / properties.stepY;
+			offsetX = (properties.checkered ? layerIndex / 2 : layerIndex) % properties.stepY;
+			offsetY = (properties.checkered ? layerIndex / 2 : layerIndex) / properties.stepY;
 			current = new CoordinateBasic(width, offsetY - properties.stepY);
 		}
 
@@ -74,11 +77,16 @@ namespace ITG_Core {
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool MoveNext()
 		{
-			if ( ( current.x += properties.stepX ) >= width ) {
+			if ((current.x += properties.stepX) >= width)
+			{
 				current.x = offsetX;
-				if ( properties.checkered )
-					current.x += ( ++rowIndex % 2 == 0 ) ? properties.stepY : 0;
-				if ( ( current.y += properties.stepY ) >= height ) {
+				if (properties.checkered)
+				{
+					current.x += (++rowIndex % 2 == 0) ? properties.stepY : 0;
+				}
+
+				if ((current.y += properties.stepY) >= height)
+				{
 					return false;
 				}
 			}
@@ -93,7 +101,8 @@ namespace ITG_Core {
 		}
 	}
 
-	public class LayeringEnumerator : IEnumerator<CoordinateBasic> {
+	public class LayeringEnumerator : IEnumerator<CoordinateBasic>
+	{
 
 		private LayerEnumerator layerEnumerator;
 
@@ -134,9 +143,12 @@ namespace ITG_Core {
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int GetShuffledIndex(in int indexIN, in LayeringProperties layeringProperties)
 		{
-			if ( layeringProperties.layeringPower % 2 == 0 )
+			if (layeringProperties.layeringPower % 2 == 0)
+			{
 				return GetShuffledIndex(indexIN, layeringProperties.layeringPower / 2);
-			return ( GetShuffledIndex(indexIN >> 1, layeringProperties.layeringPower / 2) << 1 ) + ( ( indexIN % 2 == 0 ) ? 1 : 0 );
+			}
+
+			return (GetShuffledIndex(indexIN >> 1, layeringProperties.layeringPower / 2) << 1) + ((indexIN % 2 == 0) ? 1 : 0);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -147,18 +159,19 @@ namespace ITG_Core {
 			int sideLength = 1 << power;
 			int x = 0;
 			int y = 0;
-			for ( int p = 0 ; p < power ; p++ ) {
-				int temp = ( indexIN >> ( p * 2 ) ) & 3;
+			for (int p = 0; p < power; p++)
+			{
+				int temp = (indexIN >> (p * 2)) & 3;
 				int a = temp & 1;
 				int b = temp >> 1;
 				int pInverse = powerMone - p;
 
-				x = ( x << 1 ) | a;
-				y = ( y << 1 ) | ( a ^ b );
+				x = (x << 1) | a;
+				y = (y << 1) | (a ^ b);
 				//x += a << pInverse;
 				//y += ( a ^ b ) << pInverse;
 			}
-			int indexOut = y * sideLength + x;
+			int indexOut = (y * sideLength) + x;
 			return indexOut;
 		}
 
@@ -169,10 +182,14 @@ namespace ITG_Core {
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool MoveNext()
 		{
-			if ( layerEnumerator.MoveNext() )
+			if (layerEnumerator.MoveNext())
+			{
 				return true;
+			}
+
 			currentIndex++;
-			if ( currentIndex < layers ) {
+			if (currentIndex < layers)
+			{
 				int shuffledIndex = GetShuffledIndex(currentIndex, properties);
 				layerEnumerator = new LayerEnumerator(shuffledIndex, properties, width, height);
 				layerEnumerator.MoveNext();
@@ -188,7 +205,8 @@ namespace ITG_Core {
 		}
 	}
 
-	public class LayerungEnumeratorBuilder {
+	public class LayeringEnumeratorBuilder
+	{
 
 		public readonly int layeringPower;
 
@@ -196,14 +214,14 @@ namespace ITG_Core {
 
 		public readonly LayeringProperties properties;
 
-		public LayerungEnumeratorBuilder(int layeringPower, float coverageFactor)
+		public LayeringEnumeratorBuilder(int layeringPower, float coverageFactor)
 		{
 			this.layeringPower = layeringPower;
-			int totalLayers = 1 << ( layeringPower );
-			layers = (int)( totalLayers * coverageFactor );
+			int totalLayers = 1 << (layeringPower);
+			layers = (int)(totalLayers * coverageFactor);
 			bool checkered = layeringPower % 2 == 1;
-			int stepY = 1 << ( layeringPower / 2 );
-			int stepX = ( checkered ) ? stepY + stepY : stepY;
+			int stepY = 1 << (layeringPower / 2);
+			int stepX = checkered ? stepY + stepY : stepY;
 
 			properties = new LayeringProperties(stepY, stepX, checkered, layeringPower);
 		}

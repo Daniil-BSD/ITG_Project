@@ -1,4 +1,5 @@
-﻿namespace ITG_Core.Base {
+﻿namespace ITG_Core.Base
+{
 	using System;
 	using System.Runtime.CompilerServices;
 
@@ -7,7 +8,8 @@
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	/// <typeparam name="S"></typeparam>
-	public abstract class InterpolatableAlgorithm<T, S> : Layer<T, S> where T : struct where S : struct {
+	public abstract class InterpolatableAlgorithm<T, S> : Layer<T, S> where T : struct where S : struct
+	{
 
 		public readonly float initialOffset;
 
@@ -39,13 +41,15 @@
 			//used to find the corresponding intermidiate value index
 			float pointOffsetX = MathExt.Modulo(corX * Constants.CHUNK_SIZE, scale) * step;
 			float pointOffsetY = MathExt.Modulo(corY * Constants.CHUNK_SIZE, scale) * step;
-			Sector<S> sourceSector = source.GetSector(new RequstSector(new Coordinate(corX.IntegerDevisionConsistent(scale), corY.IntegerDevisionConsistent(scale)), requstSector.width / scale + 2, requstSector.height / scale + 2));
-			Sector<T> sector = new Sector<T>(requstSector);
-			for ( int i = 0 ; i < sector.Width_units ; i++ ) {
-				float x = step * i + pointOffsetX;
+			Sector<S> sourceSector = source.GetSector(new RequstSector(new Coordinate(corX.IntegerDivisionConsistent(scale), corY.IntegerDivisionConsistent(scale)), (requstSector.width / scale) + 2, (requstSector.height / scale) + 2));
+			var sector = new Sector<T>(requstSector);
+			for (int i = 0; i < sector.Width_units; i++)
+			{
+				float x = (step * i) + pointOffsetX;
 				int sectorIndexX = (int)Math.Floor(x) + offsetX;
-				for ( int j = 0 ; j < sector.Height_units ; j++ ) {
-					float y = step * j + pointOffsetY;
+				for (int j = 0; j < sector.Height_units; j++)
+				{
+					float y = (step * j) + pointOffsetY;
 					int sectorIndexY = (int)Math.Floor(y) + offsetY;
 					sector[i, j] = Compute(
 						sourceSector[sectorIndexX, sectorIndexY],

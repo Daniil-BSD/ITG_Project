@@ -1,11 +1,13 @@
-﻿namespace ITG_Core {
+﻿namespace ITG_Core
+{
 	using System;
 	using System.Runtime.CompilerServices;
 
 	/// <summary>
 	/// type for representing the position on the 2D plane.
 	/// </summary>
-	public struct Coordinate {
+	public struct Coordinate
+	{
 
 		public static readonly Coordinate Origin = new Coordinate(0, 0);
 
@@ -48,18 +50,27 @@
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Coordinate operator -(in Coordinate c1)
 		{
-			if ( c1.x == 0 && c1.y == 0 )
+			if (c1.x == 0 && c1.y == 0)
+			{
 				return c1;
+			}
+
 			return new Coordinate(-c1.x, -c1.y);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Coordinate operator -(in Coordinate c1, in Coordinate c2)
 		{
-			if ( c2.x == 0 && c2.y == 0 )
+			if (c2.x == 0 && c2.y == 0)
+			{
 				return c1;
-			if ( c1.x == 0 && c1.y == 0 )
+			}
+
+			if (c1.x == 0 && c1.y == 0)
+			{
 				return -c2;
+			}
+
 			return new Coordinate(c1.x - c2.x, c1.y - c2.y);
 		}
 
@@ -72,40 +83,50 @@
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Coordinate operator *(in Coordinate c1, in int i)
 		{
-			if ( i == 1 )
+			if (i == 1)
+			{
 				return c1;
+			}
+
 			return new Coordinate(c1.x * i, c1.y * i);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Coordinate operator /(in Coordinate c1, in int i)
 		{
-			return new Coordinate(c1.x.IntegerDevisionConsistent(i), c1.y.IntegerDevisionConsistent(i));
+			return new Coordinate(c1.x.IntegerDivisionConsistent(i), c1.y.IntegerDivisionConsistent(i));
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Coordinate operator +(in Coordinate c1, in Coordinate c2)
 		{
-			if ( c2.x == 0 && c2.y == 0 )
+			if (c2.x == 0 && c2.y == 0)
+			{
 				return c1;
-			if ( c1.x == 0 && c1.y == 0 )
+			}
+
+			if (c1.x == 0 && c1.y == 0)
+			{
 				return c2;
+			}
+
 			return new Coordinate(c1.x + c2.x, c1.y + c2.y);
 		}
 
 		public override bool Equals(object obj)
 		{
-			if ( !( obj is Coordinate ) ) {
+			if (!(obj is Coordinate))
+			{
 				return false;
 			}
-			Coordinate coordinate = (Coordinate)obj;
+			var coordinate = (Coordinate)obj;
 			return x == coordinate.x && y == coordinate.y;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public override int GetHashCode()
 		{
-			return ( ( x << 16 ) | ( y & 0b0000_0000_0000_0000_1111_1111_1111_1111 ) );
+			return (x << 16) | (y & 0b0000_0000_0000_0000_1111_1111_1111_1111);
 		}
 
 		public override string ToString()
@@ -117,7 +138,8 @@
 	/// <summary>
 	/// Defines the <see cref="CoordinateBasic" />
 	/// </summary>
-	public struct CoordinateBasic {
+	public struct CoordinateBasic
+	{
 
 		public int x;
 
@@ -168,7 +190,7 @@
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public override int GetHashCode()
 		{
-			return ( ( x << 16 ) | ( y & 0b0000_0000_0000_0000_1111_1111_1111_1111 ) );
+			return (x << 16) | (y & 0b0000_0000_0000_0000_1111_1111_1111_1111);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

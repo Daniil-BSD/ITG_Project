@@ -1,13 +1,15 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace ITG_Core.Base {
+namespace ITG_Core.Base
+{
 
 	/// <summary>
 	/// Defines the <see cref="Layer{T, S}" />
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	/// <typeparam name="S"></typeparam>
-	public abstract class Layer<T, S> : Algorithm<T> where T : struct where S : struct {
+	public abstract class Layer<T, S> : Algorithm<T> where T : struct where S : struct
+	{
 
 		protected readonly Algorithm<S> source;
 
@@ -32,7 +34,7 @@ namespace ITG_Core.Base {
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		protected override Sector<T> SectorPopulation(in RequstSector requstSector)
 		{
-			Sector<T> sector = new Sector<T>(requstSector, false);
+			var sector = new Sector<T>(requstSector, false);
 			Sector<S> request = source.GetSector(requstSector);
 			Sector<T>.ForeachChunk(ChunkPopulation, ref sector, request);
 			return sector;

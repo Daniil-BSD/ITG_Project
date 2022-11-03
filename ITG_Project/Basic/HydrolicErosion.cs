@@ -1,4 +1,5 @@
-﻿namespace ITG_Core.Basic {
+﻿namespace ITG_Core.Basic
+{
 	using System;
 	using System.Runtime.CompilerServices;
 	using ITG_Core.Base;
@@ -7,13 +8,14 @@
 	/// <summary>
 	/// Defines the <see cref="HydrolicErrosion" />
 	/// </summary>
-	public class HydrolicErosion : Layer<float, float> {
+	public class HydrolicErosion : Layer<float, float>
+	{
 
 		private readonly CircularFloatBrushGroup depositBrushes;
 
 		private readonly CircularFloatBrushGroup errosionBrushes;
 
-		private readonly LayerungEnumeratorBuilder layeringEnumeratorBuilder;
+		private readonly LayeringEnumeratorBuilder layeringEnumeratorBuilder;
 
 		private readonly int maxSectorSize;
 
@@ -79,10 +81,10 @@
 
 			errosionBrushes = new CircularFloatBrushGroup(brushRadius, CircularBrushMode.Quadratic_EaseOut, Constants.AROUND_0_POSITIVE, BRUSHGROUP_SIZE);
 			depositBrushes = new CircularFloatBrushGroup(brushRadius, CircularBrushMode.Quadratic_Smooth, Constants.AROUND_0_POSITIVE, BRUSHGROUP_SIZE);
-			layeringEnumeratorBuilder = new LayerungEnumeratorBuilder(layeringPower, coverageFactor);
+			layeringEnumeratorBuilder = new LayeringEnumeratorBuilder(layeringPower, coverageFactor);
 
-			extraDropletRadius = (int)( ( brushRadius + stepLength * maxIterations ) / ( Constants.CHUNK_SIZE ) );
-			extraHeightmapRadius = 1 + (int)( extraDropletRadius * 1.125f );
+			extraDropletRadius = (int)((brushRadius + (stepLength * maxIterations)) / Constants.CHUNK_SIZE);
+			extraHeightmapRadius = 1 + (int)(extraDropletRadius * 1.125f);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -92,28 +94,29 @@
 			Sector<float> heightmap = source.GetSector(outgoingRequestSector).GetDeepCopy();
 
 			RequstSector enumeratorRequestSector = requstSector.GetExpandedCopy(extraDropletRadius);
-			Vec2 enumeratorOffset = new Vec2(( extraHeightmapRadius - extraDropletRadius ) * Constants.CHUNK_SIZE);
+			var enumeratorOffset = new Vec2((extraHeightmapRadius - extraDropletRadius) * Constants.CHUNK_SIZE);
 			LayeringEnumerator enumerator = layeringEnumeratorBuilder.BuildEnumerator(enumeratorRequestSector.Width_units, enumeratorRequestSector.Height_units);
 
 			int margin = (int)stepLength + (int)brushRadius + 2;
 			int margin_right = heightmap.Width_units - margin;
 			int margin_top = heightmap.Height_units - margin;
 
-			int margin_big = margin + (int)( stepLength * maxIterations );
+			int margin_big = margin + (int)(stepLength * maxIterations);
 			float minSedimentCapacityPlusMinModification = minSedimentCapacity + minModification;
-			while ( enumerator.MoveNext() ) {
+			while (enumerator.MoveNext())
+			{
 				float sediment = 0;
 				float speed = initialSpeed;
 				float volume = initialVolume;
 				float sedimentCapacity = 1;
 				Vec2 position = enumerator.Current + enumeratorOffset;
-				bool borderline = ( position.x < margin_big ||
+				bool borderline = position.x < margin_big ||
 						position.y < margin_big ||
 						position.x > heightmap.Width_units - margin_big ||
 						position.y > heightmap.Height_units - margin_big
-						);// true if droplet could fall off the edge
-				CoordinateBasic positionInt = (CoordinateBasic)position;
-				Vec2 positionWithinCell = new Vec2(position.x - positionInt.x, position.y - positionInt.y);
+						;// true if droplet could fall off the edge
+				var positionInt = (CoordinateBasic)position;
+				var positionWithinCell = new Vec2(position.x - positionInt.x, position.y - positionInt.y);
 				float height = GetHeight(heightmap, positionWithinCell, positionInt);
 				Vec2 dir = GetGradients(heightmap, positionWithinCell, positionInt);
 
@@ -124,17 +127,24 @@
 				Vec2 positionWithinCellNext;
 				Vec2 gradients;
 				int lifetime;
-				for ( lifetime = 0 ; lifetime < maxIterations && sedimentCapacity > -1 ; lifetime++ ) {
+				for (lifetime = 0; lifetime < maxIterations && sedimentCapacity > -1; lifetime++)
+				{
 					gradients = GetGradients(heightmap, positionWithinCell, positionInt);
 					gradients.Magnitude = stepLength;
-					if ( gradients.x == 0 && gradients.y == 0 )
+					if (gradients.x == 0 && gradients.y == 0)
+					{
 						dir = dir * speedStepFactor;
-					dir = dir * speedStepFactor + gradients.NormalizedCopy * -gravity;
-					speed = dir.Magnitude;
-					if ( float.IsInfinity(speed) )
-						speed = 0;
+					}
 
-					if ( dir.MagnitudeSquared <= Constants.AROUND_0_POSITIVE ) {
+					dir = (dir * speedStepFactor) + (gradients.NormalizedCopy * -gravity);
+					speed = dir.Magnitude;
+					if (float.IsInfinity(speed))
+					{
+						speed = 0;
+					}
+
+					if (dir.MagnitudeSquared <= Constants.AROUND_0_POSITIVE)
+					{
 						dir = gradients * Constants.AROUND_0_POSITIVE;
 					}
 					Vec2 dirNormalized = dir;
@@ -144,13 +154,14 @@
 
 					positionIntNext = (CoordinateBasic)positionNext;
 
-					if ( borderline &&
-						( positionNext.x < margin ||
+					if (borderline &&
+						(positionNext.x < margin ||
 						positionNext.y < margin ||
 						positionNext.x > margin_right ||
 						positionNext.y > margin_top
 						)
-						) {
+						)
+					{
 						break;
 					}
 					positionWithinCellNext = new Vec2(positionNext.x - positionIntNext.x, positionNext.y - positionIntNext.y);
@@ -160,32 +171,40 @@
 
 					sedimentCapacity = MathExt.Max(-deltaHeight * speed * volume * sedimentCapacityFactor, minSedimentCapacity);
 					float sedimentMinusSedimentCapacity = sediment - sedimentCapacity;
-					if ( sedimentMinusSedimentCapacity > 0 || deltaHeight > 0 ) {
-						float amountToDeposit = ( deltaHeight > 0 ) ? MathExt.Min(deltaHeight, sediment) : MathExt.Max(sedimentMinusSedimentCapacity * depositSpeed, ( sedimentCapacity <= minSedimentCapacityPlusMinModification ) ? minModification : 0);
-						if ( amountToDeposit >= minModification ) {
+					if (sedimentMinusSedimentCapacity > 0 || deltaHeight > 0)
+					{
+						float amountToDeposit = (deltaHeight > 0) ? MathExt.Min(deltaHeight, sediment) : MathExt.Max(sedimentMinusSedimentCapacity * depositSpeed, (sedimentCapacity <= minSedimentCapacityPlusMinModification) ? minModification : 0);
+						if (amountToDeposit >= minModification)
+						{
 							sediment -= MathExt.Min(amountToDeposit, sediment);
 							CircularFloatBrush depositBrush = depositBrushes.GetBrush(position);
 							BrushTouple<float>[] depositBrushSamples = depositBrush.Touples;
-							float depositHeight = ( amountToDeposit / depositBrush.sum ) * outputFactor * sedimentFactor;
+							float depositHeight = amountToDeposit / depositBrush.sum * outputFactor * sedimentFactor;
 
-							for ( int i = 0 ; i < depositBrushSamples.Length ; i++ ) {
+							for (int i = 0; i < depositBrushSamples.Length; i++)
+							{
 								heightmap[depositBrushSamples[i].offset + positionInt] += depositBrushSamples[i].value * depositHeight;
 							}
 
-							if ( sediment == 0 && deltaHeight < 0 ) {
+							if (sediment == 0 && deltaHeight < 0)
+							{
 								break;
 							}
 						}
-					} else {
+					}
+					else
+					{
 						float amountToErode = sedimentMinusSedimentCapacity * erodeSpeed;
 
-						if ( amountToErode >= minModification ) {
+						if (amountToErode >= minModification)
+						{
 							amountToErode = MathExt.Min(amountToErode, maxModification);
 							CircularFloatBrush errosionBrush = errosionBrushes.GetBrush(position);
 							BrushTouple<float>[] errosionBrushSamples = errosionBrush.Touples;
-							float errosionHeight = MathExt.Min(( amountToErode / errosionBrush.sum ), -deltaHeight) * outputFactor;
+							float errosionHeight = MathExt.Min(amountToErode / errosionBrush.sum, -deltaHeight) * outputFactor;
 
-							for ( int i = 0 ; i < errosionBrushSamples.Length ; i++ ) {
+							for (int i = 0; i < errosionBrushSamples.Length; i++)
+							{
 								heightmap[errosionBrushSamples[i].offset + positionInt] -= errosionBrushSamples[i].value * errosionHeight;
 							}
 							sediment += errosionHeight * errosionBrush.sum;
@@ -215,14 +234,14 @@
 			float val10 = heightmap[xpo, y];
 			float val11 = heightmap[xpo, ypo];
 
-			float gradXtop = ( val11 - val01 );
-			float gradXbottom = ( val10 - val00 );
+			float gradXtop = val11 - val01;
+			float gradXbottom = val10 - val00;
 
-			float gradYright = ( val11 - val10 );
-			float gradYleft = ( val01 - val00 );
+			float gradYright = val11 - val10;
+			float gradYleft = val01 - val00;
 
-			return new Vec2(gradXbottom + positionWithinCell.x * ( gradXtop - gradXbottom ),
-				gradYleft + positionWithinCell.y * ( gradYright - gradYleft )
+			return new Vec2(gradXbottom + (positionWithinCell.x * (gradXtop - gradXbottom)),
+				gradYleft + (positionWithinCell.y * (gradYright - gradYleft))
 				);
 		}
 

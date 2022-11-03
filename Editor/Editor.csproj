@@ -188,6 +188,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ITG_ANTZ\ITG_ANTZ.csproj">
+      <Project>{deba93fe-8e25-402c-aaba-7b73c3a26ad8}</Project>
+      <Name>ITG_ANTZ</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ITG_Project\ITG_Core.csproj">
       <Project>{3ff01ef6-6571-4056-994b-2e911802da53}</Project>
       <Name>ITG_Core</Name>
